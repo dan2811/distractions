@@ -1,0 +1,1 @@
+export type Role = "client" | "musician" | "admin" | "superAdmin";

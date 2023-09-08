@@ -2,13 +2,13 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { type GetServerSidePropsContext } from "next";
 import {
   getServerSession,
-  type DefaultSession,
   type NextAuthOptions,
+  type DefaultUser,
 } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
-
-import { env } from "~/env.mjs";
+import { type JWT } from "next-auth/jwt";
+import GoogleProvider, { type GoogleProfile } from "next-auth/providers/google";
 import { prisma } from "~/server/db";
+import { type Role } from "~/types";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -16,21 +16,20 @@ import { prisma } from "~/server/db";
  *
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
-declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: DefaultSession["user"] & {
-      id: string;
-      // ...other properties
-      // role: UserRole;
-    };
-  }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+// common interface for JWT and Session
+interface User extends DefaultUser {
+  role?: Role;
 }
-
+declare module "next-auth" {
+  interface Session {
+    user: User;
+  }
+}
+declare module "next-auth/jwt" {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface JWT extends User { }
+}
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -38,30 +37,50 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    jwt({ token, user }: { token: JWT; user: User; }) {
+      if (user) {
+        token.role = user.role;
+      };
+      return token;
+    },
+    session({ session, token }) {
+      console.log("session", session, "token", token);
+      if (session.user && token.sub) {
+        session.user.id = token.sub;
+        session.user.role = "client";
+      }
+      return session;
+    }
+  },
+  theme: {
+    brandColor: "#9760f2",
+    buttonText: "Sign in with Google",
+  },
+  session: {
+    strategy: "jwt",
   },
   adapter: PrismaAdapter(prisma),
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
-    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      profile: (profile: GoogleProfile) => {
+        console.log("profile", profile);
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+          role: "client"
+        };
+      }
+    })
     /**
      * ...add more providers here.
      *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
      * @see https://next-auth.js.org/providers/github
      */
-  ],
+  ]
 };
 
 /**
