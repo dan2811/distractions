@@ -9,26 +9,18 @@ datasource db {
     provider = "postgresql"
     url      = env("DATABASE_URL")
 }
-
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-}
-
-// Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
     userId            String
     type              String
     provider          String
     providerAccountId String
-    refresh_token     String? // @db.Text
-    access_token      String? // @db.Text
+    refresh_token     String?
+    access_token      String?
     expires_at        Int?
     token_type        String?
     scope             String?
-    id_token          String? // @db.Text
+    id_token          String?
     session_state     String?
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -46,12 +38,15 @@ model Session {
 model User {
     id            String    @id @default(cuid())
     name          String?
-    role          Role            @default(client)
-    email         String?   @unique
+    role          Role          @default(client)
+    email         String?       @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
+    gigs          Event[]       @relation("gigs")
+    instruments   Instrument[]
+    bookings      Event[]       @relation("bookings")
 }
 
 enum Role {
@@ -67,4 +62,43 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model EventType {
+    id         String   @id @default(cuid())
+    name       String
+    events     Event[]
+}
+
+model Event {
+    id          String   @id @default(cuid())
+    ownerId     String
+    owner       User        @relation("bookings", fields: [ownerId], references: [id])
+    musicians   User[]      @relation("gigs")
+    date        String
+    packages    Package[]
+    eventTypeId String
+    EventType   EventType @relation(fields: [eventTypeId], references: [id])
+    Equipment   Equipment[]
+}
+
+model Instrument {
+    id         String   @id @default(cuid())
+    name       String
+    musicians      User[]
+}
+
+model Package {
+    id         String   @id @default(cuid())
+    name       String
+    basePrice      Int
+    description String
+    events      Event[]
+}
+
+model Equipment {
+    id         String   @id @default(cuid())
+    name       String
+    quanitity  Int
+    events      Event[]
 }
