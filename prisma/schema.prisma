@@ -47,6 +47,7 @@ model User {
     gigs          Event[]       @relation("gigs")
     instruments   Instrument[]
     bookings      Event[]       @relation("bookings")
+    phone         String[]
 }
 
 enum Role {
@@ -81,6 +82,7 @@ model Event {
     eventTypeId String
     EventType   EventType    @relation(fields: [eventTypeId], references: [id])
     Equipment   Equipment[]
+    location    String?
 }
 
 model Instrument {
