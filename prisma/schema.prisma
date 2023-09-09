@@ -72,13 +72,14 @@ model EventType {
 
 model Event {
     id          String   @id @default(cuid())
+    name        String       @unique
     ownerId     String
-    owner       User        @relation("bookings", fields: [ownerId], references: [id])
-    musicians   User[]      @relation("gigs")
+    owner       User         @relation("bookings", fields: [ownerId], references: [id])
+    musicians   User[]       @relation("gigs")
     date        String
     packages    Package[]
     eventTypeId String
-    EventType   EventType @relation(fields: [eventTypeId], references: [id])
+    EventType   EventType    @relation(fields: [eventTypeId], references: [id])
     Equipment   Equipment[]
 }
 
