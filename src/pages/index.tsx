@@ -7,6 +7,7 @@ import { api } from "~/utils/api";
 export default function Home() {
   const session = useSession();
   const isUserAuthed = session.status === "authenticated";
+  const userRole = session.data?.user.role;
   return (
     <>
       <Head>
@@ -18,9 +19,8 @@ export default function Home() {
         <Auth />
         {isUserAuthed && (
           <>
-            <RequiredActions />
             <Bookings />
-            <Gigs />
+            {userRole === "musician" ?? <Gigs />}
           </>
         )}
       </Layout>
@@ -39,25 +39,31 @@ const Bookings = () => {
         <p>Loading...</p>
       ) : (
         <p className="font-body">
-          {data?.map(({ id, date }) => `${id} ${date}`)}
+          {data?.map((event) => <EventListItem event={event} key={event.id} />)}
         </p>
       )}
     </div>
   );
 };
 
+const EventListItem = ({
+  event,
+}: {
+  event: { id: string; name: string; date: string };
+}) => (
+  <div className="flex flex-col gap-2 pt-2">
+    <p>{new Date(event.date).toLocaleDateString()}</p>
+    <p>{event.name}</p>
+    <hr />
+  </div>
+);
+
 const Gigs = () => {
   return (
     <div>
-      <h2>Your Gigs</h2>
-    </div>
-  );
-};
-
-const RequiredActions = () => {
-  return (
-    <div>
-      <h2>Required Actions</h2>
+      <Heading>
+        <h2>Your Gigs</h2>
+      </Heading>
     </div>
   );
 };
