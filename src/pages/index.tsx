@@ -1,5 +1,6 @@
 import { useSession } from "next-auth/react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { Auth } from "~/components/Auth";
 import Layout from "~/components/Layout";
 import { Loading } from "~/components/Loading";
@@ -51,13 +52,20 @@ const EventListItem = ({
   event,
 }: {
   event: { id: string; name: string; date: string };
-}) => (
-  <div className="flex flex-col gap-2 pt-2">
-    <p>{new Date(event.date).toLocaleDateString()}</p>
-    <p>{event.name}</p>
-    <hr className="" />
-  </div>
-);
+}) => {
+  const { push } = useRouter();
+
+  return (
+    <div
+      className="flex flex-col gap-2 pt-2"
+      onClick={() => void push(`event/detail/${event.id}`)}
+    >
+      <p>{event.date ?? new Date(event.date).toLocaleDateString()}</p>
+      <p>{event.name}</p>
+      <hr className="" />
+    </div>
+  );
+};
 
 const Gigs = () => {
   return (
@@ -70,7 +78,7 @@ const Gigs = () => {
 };
 
 const Heading = (props: React.PropsWithChildren) => (
-  <div className="bg-main-accent font-headers flex w-2/3 flex-row items-center justify-end gap-2 py-2 pr-2">
+  <div className="flex w-2/3 flex-row items-center justify-end gap-2 bg-main-accent py-2 pr-2 font-headers">
     <hr className="flex-grow" />
     {props.children}
   </div>
