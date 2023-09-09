@@ -2,6 +2,7 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { Auth } from "~/components/Auth";
 import Layout from "~/components/Layout";
+import { Loading } from "~/components/Loading";
 import { api } from "~/utils/api";
 
 export default function Home() {
@@ -36,7 +37,7 @@ const Bookings = () => {
         <h2>Your Bookings</h2>
       </Heading>
       {isLoading ? (
-        <p>Loading...</p>
+        <Loading />
       ) : (
         <p className="font-body">
           {data?.map((event) => <EventListItem event={event} key={event.id} />)}
@@ -54,7 +55,7 @@ const EventListItem = ({
   <div className="flex flex-col gap-2 pt-2">
     <p>{new Date(event.date).toLocaleDateString()}</p>
     <p>{event.name}</p>
-    <hr />
+    <hr className="" />
   </div>
 );
 
