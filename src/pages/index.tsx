@@ -56,14 +56,16 @@ const EventListItem = ({
   const { push } = useRouter();
 
   return (
-    <div
-      className="flex flex-col gap-2 pt-2"
-      onClick={() => void push(`event/detail/${event.id}`)}
-    >
-      <p>{event.date ?? new Date(event.date).toLocaleDateString()}</p>
-      <p>{event.name}</p>
-      <hr className="" />
-    </div>
+    <>
+      <div
+        className="flex flex-col gap-2 py-2 pl-2"
+        onClick={() => void push(`event/detail/${event.id}`)}
+      >
+        <p>{event.date ?? new Date(event.date).toLocaleDateString()}</p>
+        <p>{event.name}</p>
+      </div>
+      <hr />
+    </>
   );
 };
 
