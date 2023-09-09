@@ -6,6 +6,7 @@ import {
   type DefaultUser,
 } from "next-auth";
 import { type JWT } from "next-auth/jwt";
+import Email from "next-auth/providers/email";
 import GoogleProvider, { type GoogleProfile } from "next-auth/providers/google";
 import { prisma } from "~/server/db";
 import { type Role } from "~/types";
@@ -73,7 +74,19 @@ export const authOptions: NextAuthOptions = {
           image: profile.picture,
           role: "client"
         };
-      }
+      },
+      allowDangerousEmailAccountLinking: true
+    }),
+    Email({
+      server: {
+        host: process.env.EMAIL_SERVER_HOST!,
+        port: Number(process.env.EMAIL_SERVER_PORT!),
+        auth: {
+          user: process.env.EMAIL_SERVER_USER!,
+          pass: process.env.EMAIL_SERVER_PASSWORD!,
+        },
+      },
+      from: process.env.EMAIL_FROM!,
     })
     /**
      * ...add more providers here.
