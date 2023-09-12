@@ -1,17 +1,14 @@
 import {
+  Create,
   DatagridConfigurable,
   Edit,
   List,
-  ReferenceArrayInput,
-  ReferenceInput,
+  SelectInput,
   Show,
   SimpleForm,
   SimpleShowLayout,
   TextField,
   TextInput,
-  useGetMany,
-  useGetManyReference,
-  useRecordContext,
 } from "react-admin";
 
 export const UserList = () => {
@@ -20,6 +17,7 @@ export const UserList = () => {
       <DatagridConfigurable rowClick="show" omit={["id"]}>
         <TextField source="id" />
         <TextField source="name" />
+        <TextField source="role" />
       </DatagridConfigurable>
     </List>
   );
@@ -42,9 +40,39 @@ export const UserEdit = () => {
     <Edit>
       <SimpleForm>
         <TextInput source="name" />
-        <TextInput source="email" />
+        <TextInput source="email" type="email" />
         <TextInput source="phone" />
+        <SelectInput
+          source="role"
+          choices={[
+            { id: "superAdmin", name: "Super Admin" },
+            { id: "admin", name: "Admin" },
+            { id: "musician", name: "Musician" },
+            { id: "client", name: "Client" },
+          ]}
+        />
       </SimpleForm>
     </Edit>
+  );
+};
+
+export const UserCreate = () => {
+  return (
+    <Create>
+      <SimpleForm>
+        <TextInput source="name" />
+        <TextInput source="email" type="email" />
+        <TextInput source="phone" />
+        <SelectInput
+          source="role"
+          choices={[
+            { id: "superAdmin", name: "Super Admin" },
+            { id: "admin", name: "Admin" },
+            { id: "musician", name: "Musician" },
+            { id: "client", name: "Client" },
+          ]}
+        />
+      </SimpleForm>
+    </Create>
   );
 };

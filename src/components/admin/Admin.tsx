@@ -7,9 +7,10 @@ import { Admin, Resource, type LayoutProps, Layout } from "react-admin";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { AppBar, TitlePortal, InspectorButton } from "react-admin";
 import { dataProvider } from "ra-data-simple-prisma";
-import { UserEdit, UserList, UserShow } from "./Users/Users";
+import { UserCreate, UserEdit, UserList, UserShow } from "./Users/Users";
 import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
 import { useSession } from "next-auth/react";
+import { EventList, EventShow } from "./Events/Events";
 
 export const MyLayout = (props: LayoutProps) => (
   <>
@@ -48,7 +49,14 @@ const AdminApp = () => {
         show={UserShow}
         list={UserList}
         edit={UserEdit}
+        create={UserCreate}
         icon={EmojiPeopleIcon}
+      />
+      <Resource
+        name="event"
+        recordRepresentation={(rec) => `${rec.date} - ${rec.name}`}
+        list={EventList}
+        show={EventShow}
       />
     </Admin>
   );
