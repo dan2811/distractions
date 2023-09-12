@@ -47,7 +47,7 @@ model User {
     gigs          Event[]       @relation("gigs")
     instruments   Instrument[]
     bookings      Event[]       @relation("bookings")
-    phone         String[]
+    phone         String
 }
 
 enum Role {
