@@ -1,5 +1,5 @@
 import React from "react";
-import { Logo } from "../Logo";
+import { LogoFull, Logo } from "../Logos";
 import {
   AppBar,
   Box,
@@ -38,7 +38,7 @@ export const NavBar = () => {
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <div className="my-4 flex w-full justify-center">
-        <Logo className="w-2/3" />
+        <LogoFull className="w-2/3" />
       </div>
       <Divider className="bg-main-accent" />
       <List disablePadding>
@@ -63,7 +63,7 @@ export const NavBar = () => {
       <AppBar
         component="nav"
         position="sticky"
-        sx={{ backgroundColor: globalColors.main.dark }}
+        sx={{ backgroundColor: globalColors.main.menu }}
       >
         <Toolbar className="flex justify-between">
           <IconButton
@@ -110,7 +110,7 @@ export const NavBar = () => {
           </div>
         </Toolbar>
       </AppBar>
-      <nav className="bg-main-dark">
+      <nav>
         <Drawer
           variant="temporary"
           open={mobileOpen}
