@@ -1,4 +1,4 @@
-// import { z } from "zod";
+import { z } from "zod";
 
 import {
   createTRPCRouter, protectedProcedure,
@@ -12,6 +12,27 @@ export const eventRouter = createTRPCRouter({
     return prisma.event.findMany({
       where: {
         ownerId: ctx.session.user.id,
+      }
+    });
+  }),
+  getOne: protectedProcedure.input(z.object({
+    id: z.string(),
+  })).query(({ input }) => {
+    return prisma.event.findUnique({
+      select: {
+        name: true,
+        ownerId: true,
+        owner: true,
+        musicians: true,
+        date: true,
+        packages: true,
+        eventTypeId: true,
+        EventType: true,
+        Equipment: true,
+        location: true
+      },
+      where: {
+        id: input.id,
       }
     });
   })

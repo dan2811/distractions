@@ -21,6 +21,7 @@ import { type Role } from "~/types";
 // common interface for JWT and Session
 interface User extends DefaultUser {
   role?: Role;
+  phone?: string;
 }
 declare module "next-auth" {
   interface Session {

@@ -3,9 +3,17 @@
 @tailwind utilities;
 
 body {
-  @apply font-body bg-black font-thin text-slate-100;
+  @apply bg-black font-body font-thin text-slate-100;
 }
 
 h2 {
   @apply font-headers text-2xl font-normal;
+}
+
+button {
+  @apply rounded-md bg-main-accent p-2 font-headers text-xl font-normal text-white;
+}
+
+input {
+  @apply rounded bg-main-dark;
 }
