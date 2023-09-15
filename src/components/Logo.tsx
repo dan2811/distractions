@@ -7,6 +7,6 @@ export const Logo = (props: { className?: string }) => (
     alt="The Distractions Band Logo"
     width={175}
     height={175}
-    className={`m-2 ${props.className ?? ""}`}
+    className={`p-2 ${props.className ?? ""}`}
   />
 );
