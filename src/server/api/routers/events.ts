@@ -35,5 +35,19 @@ export const eventRouter = createTRPCRouter({
         id: input.id,
       }
     });
-  })
+  }),
+  updateEvent: protectedProcedure.input(z.object({
+    eventId: z.string(),
+    name: z.string(),
+    date: z.string(),
+    location: z.string().optional(),
+  })).mutation(({ input }) => {
+    const { eventId, ...data } = input;
+    return prisma.user.update({
+      where: {
+        id: eventId
+      },
+      data
+    });
+  }),
 });

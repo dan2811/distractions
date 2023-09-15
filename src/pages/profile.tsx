@@ -1,38 +1,35 @@
-import { UserArgs } from "@prisma/client/runtime/library";
+"use client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
+import { AuthButton } from "~/components/Auth";
 import Layout from "~/components/Layout/Layout";
-import { Loading } from "~/components/Loading";
 import { api } from "~/utils/api";
 
 const Profile = () => {
   const { data: sessionData } = useSession();
-  const { push } = useRouter();
-  if (!sessionData) return <Loading />;
-
-  if (!sessionData.user.email) return void push("/");
+  if (!sessionData ?? !sessionData?.user.email) return 401;
   return (
     <Layout>
-      <div className="flex flex-col gap-y-2">
+      <div className="flex flex-col gap-y-2 py-2">
         <p className="flex flex-col text-2xl text-white">
           {sessionData && <span>Hello {sessionData.user.name},</span>}
         </p>
-        <ProfileAttributeEdit
+        <ProfileAttribute
           label="Email"
           fieldName="email"
           inputType="email"
           initialValue={sessionData.user.email}
         />
-        <ProfileAttributeEdit
+        <ProfileAttribute
           label="Phone"
           fieldName="phone"
           inputType="tel"
-          initialValue={sessionData?.user.phone ?? ""}
-          pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
+          initialValue={sessionData.user.phone ?? ""}
         />
       </div>
+      <AuthButton />
     </Layout>
   );
 };
@@ -45,7 +42,7 @@ interface ProfileInputProps {
   pattern?: string;
 }
 
-const ProfileAttributeEdit = ({
+const ProfileAttribute = ({
   fieldName,
   label,
   inputType,
@@ -81,11 +78,13 @@ const ProfileAttributeEdit = ({
         className="col-span-4 w-full p-2"
       />
       <div className="flex justify-center">
-        {!isLoading && (
-          <button type="submit" className="w-3/4 bg-main-accent text-sm">
-            Save
-          </button>
-        )}
+        <button
+          type="submit"
+          className="w-3/4 bg-main-accent text-sm disabled:opacity-30"
+          disabled={isLoading}
+        >
+          Save
+        </button>
       </div>
     </form>
   );

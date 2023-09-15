@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { Auth } from "~/components/Auth";
+import { AuthButton } from "~/components/Auth";
 import Layout from "~/components/Layout/Layout";
 import { Loading } from "~/components/Loading";
 import { api } from "~/utils/api";
@@ -18,7 +18,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
-        <Auth />
+        {!isUserAuthed && <AuthButton />}
         {isUserAuthed && (
           <>
             <Bookings />
@@ -62,7 +62,7 @@ const EventListItem = ({
         onClick={() => void push(`event/detail/${event.id}`)}
       >
         <p>{event.date ?? new Date(event.date).toLocaleDateString()}</p>
-        <p>{event.name}</p>
+        <p>{event.name || "Your event"}</p>
       </div>
       <hr />
     </>

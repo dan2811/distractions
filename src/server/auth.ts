@@ -42,12 +42,14 @@ export const authOptions: NextAuthOptions = {
     jwt({ token, user }: { token: JWT; user: User; }) {
       if (user) {
         token.role = user.role;
+        token.phone = user.phone;
       };
       return token;
     },
     session({ session, token }) {
       console.log("session", session, "token", token);
       if (session.user && token.sub) {
+        session.user.phone = token.phone;
         session.user.id = token.sub;
         session.user.role = "client";
       }

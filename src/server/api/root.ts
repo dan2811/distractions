@@ -1,4 +1,4 @@
-import { eventRouter } from "~/server/api/routers/bookings";
+import { eventRouter } from "~/server/api/routers/events";
 import { createTRPCRouter } from "~/server/api/trpc";
 import { userRouter } from "./routers/users";
 
