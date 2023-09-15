@@ -83,6 +83,7 @@ model Event {
     EventType   EventType    @relation(fields: [eventTypeId], references: [id])
     Equipment   Equipment[]
     location    String?
+    payment     Payment[]
 }
 
 model Instrument {
@@ -104,4 +105,14 @@ model Equipment {
     name       String
     quanitity  Int
     events      Event[]
+}
+
+model Payment {
+    id         String   @id @default(cuid())
+    type       String
+    amount     Int
+    date       String
+    paypalId  String?
+    event      Event   @relation(fields: [eventId], references: [id])
+    eventId   String
 }
