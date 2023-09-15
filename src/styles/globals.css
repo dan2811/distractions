@@ -15,5 +15,5 @@ button {
 }
 
 input {
-  @apply rounded bg-main-dark;
+  @apply bg-main-input rounded;
 }

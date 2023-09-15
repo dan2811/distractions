@@ -3,7 +3,9 @@ import { fontFamily } from "tailwindcss/defaultTheme";
 
 export const globalColors = {
   main: {
+    menu: "black",
     dark: "#1A1A1A",
+    input: "#2A2A2A",
     accent: "#a8a07c",
   }
 };
