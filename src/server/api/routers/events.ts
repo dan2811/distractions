@@ -43,7 +43,7 @@ export const eventRouter = createTRPCRouter({
     location: z.string().optional(),
   })).mutation(({ input }) => {
     const { eventId, ...data } = input;
-    return prisma.user.update({
+    return prisma.event.update({
       where: {
         id: eventId
       },
