@@ -18,16 +18,18 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { globalColors } from "tailwind.config";
+import { useSession } from "next-auth/react";
 
 export const NavBar = () => {
   const drawerWidth = 240;
   const navItems = [
     { label: "Home", path: "/" },
-    { label: "About", path: "/about" },
+    { label: "Profile", path: "/profile" },
     { label: "Contact", path: "/contact" },
   ];
   const [mobileOpen, setMobileOpen] = useState(false);
   const { push } = useRouter();
+  const { status } = useSession();
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -94,15 +96,17 @@ export const NavBar = () => {
           </Box>
           <Logo className="self-center" />
           <div className="flex flex-1 justify-end pl-4 pr-2">
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={() => void push("/profile")}
-              sx={{ justifyContent: "end" }}
-            >
-              <AccountCircleIcon />
-            </IconButton>
+            {status === "authenticated" && (
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
+                onClick={() => void push("/profile")}
+                sx={{ justifyContent: "end" }}
+              >
+                <AccountCircleIcon />
+              </IconButton>
+            )}
           </div>
         </Toolbar>
       </AppBar>
