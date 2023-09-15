@@ -1,14 +1,20 @@
-"use client";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { Loading } from "react-admin";
 import { toast } from "react-hot-toast";
 import { AuthButton } from "~/components/Auth";
 import Layout from "~/components/Layout/Layout";
 import { api } from "~/utils/api";
 
 const Profile = () => {
-  const { data: sessionData } = useSession();
+  const { data: sessionData, status } = useSession();
+  if (status === "loading") {
+    return (
+      <Layout>
+        <Loading />
+      </Layout>
+    );
+  }
   if (!sessionData ?? !sessionData?.user.email) return 401;
   return (
     <Layout>
