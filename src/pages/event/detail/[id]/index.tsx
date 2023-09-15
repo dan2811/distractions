@@ -85,9 +85,13 @@ const EventDetails = () => {
           setFormValues={setFormValues}
           editMode={editMode}
         />
-        <p>Packages booked:</p>
-        <ul>
-          {data?.packages.map((pkg) => <li key={pkg.id}>- {pkg.name}</li>)}
+        <ul className="flex w-full flex-col pl-2">
+          <p>Packages:</p>
+          {data?.packages.map((pkg) => (
+            <li key={pkg.id} className="w-2/5 text-right">
+              - {pkg.name}
+            </li>
+          ))}
         </ul>
         <button
           type={editMode ? "button" : "submit"}

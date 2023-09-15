@@ -110,7 +110,7 @@ model Equipment {
 model Payment {
     id         String   @id @default(cuid())
     type       String
-    amount     Int
+    amount     Float
     date       String
     paypalId  String?
     event      Event   @relation(fields: [eventId], references: [id])

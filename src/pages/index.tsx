@@ -2,6 +2,7 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { AuthButton } from "~/components/Auth";
+import { Heading } from "~/components/Layout/Heading";
 import Layout from "~/components/Layout/Layout";
 import { Loading } from "~/components/Loading";
 import { api } from "~/utils/api";
@@ -78,10 +79,3 @@ const Gigs = () => {
     </div>
   );
 };
-
-const Heading = (props: React.PropsWithChildren) => (
-  <div className="flex w-2/3 flex-row items-center justify-end gap-2 bg-main-accent py-2 pr-2 font-headers">
-    <hr className="flex-grow" />
-    {props.children}
-  </div>
-);
