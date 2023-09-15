@@ -26,6 +26,7 @@ export default withAuth({
 // Define paths for which the middleware will run
 export const config = {
     matcher: [
+        "/event/:path*",
         "/profile/:path*",
         "/admin/:path*"
     ]
