@@ -18,7 +18,7 @@ export default withAuth({
 
             // By default return true only if the token is not null
             // (this forces the users to be signed in to access the page)
-            return req !== null;
+            return token !== null;
         }
     }
 });
