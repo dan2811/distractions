@@ -84,6 +84,7 @@ model Event {
     Equipment   Equipment[]
     location    String?
     payment     Payment[]
+    price       Float       @default(0)
 }
 
 model Instrument {

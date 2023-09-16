@@ -12,6 +12,9 @@ const Payment = () => {
   const { data } = api.payments.findMany.useQuery({
     eventId: eventId as string,
   });
+
+  const totalPaid = data?.reduce((acc, { amount }) => acc + amount, 0);
+  
   return (
     <Layout>
       <div className="flex flex-col gap-8">
@@ -25,7 +28,7 @@ const Payment = () => {
           <Heading>
             <h2>Totals</h2>
           </Heading>
-          <p>Total paid so far: </p>
+          <p>Total paid: £{totalPaid}</p>
           <p>Total left to pay: </p>
         </section>
         <section>
