@@ -5,3 +5,4 @@
 - Prisma
 - NEON DB
 - Vercel
+- Sendgrid
