@@ -29,7 +29,8 @@ export const eventRouter = createTRPCRouter({
         eventTypeId: true,
         EventType: true,
         Equipment: true,
-        location: true
+        location: true,
+        price: true,
       },
       where: {
         id: input.id,

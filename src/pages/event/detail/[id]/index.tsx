@@ -11,6 +11,7 @@ import { toast } from "react-hot-toast";
 import { globalColors } from "tailwind.config";
 import Layout from "~/components/Layout/Layout";
 import { Loading } from "~/components/Loading";
+import PaymentTab from "~/components/PaymentTab";
 import { type RouterInputs, api } from "~/utils/api";
 
 const EventDetails = () => {
@@ -21,7 +22,10 @@ const EventDetails = () => {
   });
   const [currentTab, setCurrentTab] = useState(0);
 
-  const tabs = [<DetailsTab key={1} />, <div key={2}>Payments</div>];
+  const tabs = [
+    <DetailsTab key={1} />,
+    <PaymentTab key={2} eventCost={(data?.price as number) ?? 0} />,
+  ];
 
   return (
     <Layout>
