@@ -24,7 +24,7 @@ const EventDetails = () => {
 
   const tabs = [
     <DetailsTab key={1} />,
-    <PaymentTab key={2} eventCost={(data?.price as number) ?? 0} />,
+    <PaymentTab key={2} eventCost={data?.price ?? 0} />,
   ];
 
   return (
@@ -44,7 +44,7 @@ const EventDetails = () => {
             color: globalColors.main.accent,
           },
         }}
-        className="bg-main-menu fixed bottom-0 w-full"
+        className="fixed bottom-0 w-full bg-main-menu"
       >
         <BottomNavigationAction label="Details" />
         <BottomNavigationAction label="Payments" />
@@ -93,7 +93,7 @@ const DetailsTab = () => {
   }, [data?.date, data?.location, data?.name, id]);
   if (!id) return 404;
 
-  if (isLoading) return <Loading />;
+  if (!data || isLoading) return <Loading />;
   return (
     <form className="flex flex-col gap-2 py-2 pl-2" onSubmit={handleSubmit}>
       <Attribute
@@ -122,7 +122,8 @@ const DetailsTab = () => {
       />
       <ul className="flex w-full flex-col pl-2">
         <p>Packages:</p>
-        {data?.packages.map((pkg) => (
+
+        {data.packages.map((pkg) => (
           <li key={pkg.id} className="w-2/5 text-right">
             - {pkg.name}
           </li>
