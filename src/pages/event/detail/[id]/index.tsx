@@ -36,15 +36,7 @@ const EventDetails = () => {
         onChange={(event, newValue: number) => {
           setCurrentTab(newValue);
         }}
-        sx={{
-          "& .Mui-selected": {
-            color: "white",
-          },
-          "& .MuiBottomNavigationAction-root": {
-            color: globalColors.main.accent,
-          },
-        }}
-        className="fixed bottom-0 w-full bg-main-menu"
+        className="fixed bottom-0 w-full"
       >
         <BottomNavigationAction label="Details" />
         <BottomNavigationAction label="Payments" />

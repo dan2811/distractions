@@ -5,6 +5,7 @@ export const globalColors = {
   main: {
     menu: "black",
     dark: "#1A1A1A",
+    light: "#aaa",
     input: "#2A2A2A",
     accent: "#a8a07c",
   }
