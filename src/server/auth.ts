@@ -20,8 +20,8 @@ import { type Role } from "~/types";
 
 // common interface for JWT and Session
 interface User extends DefaultUser {
-  role?: Role;
-  phone?: string;
+  role: Role;
+  phone: string;
 }
 declare module "next-auth" {
   interface Session {
@@ -39,19 +39,19 @@ declare module "next-auth/jwt" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    jwt({ token, user }: { token: JWT; user: User; }) {
-      if (user) {
-        token.role = user.role;
-        token.phone = user.phone;
-      };
+    jwt({ token }: { token: JWT; user: DefaultUser; }) {
       return token;
     },
-    session({ session, token }) {
-      console.log("session", session, "token", token);
+    async session({ session, token }) {
       if (session.user && token.sub) {
         session.user.phone = token.phone;
         session.user.id = token.sub;
-        session.user.role = "client";
+        const user = await prisma.user.findUnique({
+          where: {
+            id: token.sub
+          }
+        });
+        session.user.role = user?.role ?? "client";
       }
       return session;
     }
@@ -69,7 +69,6 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       profile: (profile: GoogleProfile) => {
-        console.log("profile", profile);
         return {
           id: profile.sub,
           name: profile.name,
