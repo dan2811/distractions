@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import {
@@ -15,22 +16,29 @@ export const eventRouter = createTRPCRouter({
       }
     });
   }),
+  getMyGigs: protectedProcedure.query(({ ctx }) => {
+    if (ctx.session.user.role !== "musician") throw new TRPCError({ code: "UNAUTHORIZED", message: "You must be a musician to access this resource" });
+    return prisma.event.findMany({
+      select: {
+        id: true,
+        location: true,
+        date: true,
+      },
+      where: {
+        musicians: {
+          every: {
+            id: ctx.session.user.id,
+          }
+        }
+      }
+    });
+  }),
   getOne: protectedProcedure.input(z.object({
     id: z.string(),
   })).query(({ input }) => {
     return prisma.event.findUnique({
-      select: {
-        name: true,
-        ownerId: true,
-        owner: true,
-        musicians: true,
-        date: true,
+      include: {
         packages: true,
-        eventTypeId: true,
-        EventType: true,
-        Equipment: true,
-        location: true,
-        price: true,
       },
       where: {
         id: input.id,
@@ -50,5 +58,5 @@ export const eventRouter = createTRPCRouter({
       },
       data
     });
-  }),
+  })
 });

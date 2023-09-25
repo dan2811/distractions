@@ -10,7 +10,7 @@ import { dataProvider } from "ra-data-simple-prisma";
 import { UserCreate, UserEdit, UserList, UserShow } from "./Users/Users";
 import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
 import { useSession } from "next-auth/react";
-import { EventList, EventShow } from "./Events/Events";
+import { EventCreate, EventList, EventShow } from "./Events/Events";
 
 export const MyLayout = (props: LayoutProps) => (
   <>
@@ -57,6 +57,7 @@ const AdminApp = () => {
         recordRepresentation={(rec) => `${rec.date} - ${rec.name}`}
         list={EventList}
         show={EventShow}
+        create={EventCreate}
       />
     </Admin>
   );

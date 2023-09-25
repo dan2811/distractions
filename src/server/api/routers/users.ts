@@ -17,4 +17,13 @@ export const userRouter = createTRPCRouter({
       data: input
     });
   }),
+  getClient: protectedProcedure.input(z.object({
+    id: z.string(),
+  })).query(({ input }) => {
+    return prisma.user.findFirst({
+      where: {
+        id: input.id,
+      }
+    });
+  })
 });
