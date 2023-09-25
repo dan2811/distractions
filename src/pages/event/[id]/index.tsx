@@ -8,7 +8,6 @@ import React, {
   useEffect,
 } from "react";
 import { toast } from "react-hot-toast";
-import { globalColors } from "tailwind.config";
 import Layout from "~/components/Layout/Layout";
 import { Loading } from "~/components/Loading";
 import PaymentTab from "~/components/PaymentTab";
@@ -16,25 +15,25 @@ import { type RouterInputs, api } from "~/utils/api";
 
 const EventDetails = () => {
   const router = useRouter();
-  const id = router.query.id;
+  const { id, tab: currentTab } = router.query;
   const { data, isLoading } = api.events.getOne.useQuery({
     id: id as string,
   });
-  const [currentTab, setCurrentTab] = useState(0);
 
-  const tabs = [
-    <DetailsTab key={1} />,
-    <PaymentTab key={2} eventCost={data?.price ?? 0} />,
-  ];
+  if (isLoading) return <Loading />;
+
+  if (!data) return <p>Event not found</p>;
+
+  const tabs = [<DetailsTab key={1} />, <PaymentTab key={2} event={data} />];
 
   return (
     <Layout>
-      {tabs[currentTab]}
+      {tabs[parseInt(currentTab as string)]}
       <BottomNavigation
         showLabels
         value={currentTab}
         onChange={(event, newValue: number) => {
-          setCurrentTab(newValue);
+          void router.push(`/event/${id as string}?tab=${newValue}`);
         }}
         className="fixed bottom-0 w-full"
       >

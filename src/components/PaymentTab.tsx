@@ -1,51 +1,68 @@
-import { useRouter } from "next/router";
+import { type Event } from "@prisma/client";
 import React from "react";
 import { Heading } from "~/components/Layout/Heading";
 import { api } from "~/utils/api";
 
 interface PaymentTabProps {
-  eventCost: number;
+  event: Event;
 }
-const PaymentTab = ({ eventCost }: PaymentTabProps) => {
-  const {
-    query: { id: eventId },
-  } = useRouter();
-  if (!eventId) return null;
-  const { data } = api.payments.findMany.useQuery({
-    eventId: eventId as string,
-  });
 
-  const totalPaid = data?.reduce((acc, { amount }) => acc + amount, 0) ?? 0;
+const PaymentTab = ({ event }: PaymentTabProps) => {
+  // TESTING:
+  // const { mutate, data: mutationData } =
+  //   api.paypal.createDraftDepositInvoice.useMutation();
 
+  // mutate({
+  //   amount: "100",
+  //   client: {
+  //     id: "clmkkme0m0000mf08tij6ewj1",
+  //     email: "djordandrums@gmail.com",
+  //     name: "Daniel",
+  //     surname: "Jordan",
+  //   },
+  //   event: {
+  //     id: event.id,
+  //     date: event.date,
+  //   },
+  // });
+
+  // console.log("is success: ", mutationData);
+
+  // const { mutate: sendInvoiceMutation } = api.paypal.sendInvoice.useMutation();
+
+  // console.log("mutation data: ", mutationData);
+  // if (!mutationData) return;
+  // sendInvoiceMutation({ invoiceId: mutationData.id });
+  const { clientDepositInvoiceUrl, clientFinalInvoiceUrl } = event;
   return (
     <div className="flex flex-col gap-8">
-      <section>
+      <article>
         <Heading>
-          <h2>New Payment</h2>
+          <h2>Payments</h2>
         </Heading>
-        <div>Paypal buttons here?</div>
-      </section>
-      <section>
-        <Heading>
-          <h2>Totals</h2>
-        </Heading>
-        {!totalPaid ? null : <p>Total paid: £{totalPaid}</p>}
-        {!eventCost || eventCost < totalPaid ? null : (
-          <p>Total left to pay: £{(eventCost - totalPaid).toFixed(2)}</p>
+        {!clientDepositInvoiceUrl && !clientFinalInvoiceUrl && (
+          <section className="p-2">
+            Nothing to pay yet, we&apos;ll send you an invoice soon, your
+            invoices will also appear here once they have been sent.
+            <br />
+            <br />
+            Please make sure your email address is correct by clicking on the
+            profile icon at the top right.
+          </section>
         )}
-      </section>
-      <section>
-        <Heading>
-          <h2>Previous Payments</h2>
-        </Heading>
-        {data?.map(({ id, date, amount, type }) => (
-          <div key={id} className="grid grid-cols-3">
-            <p>{date}</p>
-            <p>£{amount.toFixed(2)}</p>
-            <p>{type}</p>
-          </div>
-        ))}
-      </section>
+        <div>
+          {clientDepositInvoiceUrl && (
+            <a href={clientDepositInvoiceUrl} target="_blank">
+              <button>Pay deposit</button>
+            </a>
+          )}
+          {clientFinalInvoiceUrl && (
+            <a href={clientFinalInvoiceUrl} target="_blank">
+              <button>Pay remaining balance</button>
+            </a>
+          )}
+        </div>
+      </article>
     </div>
   );
 };
