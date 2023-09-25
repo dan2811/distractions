@@ -35,6 +35,18 @@ model Session {
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model PaypalAccessToken {
+    /// comma separated list of scopes
+    scope String
+    access_token String @id
+    token_type String
+    app_id String
+    /// seconds until expiry
+    expires_in Int
+    nonce String
+    createdAt DateTime @default(now())
+}
+
 model User {
     id            String    @id @default(cuid())
     name          String?
@@ -67,35 +79,52 @@ model VerificationToken {
 
 model EventType {
     id         String   @id @default(cuid())
-    name       String
+    name       String   @unique
     events     Event[]
 }
 
 model Event {
-    id          String   @id @default(cuid())
-    name        String       @unique
-    ownerId     String
-    owner       User         @relation("bookings", fields: [ownerId], references: [id])
-    musicians   User[]       @relation("gigs")
-    date        String
-    packages    Package[]
-    eventTypeId String
-    EventType   EventType    @relation(fields: [eventTypeId], references: [id])
-    Equipment   Equipment[]
-    location    String?
-    payment     Payment[]
-    price       Float       @default(0)
+    id                  String   @id @default(cuid())
+    name                String       @unique
+    ownerId             String
+    owner               User         @relation("bookings", fields: [ownerId], references: [id])
+    musicians           User[]       @relation("gigs")
+    date                String
+    packages            Package[]
+    eventTypeId         String
+    EventType           EventType    @relation(fields: [eventTypeId], references: [id])
+    Equipment           Equipment[]
+    location            String?
+    price               Float       @default(0)
+    clientDepositInvoiceUrl    String?
+    clientFinalInvoiceUrl      String?
+    adminDepositInvoiceUrl     String?
+    adminFinalInvoiceUrl       String?
+}
+
+model Job {
+    id           String   @id @default(cuid())
+    musicianId   String
+    eventId      String
+    pay          Float
+    Instruments  Instrument[]
+    isMd         Boolean
+    notes        String?
+    status     String  @default("pending")
+
+    @@unique([musicianId, eventId])
 }
 
 model Instrument {
     id         String   @id @default(cuid())
-    name       String
-    musicians      User[]
+    name       String   @unique
+    musicians  User[]
+    jobs       Job[]
 }
 
 model Package {
     id         String   @id @default(cuid())
-    name       String
+    name       String   @unique
     basePrice      Int
     description String
     events      Event[]
@@ -103,17 +132,7 @@ model Package {
 
 model Equipment {
     id         String   @id @default(cuid())
-    name       String
+    name       String   @unique
     quanitity  Int
     events      Event[]
-}
-
-model Payment {
-    id         String   @id @default(cuid())
-    type       String
-    amount     Float
-    date       String
-    paypalId  String?
-    event      Event   @relation(fields: [eventId], references: [id])
-    eventId   String
 }
