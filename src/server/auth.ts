@@ -39,7 +39,14 @@ declare module "next-auth/jwt" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    jwt({ token }: { token: JWT; user: DefaultUser; }) {
+    jwt({ token, user }: { token: JWT; user: DefaultUser | undefined; }) {
+      if (user) {
+        // Assign role to token for use in middleware to check for admin access
+        token.sub = user.id;
+        // Some nasty casting to keep TS happy when trying to get phone number and role into the token
+        token.phone = (user as User).phone;
+        token.role = (user as User).role;
+      }
       return token;
     },
     async session({ session, token }) {
@@ -51,7 +58,10 @@ export const authOptions: NextAuthOptions = {
             id: token.sub
           }
         });
+        //Assign role to session for use in front end
         session.user.role = user?.role ?? "client";
+        //Assign role to token for use in middleware to check for admin access
+        token.role = user?.role ?? "client";
       }
       return session;
     }

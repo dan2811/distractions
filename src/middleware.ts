@@ -7,12 +7,12 @@ export default withAuth({
             // route which requires a specific role
             const path = req.nextUrl.pathname;
             console.debug("User visiting path: ", path);
-            console.debug("TOKEN: ", JSON.stringify(token));
             if (path.startsWith("/admin")) {
                 if (token?.role === "admin" || token?.role === "superAdmin") {
                     console.log("ADMIN ACCESS GRANTED TO: ", JSON.stringify(token));
                     return true;
                 }
+                console.log("ADMIN ACCESS DENIED TO: ", JSON.stringify(token));
                 return false;
             }
 
