@@ -128,7 +128,7 @@ const DetailsTab = ({ event }: { event: Event }) => {
         <>
           <h2 className="text-xl text-main-accent">Instrument</h2>
           <p className="text-lg">
-            {(instruments as Instrument[])
+            {instruments
               .map((instrument: Instrument) => instrument.name)
               .join(", ")}
           </p>
