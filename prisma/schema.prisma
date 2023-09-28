@@ -54,14 +54,14 @@ model User {
     email         String        @unique
     emailVerified DateTime?
     image         String?
+    phone         String?
+    createdAt     DateTime      @default(now())
+    updatedAt     DateTime      @updatedAt
     accounts      Account[]
     sessions      Session[]
     instruments   Instrument[]
     jobs          Job[]
     bookings      Event[]       @relation("bookings")
-    phone         String?
-    createdAt     DateTime      @default(now())
-    updatedAt     DateTime      @updatedAt
 }
 
 enum Role {
@@ -82,24 +82,17 @@ model VerificationToken {
 model EventType {
     id         String @id @default(cuid())
     name       String     @unique
-    events     Event[]
     createdAt  DateTime   @default(now())
     updatedAt  DateTime   @updatedAt
+    events     Event[]
 }
 
 model Event {
     id                         String   @id @default(cuid())
     name                       String       @unique
-    ownerId                    String
-    owner                      User         @relation("bookings", fields: [ownerId], references: [id])
     date                       DateTime
-    packages                   Package[]
-    eventTypeId                String
-    EventType                  EventType    @relation(fields: [eventTypeId], references: [id])
-    Equipment                  Equipment[]
     InstrumentsRequired        Json
     location                   String?
-    jobs                       Job[]
     price                      Float       @default(0)
     clientDepositInvoiceUrl    String?
     clientFinalInvoiceUrl      String?
@@ -107,21 +100,28 @@ model Event {
     adminFinalInvoiceUrl       String?
     createdAt                  DateTime           @default(now())
     updatedAt                  DateTime           @updatedAt
+    ownerId                    String
+    owner                      User         @relation("bookings", fields: [ownerId], references: [id])
+    eventTypeId                String
+    EventType                  EventType    @relation(fields: [eventTypeId], references: [id])
+    packages                   Package[]
+    Equipment                  Equipment[]
+    jobs                       Job[]
 }
 
 model Job {
     id           String   @id @default(cuid())
+    pay          Float
+    isMd         Boolean
+    notes        String?
+    status       String  @default("pending")
+    createdAt    DateTime           @default(now())
+    updatedAt    DateTime           @updatedAt
     musicianId   String
     musician     User     @relation(fields: [musicianId], references: [id])
     eventId      String
     event        Event   @relation(fields: [eventId], references: [id])
-    pay          Float
     Instruments  Instrument[]
-    isMd         Boolean
-    notes        String?
-    status       String  @default("pending")
-    createdAt        DateTime           @default(now())
-    updatedAt        DateTime           @updatedAt
 
     @@unique([musicianId, eventId])
 }
@@ -129,10 +129,10 @@ model Job {
 model Instrument {
     id         String  @id @default(cuid())
     name       String      @unique
-    musicians  User[]
-    jobs       Job[]
     createdAt  DateTime    @default(now())
     updatedAt  DateTime    @updatedAt
+    musicians  User[]
+    jobs       Job[]
 }
 
 model Package {
@@ -140,16 +140,16 @@ model Package {
     name            String   @unique
     basePrice       Int
     description     String
-    events          Event[]
     createdAt        DateTime           @default(now())
     updatedAt        DateTime           @updatedAt
+    events          Event[]
 }
 
 model Equipment {
     id         String   @id @default(cuid())
     name       String   @unique
     quanitity  Int
-    events     Event[]
     createdAt        DateTime           @default(now())
     updatedAt        DateTime           @updatedAt
+    events     Event[]
 }
