@@ -24,8 +24,8 @@ export default function Home() {
         {isUserAuthed && (
           <>
             <Bookings />
-            {session.data.user.role === "musician" && <GigOffers />}
-            {session.data.user.role === "musician" && <Gigs />}
+            {session.data.user.role !== "client" && <GigOffers />}
+            {session.data.user.role !== "client" && <Gigs />}
           </>
         )}
       </Layout>

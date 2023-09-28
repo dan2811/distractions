@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Instrument, Prisma, User } from "@prisma/client";
-import { NextApiResponse } from "next";
-import { NextResponse } from "next/server";
+import type { Instrument, Prisma, User } from "@prisma/client";
+import type { NextApiResponse } from "next";
 import { type RaPayload, defaultHandler, createHandler, deleteHandler, deleteManyHandler, getListHandler, getManyHandler, getManyReferenceHandler, getOneHandler, updateHandler, updateManyHandler } from "ra-data-simple-prisma";
 import { prisma } from "~/server/db";
 
@@ -12,15 +11,16 @@ export interface RaUser extends User {
 }
 
 export default async function handler(req: { body: RaPayload; }, res: NextApiResponse) {
+    let result;
     switch (req.body.resource) {
         case "user":
-            await userHandler(req, res);
+            result = await userHandler(req, res);
             break;
         default:
-            const result = await defaultHandler(req.body, prisma);
-            res.json(result);
+            result = await defaultHandler(req.body, prisma);
             break;
-    }
+    };
+    res.json(result);
 }
 
 const userHandler = async (req: { body: RaPayload; }, res: NextApiResponse) => {
@@ -126,5 +126,5 @@ const userHandler = async (req: { body: RaPayload; }, res: NextApiResponse) => {
         default:
             await defaultHandler(req.body, prisma);
             break;
-    }
+    };
 };

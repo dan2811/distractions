@@ -27,6 +27,15 @@ export const NavBar = () => {
     { label: "Profile", path: "/profile" },
     { label: "Contact", path: "/contact" },
   ];
+
+  const session = useSession();
+  const isAdmin =
+    session.data?.user.role === "superAdmin" ||
+    session.data?.user.role === "admin";
+
+  if (isAdmin) {
+    navItems.push({ label: "Admin console", path: "/admin" });
+  }
   const [mobileOpen, setMobileOpen] = useState(false);
   const { push } = useRouter();
   const { status } = useSession();
