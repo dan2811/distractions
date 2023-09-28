@@ -4,7 +4,11 @@ import { ReactQueryDevtools } from "react-query/devtools";
 import { AppBar, TitlePortal, InspectorButton } from "react-admin";
 import { dataProvider } from "ra-data-simple-prisma";
 import { UserCreate, UserEdit, UserList } from "./Users/Users";
+
 import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
+import FestivalIcon from "@mui/icons-material/Festival";
+import PianoIcon from "@mui/icons-material/Piano";
+
 import { useSession } from "next-auth/react";
 import { EventCreate, EventList, EventShow } from "./Events/Events";
 import {
@@ -15,6 +19,12 @@ import {
 } from "./Instruments/Instruments";
 import { UserShow } from "./Users/UserShow";
 import type { Event } from "@prisma/client";
+import {
+  EventTypeCreate,
+  EventTypeEdit,
+  EventTypeList,
+  EventTypeShow,
+} from "./EventType/EventType";
 
 export const MyLayout = (props: LayoutProps) => (
   <>
@@ -64,6 +74,7 @@ const AdminApp = () => {
         list={EventList}
         show={EventShow}
         create={EventCreate}
+        icon={FestivalIcon}
       />
       <Resource
         name="instrument"
@@ -72,6 +83,15 @@ const AdminApp = () => {
         show={InstrumentShow}
         edit={InstrumentEdit}
         create={InstrumentCreate}
+        icon={PianoIcon}
+      />
+      <Resource
+        name="eventType"
+        recordRepresentation="name"
+        list={EventTypeList}
+        show={EventTypeShow}
+        create={EventTypeCreate}
+        edit={EventTypeEdit}
       />
     </Admin>
   );

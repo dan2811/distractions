@@ -6,6 +6,7 @@ import { type RaPayload, defaultHandler } from "ra-data-simple-prisma";
 import { prisma } from "~/server/db";
 import { userHandler } from "./RaHandlers/userHandler";
 import { instrumentHandler } from "./RaHandlers/instrumentHandler";
+import { eventHandler } from "./RaHandlers/eventHandler";
 
 export default async function handler(req: { body: RaPayload; }, res: NextApiResponse) {
     let result;
@@ -15,6 +16,9 @@ export default async function handler(req: { body: RaPayload; }, res: NextApiRes
             break;
         case "instrument":
             result = await instrumentHandler(req, res);
+            break;
+        case "event":
+            result = await eventHandler(req, res);
             break;
         default:
             result = await defaultHandler(req.body, prisma);

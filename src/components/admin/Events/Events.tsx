@@ -1,14 +1,19 @@
 import React from "react";
 import {
+  ArrayInput,
   Create,
   DatagridConfigurable,
+  DateField,
   DateInput,
   Edit,
   List,
+  NumberInput,
   ReferenceField,
   ReferenceInput,
+  SelectInput,
   Show,
   SimpleForm,
+  SimpleFormIterator,
   SimpleShowLayout,
   TextField,
   TextInput,
@@ -21,8 +26,18 @@ export const EventList = () => {
       <DatagridConfigurable omit={["id"]} rowClick="show">
         <TextField source="id" />
         <TextField source="name" />
-        <TextField source="date" />
-        <ReferenceField source="ownerId" reference="user" />
+        <ReferenceField
+          source="ownerId"
+          reference="user"
+          link="show"
+          label="Client"
+        />
+        <DateField source="date" />
+        <ReferenceField
+          source="eventTypeId"
+          reference="eventType"
+          link="show"
+        />
       </DatagridConfigurable>
     </List>
   );
@@ -35,6 +50,11 @@ export const EventShow = () => {
         <TextField source="name" />
         <TextField source="date" />
         <ReferenceField source="ownerId" reference="user" link="show" />
+        <ReferenceField
+          source="eventTypeId"
+          reference="eventType"
+          link="show"
+        />
         <InvoiceButton type="deposit" />
         <InvoiceButton type="final" />
       </SimpleShowLayout>
@@ -47,11 +67,27 @@ export const EventCreate = () => {
     <Create>
       <SimpleForm>
         <TextInput source="name" />
-        <DateInput source="date" />
+        <DateInput
+          source="date"
+          parse={(val: string) => new Date(val).toISOString()}
+        />
         <ReferenceInput source="owner" reference="user" />
-        <TextInput source="EventType" />
+        <ReferenceInput source="EventType" reference="eventType" />
         <TextInput source="location" />
-        <TextInput source="price" />
+        <NumberInput source="price" />
+        <ArrayInput source="InstrumentsRequired">
+          <SimpleFormIterator inline>
+            <ReferenceInput
+              source="id"
+              reference="Instrument"
+              resource="Instrument"
+              label="Required instruments"
+            >
+              <SelectInput optionText="name" label="Instrument" />
+            </ReferenceInput>
+            <NumberInput source="quantity" defaultValue={1} min={1} />
+          </SimpleFormIterator>
+        </ArrayInput>
       </SimpleForm>
     </Create>
   );

@@ -1,6 +1,7 @@
 import {
   ChipField,
   Datagrid,
+  Labeled,
   ReferenceArrayField,
   ReferenceField,
   ReferenceManyField,
@@ -22,25 +23,24 @@ export const UserShow = () => {
         <TextField source="role" />
         <ReferenceArrayField source="instruments" reference="Instrument">
           <SingleFieldList linkType="show">
-            <ChipField
-              source="name"
-              emptyText="This user plays no instruments"
-            />
+            <ChipField source="name" />
           </SingleFieldList>
         </ReferenceArrayField>
-        <Gigs />
+        <Labeled label="Events">
+          <Events />
+        </Labeled>
       </SimpleShowLayout>
     </Show>
   );
 };
 
-const Gigs = () => {
+const Events = () => {
   const user: RaUser = useRecordContext();
 
   if (user.role === "client") {
     return (
       <ReferenceManyField reference="event" target="ownerId">
-        <Datagrid>
+        <Datagrid rowClick="show">
           <TextField source="name" />
           <TextField source="date" />
           <TextField source="location" />
@@ -51,7 +51,7 @@ const Gigs = () => {
 
   return (
     <ReferenceArrayField source="jobs" reference="Job">
-      <Datagrid>
+      <Datagrid rowClick="show">
         <ReferenceField source="eventId" reference="Event" label="Client">
           <ReferenceField source="ownerId" reference="user" />
         </ReferenceField>
