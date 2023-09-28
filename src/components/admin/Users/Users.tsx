@@ -1,8 +1,16 @@
+import { User } from "@prisma/client";
+import { ReactEventHandler } from "react";
 import {
+  ArrayField,
   Create,
   DatagridConfigurable,
   Edit,
+  FunctionField,
   List,
+  ReferenceArrayField,
+  ReferenceArrayInput,
+  ReferenceInput,
+  SelectArrayInput,
   SelectInput,
   Show,
   SimpleForm,
@@ -10,6 +18,7 @@ import {
   TextField,
   TextInput,
 } from "react-admin";
+import { RaUser } from "~/pages/api/[resource]";
 
 export const UserList = () => {
   return (
@@ -29,7 +38,18 @@ export const UserShow = () => {
       <SimpleShowLayout>
         <TextField source="name" />
         <TextField source="email" />
-        <TextField source="phone" />
+        <TextField source="phone" emptyText="No phone number" />
+        <TextField source="role" />
+        <FunctionField
+          render={(record: RaUser) =>
+            record.role === "client" ? null : (
+              <ReferenceArrayField
+                source="instruments"
+                reference="instrument"
+              />
+            )
+          }
+        />
       </SimpleShowLayout>
     </Show>
   );
@@ -51,6 +71,7 @@ export const UserEdit = () => {
             { id: "client", name: "Client" },
           ]}
         />
+        <ReferenceArrayInput source="instrument" reference="instrument" />
       </SimpleForm>
     </Edit>
   );
@@ -58,7 +79,7 @@ export const UserEdit = () => {
 
 export const UserCreate = () => {
   return (
-    <Create>
+    <Create redirect="show">
       <SimpleForm>
         <TextInput source="name" />
         <TextInput source="email" type="email" />
@@ -72,6 +93,7 @@ export const UserCreate = () => {
             { id: "client", name: "Client" },
           ]}
         />
+        <ReferenceArrayField source="instruments" reference="Instrument" />
       </SimpleForm>
     </Create>
   );

@@ -11,6 +11,12 @@ import { UserCreate, UserEdit, UserList, UserShow } from "./Users/Users";
 import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
 import { useSession } from "next-auth/react";
 import { EventCreate, EventList, EventShow } from "./Events/Events";
+import {
+  InstrumentCreate,
+  InstrumentEdit,
+  InstrumentList,
+  InstrumentShow,
+} from "./Instruments/Instruments";
 
 export const MyLayout = (props: LayoutProps) => (
   <>
@@ -58,6 +64,14 @@ const AdminApp = () => {
         list={EventList}
         show={EventShow}
         create={EventCreate}
+      />
+      <Resource
+        name="instrument"
+        recordRepresentation="name"
+        list={InstrumentList}
+        show={InstrumentShow}
+        edit={InstrumentEdit}
+        create={InstrumentCreate}
       />
     </Admin>
   );

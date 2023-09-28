@@ -25,11 +25,11 @@ export const eventRouter = createTRPCRouter({
         date: true,
       },
       where: {
-        musicians: {
+        jobs: {
           every: {
-            id: ctx.session.user.id,
+            musicianId: ctx.session.user.id,
           }
-        }
+        },
       }
     });
   }),
