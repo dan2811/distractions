@@ -20,6 +20,12 @@ const EventDetails = () => {
     id: id as string,
   });
 
+  const [state, setState] = useState(0);
+
+  useEffect(() => {
+    setState(parseInt(currentTab as string));
+  }, [currentTab]);
+
   if (isLoading) return <Loading />;
 
   if (!data) return <p>Event not found</p>;
@@ -31,7 +37,7 @@ const EventDetails = () => {
       {tabs[parseInt(currentTab as string)]}
       <BottomNavigation
         showLabels
-        value={currentTab}
+        value={state}
         onChange={(event, newValue: number) => {
           void router.push(`/event/${id as string}?tab=${newValue}`);
         }}
@@ -55,7 +61,7 @@ const DetailsTab = () => {
   >({
     eventId: id as string,
     name: data?.name ?? "",
-    date: data?.date ?? "",
+    date: data?.date ? new Date(data.date).toLocaleDateString() : "",
     location: data?.location ?? "",
   });
   const [editMode, setEditMode] = useState(false);
@@ -77,7 +83,7 @@ const DetailsTab = () => {
     setFormValues({
       eventId: id as string,
       name: data?.name ?? "",
-      date: data?.date ?? "",
+      date: data?.date ? new Date(data.date).toLocaleDateString() : "",
       location: data?.location ?? "",
     });
     console.log("use effect check");
