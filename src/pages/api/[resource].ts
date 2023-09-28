@@ -36,7 +36,7 @@ const userHandler = async (req: { body: RaPayload; }, res: NextApiResponse) => {
                 softDeleteField: "deletedAt",
             });
         case "deleteMany":
-            return await deleteManyHandler<Prisma.UserDeleteManyArgs>(req.body, prisma.user, {
+            return await deleteManyHandler(req.body, prisma.user, {
                 softDeleteField: "deletedAt",
             });
         case "getList":
@@ -110,7 +110,7 @@ const userHandler = async (req: { body: RaPayload; }, res: NextApiResponse) => {
                 }
             );
         case "updateMany":
-            await updateManyHandler<Prisma.UserUpdateManyArgs>(
+            await updateManyHandler(
                 req.body,
                 prisma.user,
                 {

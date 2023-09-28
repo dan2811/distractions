@@ -161,11 +161,7 @@ const GigListItem = ({ job }: { job: JobWithInstruments }) => {
         </p>
         <p>{event.location}</p>
         {instruments?.length > 0 && (
-          <p>
-            {(instruments as Instrument[])
-              .map((instrument) => instrument.name)
-              .join(", ")}
-          </p>
+          <p>{instruments.map((instrument) => instrument.name).join(", ")}</p>
         )}
       </div>
       <hr />
