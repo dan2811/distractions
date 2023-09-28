@@ -1,13 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Admin, Resource, type LayoutProps, Layout } from "react-admin";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { AppBar, TitlePortal, InspectorButton } from "react-admin";
 import { dataProvider } from "ra-data-simple-prisma";
-import { UserCreate, UserEdit, UserList, UserShow } from "./Users/Users";
+import { UserCreate, UserEdit, UserList } from "./Users/Users";
 import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
 import { useSession } from "next-auth/react";
 import { EventCreate, EventList, EventShow } from "./Events/Events";
@@ -17,6 +13,8 @@ import {
   InstrumentList,
   InstrumentShow,
 } from "./Instruments/Instruments";
+import { UserShow } from "./Users/UserShow";
+import type { Event } from "@prisma/client";
 
 export const MyLayout = (props: LayoutProps) => (
   <>
@@ -60,7 +58,9 @@ const AdminApp = () => {
       />
       <Resource
         name="event"
-        recordRepresentation={(rec) => `${rec.date} - ${rec.name}`}
+        recordRepresentation={(rec: Event) =>
+          `${new Date(rec.date).toLocaleDateString()} - ${rec.name}`
+        }
         list={EventList}
         show={EventShow}
         create={EventCreate}

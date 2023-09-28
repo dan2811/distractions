@@ -1,18 +1,16 @@
-import { ReactEventHandler } from "react";
 import {
-  ArrayField,
   Create,
+  Datagrid,
   DatagridConfigurable,
+  DateField,
   Edit,
   List,
   ReferenceArrayField,
-  ReferenceArrayInput,
-  ReferenceInput,
-  SelectArrayInput,
-  SelectInput,
+  ReferenceField,
   Show,
   SimpleForm,
   SimpleShowLayout,
+  TabbedShowLayout,
   TextField,
   TextInput,
 } from "react-admin";
@@ -31,10 +29,33 @@ export const InstrumentList = () => {
 export const InstrumentShow = () => {
   return (
     <Show>
-      <SimpleShowLayout>
-        <TextField source="id" />
-        <TextField source="name" />
-      </SimpleShowLayout>
+      <TabbedShowLayout>
+        <TabbedShowLayout.Tab label="details">
+          <SimpleShowLayout>
+            <TextField source="name" />
+          </SimpleShowLayout>
+        </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab label="Musicians">
+          <ReferenceArrayField source="musicians" reference="User">
+            <Datagrid rowClick="show">
+              <TextField source="name" />
+              <TextField source="email" />
+            </Datagrid>
+          </ReferenceArrayField>
+        </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab label="Events">
+          <ReferenceArrayField source="jobs" reference="Job">
+            <Datagrid rowClick="show">
+              <ReferenceField source="eventId" reference="Event">
+                <TextField source="name" />
+              </ReferenceField>
+              <ReferenceField source="eventId" reference="Event">
+                <DateField source="date" />
+              </ReferenceField>
+            </Datagrid>
+          </ReferenceArrayField>
+        </TabbedShowLayout.Tab>
+      </TabbedShowLayout>
     </Show>
   );
 };
