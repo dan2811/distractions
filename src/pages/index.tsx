@@ -34,17 +34,23 @@ export default function Home() {
 }
 
 const Bookings = () => {
+  const session = useSession();
   const { data, isLoading } = api.events.getMyBookings.useQuery();
-  if (!data?.length) return null;
+  if (session.data?.user.role !== "client" && !data?.length) return null;
   return (
     <div>
       <Heading>
         <h2>Your Bookings</h2>
       </Heading>
-      {isLoading ? (
+      {isLoading && session.data?.user.role === "client" ? (
         <Loading />
       ) : (
         <p className="font-body">
+          {!data?.length && (
+            <div>
+              <p>You haven&apos;t made a booking with us yet. 😢</p>
+            </div>
+          )}
           {data?.map((event) => <EventListItem event={event} key={event.id} />)}
         </p>
       )}
