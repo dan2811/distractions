@@ -51,15 +51,17 @@ model User {
     id            String    @id @default(cuid())
     name          String?
     role          Role          @default(client)
-    email         String       @unique
+    email         String        @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
-    gigs          Event[]       @relation("gigs")
     instruments   Instrument[]
+    jobs          Job[]
     bookings      Event[]       @relation("bookings")
     phone         String?
+    createdAt     DateTime      @default(now())
+    updatedAt     DateTime      @updatedAt
 }
 
 enum Role {
@@ -78,61 +80,76 @@ model VerificationToken {
 }
 
 model EventType {
-    id         String   @id @default(cuid())
-    name       String   @unique
+    id         String @id @default(cuid())
+    name       String     @unique
     events     Event[]
+    createdAt  DateTime   @default(now())
+    updatedAt  DateTime   @updatedAt
 }
 
 model Event {
-    id                  String   @id @default(cuid())
-    name                String       @unique
-    ownerId             String
-    owner               User         @relation("bookings", fields: [ownerId], references: [id])
-    musicians           User[]       @relation("gigs")
-    date                String
-    packages            Package[]
-    eventTypeId         String
-    EventType           EventType    @relation(fields: [eventTypeId], references: [id])
-    Equipment           Equipment[]
-    location            String?
-    price               Float       @default(0)
+    id                         String   @id @default(cuid())
+    name                       String       @unique
+    ownerId                    String
+    owner                      User         @relation("bookings", fields: [ownerId], references: [id])
+    date                       DateTime
+    packages                   Package[]
+    eventTypeId                String
+    EventType                  EventType    @relation(fields: [eventTypeId], references: [id])
+    Equipment                  Equipment[]
+    InstrumentsRequired        Json
+    location                   String?
+    jobs                       Job[]
+    price                      Float       @default(0)
     clientDepositInvoiceUrl    String?
     clientFinalInvoiceUrl      String?
     adminDepositInvoiceUrl     String?
     adminFinalInvoiceUrl       String?
+    createdAt                  DateTime           @default(now())
+    updatedAt                  DateTime           @updatedAt
 }
 
 model Job {
     id           String   @id @default(cuid())
     musicianId   String
+    musician     User     @relation(fields: [musicianId], references: [id])
     eventId      String
+    event        Event   @relation(fields: [eventId], references: [id])
     pay          Float
     Instruments  Instrument[]
     isMd         Boolean
     notes        String?
-    status     String  @default("pending")
+    status       String  @default("pending")
+    createdAt        DateTime           @default(now())
+    updatedAt        DateTime           @updatedAt
 
     @@unique([musicianId, eventId])
 }
 
 model Instrument {
-    id         String   @id @default(cuid())
-    name       String   @unique
+    id         String  @id @default(cuid())
+    name       String      @unique
     musicians  User[]
     jobs       Job[]
+    createdAt  DateTime    @default(now())
+    updatedAt  DateTime    @updatedAt
 }
 
 model Package {
-    id         String   @id @default(cuid())
-    name       String   @unique
-    basePrice      Int
-    description String
-    events      Event[]
+    id              String   @id @default(cuid())
+    name            String   @unique
+    basePrice       Int
+    description     String
+    events          Event[]
+    createdAt        DateTime           @default(now())
+    updatedAt        DateTime           @updatedAt
 }
 
 model Equipment {
     id         String   @id @default(cuid())
     name       String   @unique
     quanitity  Int
-    events      Event[]
+    events     Event[]
+    createdAt        DateTime           @default(now())
+    updatedAt        DateTime           @updatedAt
 }
