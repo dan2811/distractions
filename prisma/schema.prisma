@@ -122,6 +122,9 @@ model Job {
     eventId      String
     event        Event   @relation(fields: [eventId], references: [id])
     Instruments  Instrument[]
+    hotelNeeded  Boolean @default(false)
+    hotelBooked  Boolean @default(false)
+    hotelInfo    String? 
 
     @@unique([musicianId, eventId])
 }
