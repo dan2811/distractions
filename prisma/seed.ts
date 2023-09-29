@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { type Event, type Instrument, PrismaClient, type User } from '@prisma/client';
 const prisma = new PrismaClient();
 
 const seedPackages = async () => {
@@ -36,7 +36,7 @@ const seedPackages = async () => {
         }
     });
 
-    console.log({ djLive, showbandParty, ShowbandFullday });
+    console.log("PACKAGES: ", { djLive, showbandParty, ShowbandFullday });
 };
 
 const seedInstruments = async () => {
@@ -112,7 +112,9 @@ const seedInstruments = async () => {
             name: 'Keyboard',
         }
     });
-    console.log({ drums, bongos, bass, guitar, vocals, saxophone, keys });
+    const instruments = [drums, bongos, dj, bass, guitar, vocals, saxophone, keys];
+    console.log("INSTRUMENTS: ", instruments);
+    return instruments;
 };
 
 const seedUsers = async () => {
@@ -131,6 +133,15 @@ const seedUsers = async () => {
         create: {
             email: 'bob@thedistractionsband.co.uk',
             name: 'Bob',
+            role: 'client'
+        },
+    });
+    const steven = await prisma.user.upsert({
+        where: { email: 'steven@thedistractionsband.co.uk' },
+        update: {},
+        create: {
+            email: 'steven@thedistractionsband.co.uk',
+            name: 'Steven',
             role: 'client'
         },
     });
@@ -199,7 +210,9 @@ const seedUsers = async () => {
         },
     });
 
-    console.log({ alice, bob, lily, dan, patrick, lee, joe });
+    const users = [alice, bob, lily, steven, dan, patrick, lee, joe];
+    console.log("USERS: ", users);
+    return users;
 };
 
 const seedEventTypes = async () => {
@@ -240,78 +253,247 @@ const seedEventTypes = async () => {
         }
     });
 
-    console.log({ wedding, corporate, birthdayParty, destination });
+    console.log("EVENT TYPES: ", { wedding, corporate, birthdayParty, destination });
 };
 
 const seedEvents = async () => {
-    const event1 = await prisma.event.upsert({
-        where: {
-            name: 'Wedding 1'
-        },
-        update: {},
-        create: {
-            name: 'Wedding 1',
-            date: new Date().toISOString(),
-            EventType: {
-                connect: {
-                    name: 'Wedding'
-                }
-            },
-            owner: {
-                connect: {
-                    email: 'alice@thedistractionsband.co.uk',
-                }
-            },
-            packages: {
-                connect: {
-                    name: 'DJ LIVE'
-                }
-            },
-            InstrumentsRequired: [{ name: "Bongos", quantity: 1 }, { name: "Vocals", quantity: 1 }, { name: "Saxophone", quantity: 1 }, { name: "DJ", quantity: 1 }],
-            price: 2500,
-            location: 'The Shard, London, UK, Earth, Milky Way',
-        }
-    });
 
-    const event2 = await prisma.event.upsert({
-        where: {
-            name: 'Wedding 2'
-        },
-        update: {},
-        create: {
-            name: 'Wedding 2',
-            date: new Date().toISOString(),
-            EventType: {
-                connect: {
-                    name: 'Wedding'
+    interface CreateEventInput {
+        name: string;
+        ownerEmail: string;
+        eventType: string;
+        packages: string[];
+        instruments: { name: string; quantity: number; }[];
+        price: number;
+        location: string;
+        date?: string;
+    }
+
+    const createEvent = async ({ name, ownerEmail, eventType, packages, instruments, price, location, date }: CreateEventInput) => {
+        return prisma.event.upsert({
+            where: {
+                name
+            },
+            update: {},
+            create: {
+                name,
+                date: date ?? new Date().toISOString(),
+                EventType: {
+                    connect: {
+                        name: eventType
+                    }
+                },
+                owner: {
+                    connect: {
+                        email: ownerEmail,
+                    }
+                },
+                packages: {
+                    connect: packages.map((pack) => ({ name: pack }))
+                },
+                InstrumentsRequired: instruments,
+                price,
+                location,
+            }
+        });
+    };
+
+    const event1Config: CreateEventInput = {
+        name: "Wedding 1",
+        ownerEmail: "alice@thedistractionsband.co.uk",
+        eventType: "Wedding",
+        packages: ['DJ LIVE'],
+        instruments: [{ name: "Bongos", quantity: 1 }, { name: "Vocals", quantity: 1 }, { name: "Saxophone", quantity: 1 }, { name: "DJ", quantity: 1 }],
+        price: 2500,
+        location: 'The Shard, London, UK, Earth, Milky Way',
+        date: new Date(new Date().getDay() + 50).toISOString()
+    };
+    const event1 = await createEvent(event1Config);
+
+    const event2Config: CreateEventInput = {
+        name: "Wedding 2",
+        ownerEmail: "bob@thedistractionsband.co.uk",
+        eventType: "Wedding",
+        packages: ['Showband - Party'],
+        instruments: [{ name: "Drums", quantity: 1 }, { name: "Bass", quantity: 1 }, { name: "Saxophone", quantity: 1 }, { name: "Guitar", quantity: 1 }, { name: "Vocals", quantity: 2 }, { name: "Keyboard", quantity: 1 }],
+        price: 5000,
+        location: 'The Gherkin, London, UK, Earth, Milky Way'
+    };
+    const event2 = await createEvent(event2Config);
+
+    const event3Config: CreateEventInput = {
+        name: "Wedding 3",
+        ownerEmail: "djordandrums@gmail.com",
+        eventType: "Wedding",
+        packages: ['Showband - Full Day'],
+        instruments: [{ name: "Drums", quantity: 1 }, { name: "Bass", quantity: 1 }, { name: "Saxophone", quantity: 1 }, { name: "Guitar", quantity: 1 }, { name: "Vocals", quantity: 2 }, { name: "Keyboard", quantity: 1 }],
+        price: 7000,
+        location: 'Eiffel Tower, Paris, France, Earth, Milky Way'
+    };
+    const event3 = await createEvent(event3Config);
+
+    const event4Config: CreateEventInput = {
+        name: "Corporate 1",
+        ownerEmail: "steven@thedistractionsband.co.uk",
+        eventType: "Corporate",
+        packages: ['DJ LIVE', 'Showband - Party'],
+        instruments: [{ name: "Bongos", quantity: 1 }, { name: "Vocals", quantity: 1 }, { name: "Saxophone", quantity: 1 }, { name: "DJ", quantity: 1 }],
+        price: 2500,
+        location: 'Covent Garden, London, UK, Earth, Milky Way'
+    };
+    const event4 = await createEvent(event4Config);
+
+    const event5Config: CreateEventInput = {
+        name: "Corporate 2",
+        ownerEmail: "steven@thedistractionsband.co.uk",
+        eventType: "Corporate",
+        packages: ['Showband - Party'],
+        instruments: [{ name: "Drums", quantity: 1 }, { name: "Bass", quantity: 1 }, { name: "Saxophone", quantity: 1 }, { name: "Guitar", quantity: 1 }, { name: "Vocals", quantity: 2 }, { name: "Keyboard", quantity: 1 }],
+        price: 5000,
+        location: 'Hackney Coffee Co. London, UK, Earth, Milky Way'
+    };
+    const event5 = await createEvent(event5Config);
+
+    const event6Config: CreateEventInput = {
+        name: "Destination 1",
+        ownerEmail: "steven@thedistractionsband.co.uk",
+        eventType: "Destination",
+        packages: ['Showband - Full Day'],
+        instruments: [{ name: "Drums", quantity: 1 }, { name: "Bass", quantity: 1 }, { name: "Saxophone", quantity: 1 }, { name: "Guitar", quantity: 1 }, { name: "Vocals", quantity: 2 }, { name: "Keyboard", quantity: 1 }],
+        price: 7000,
+        location: 'The Moon, Space, Milky Way'
+    };
+    const event6 = await createEvent(event6Config);
+
+    const event7Config: CreateEventInput = {
+        name: "Birthday Party 1",
+        ownerEmail: "djordandrums@gmail.com",
+        eventType: "Birthday Party",
+        packages: ['Showband - Full Day'],
+        instruments: [{ name: "Drums", quantity: 1 }, { name: "Bass", quantity: 1 }, { name: "Saxophone", quantity: 1 }, { name: "Guitar", quantity: 1 }, { name: "Vocals", quantity: 2 }, { name: "Keyboard", quantity: 1 }],
+        price: 7000,
+        location: 'Wilnecote Miners Welfare Club, Wilnecote, UK',
+        date: new Date(new Date().setFullYear(new Date().getFullYear(), new Date().getMonth() + 1, 1)).toISOString()
+    };
+    const event7 = await createEvent(event7Config);
+
+    const events = [event1, event2, event3, event4, event5, event6, event7];
+    console.log("EVENTS: ", events);
+    return events;
+};
+
+const seedJobs = async (instruments: Instrument[], users: User[], events: Event[]) => {
+
+    const musiciansAndAdmins = users.filter((user) => user.role !== 'client');
+
+    interface CreateJobInput {
+        musicianId: string;
+        eventId: string;
+        instrumentIds: string[];
+        pay: number;
+        isMd: boolean;
+        notes?: string;
+        status?: "accepted" | "declined" | "pending";
+    }
+    const createJob = async ({ musicianId, eventId, instrumentIds, pay, isMd, notes, status }: CreateJobInput) => {
+        return prisma.job.upsert({
+            where: {
+                musicianId_eventId: {
+                    eventId: eventId,
+                    musicianId: musicianId
                 }
             },
-            owner: {
-                connect: {
-                    email: 'bob@thedistractionsband.co.uk',
-                }
-            },
-            packages: {
-                connect: {
-                    name: 'Showband - Party'
-                }
-            },
-            InstrumentsRequired: [{ name: "Drums", quantity: 1 }, { name: "Bass", quantity: 1 }, { name: "Saxophone", quantity: 1 }, { name: "Guitar", quantity: 1 }, { name: "Vocals", quantity: 2 }, { name: "Keyboard", quantity: 1 }],
-            price: 7000,
-            location: 'The Gherkin, London, UK, Earth, Milky Way',
-        }
-    });
-    console.log({ event1, event2 });
+            update: {},
+            create: {
+                musician: {
+                    connect: {
+                        id: musicianId
+                    }
+                },
+                event: {
+                    connect: {
+                        id: eventId
+                    }
+                },
+                Instruments: {
+                    connect: instrumentIds.map((id) => ({ id }))
+                },
+                pay,
+                isMd,
+                notes: notes ?? '',
+                status: status ?? ""
+            }
+        });
+    };
+
+    const job1Config: CreateJobInput = {
+        musicianId: musiciansAndAdmins.find((musician) => musician.name === 'Dan')?.id ?? '',
+        eventId: events.find((event) => event.name === 'Wedding 1')?.id ?? '',
+        instrumentIds: [instruments.find((instrument) => instrument.name === 'Bongos')?.id ?? ""],
+        pay: 250,
+        isMd: false,
+        notes: 'Please bring your own bongos'
+    };
+    const job1 = await createJob(job1Config);
+
+    const job2Config: CreateJobInput = {
+        musicianId: musiciansAndAdmins.find((musician) => musician.name === 'Dan')?.id ?? '',
+        eventId: events.find((event) => event.name === 'Wedding 2')?.id ?? '',
+        instrumentIds: [instruments.find((instrument) => instrument.name === 'Drums')?.id ?? ""],
+        pay: 250,
+        isMd: false,
+    };
+    const job2 = await createJob(job2Config);
+
+    const job3Config: CreateJobInput = {
+        musicianId: musiciansAndAdmins.find((musician) => musician.name === 'Dan')?.id ?? '',
+        eventId: events.find((event) => event.name === 'Wedding 3')?.id ?? '',
+        instrumentIds: [instruments.find((instrument) => instrument.name === 'Drums')?.id ?? ""],
+        pay: 250,
+        isMd: false,
+    };
+    const job3 = await createJob(job3Config);
+
+    const job4Config: CreateJobInput = {
+        musicianId: musiciansAndAdmins.find((musician) => musician.name === 'Dan')?.id ?? '',
+        eventId: events.find((event) => event.name === 'Corporate 1')?.id ?? '',
+        instrumentIds: [instruments.find((instrument) => instrument.name === 'Drums')?.id ?? ""],
+        pay: 250,
+        isMd: false,
+    };
+    const job4 = await createJob(job4Config);
+
+    const job5Config: CreateJobInput = {
+        musicianId: musiciansAndAdmins.find((musician) => musician.name === 'Dan')?.id ?? '',
+        eventId: events.find((event) => event.name === 'Corporate 2')?.id ?? '',
+        instrumentIds: [instruments.find((instrument) => instrument.name === 'Drums')?.id ?? ""],
+        pay: 250,
+        isMd: false,
+        status: "accepted"
+    };
+    const job5 = await createJob(job5Config);
+
+    const job6Config: CreateJobInput = {
+        musicianId: musiciansAndAdmins.find((musician) => musician.name === 'Dan')?.id ?? '',
+        eventId: events.find((event) => event.name === 'Destination 1')?.id ?? '',
+        instrumentIds: [instruments.find((instrument) => instrument.name === 'Drums')?.id ?? ""],
+        pay: 250,
+        isMd: false,
+    };
+    const job6 = await createJob(job6Config);
+
+    console.log("JOBS: ", { job1, job2, job3, job4, job5, job6 });
 };
 
 
 const main = async () => {
     try {
         await seedPackages();
-        await seedInstruments();
+        const instruments = await seedInstruments();
         await seedEventTypes();
-        await seedUsers();
-        await seedEvents();
+        const users = await seedUsers();
+        const events = await seedEvents();
+        await seedJobs(instruments, users, events);
 
         await prisma.$disconnect();
     } catch (e) {
