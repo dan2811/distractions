@@ -25,6 +25,12 @@ import {
   EventTypeList,
   EventTypeShow,
 } from "./EventType/EventType";
+import {
+  PackageCreate,
+  PackageEdit,
+  PackageList,
+  PackageShow,
+} from "./Package/Package";
 
 export const MyLayout = (props: LayoutProps) => (
   <>
@@ -92,6 +98,14 @@ const AdminApp = () => {
         show={EventTypeShow}
         create={EventTypeCreate}
         edit={EventTypeEdit}
+      />
+      <Resource
+        name="package"
+        recordRepresentation="name"
+        list={PackageList}
+        show={PackageShow}
+        create={PackageCreate}
+        edit={PackageEdit}
       />
     </Admin>
   );

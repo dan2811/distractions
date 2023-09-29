@@ -8,6 +8,7 @@ import { userHandler } from "./RaHandlers/userHandler";
 import { instrumentHandler } from "./RaHandlers/instrumentHandler";
 import { eventHandler } from "./RaHandlers/eventHandler";
 import { jobHandler } from "./RaHandlers/jobHandler";
+import { packageHandler } from "./RaHandlers/packageHandler";
 
 export default async function handler(req: { body: RaPayload; }, res: NextApiResponse) {
     let result;
@@ -23,6 +24,10 @@ export default async function handler(req: { body: RaPayload; }, res: NextApiRes
             break;
         case "job":
             result = await jobHandler(req, res);
+            break;
+        case "package":
+            result = await packageHandler(req, res);
+            break;
         default:
             result = await defaultHandler(req.body, prisma);
             break;
