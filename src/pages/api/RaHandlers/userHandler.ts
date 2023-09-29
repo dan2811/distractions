@@ -56,8 +56,8 @@ export const userHandler = async (req: { body: RaPayload; }, res: NextApiRespons
             );
             const user: RaUser = {
                 ...response.data,
-                instruments: response.data.instruments.map((instrument: Instrument) => instrument.id),
-                jobs: response.data.jobs.map((job: Job) => job.id),
+                instruments: response.data?.instruments?.map((instrument: Instrument) => instrument.id),
+                jobs: response.data?.jobs?.map((job: Job) => job.id),
             };
             return { data: user };
         default:

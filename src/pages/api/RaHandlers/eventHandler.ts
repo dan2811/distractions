@@ -61,9 +61,9 @@ export const eventHandler = async (req: { body: RaPayload; }, res: NextApiRespon
             );
             const event: RaEvent = {
                 ...response.data,
-                packages: response.data.packages?.map((pack: Package) => pack.id),
-                jobs: response.data.jobs?.map((job: Job) => job.id),
-                Equipment: response.data.Equipment?.map((equip: Equipment) => equip.id)
+                packages: response.data?.packages?.map((pack: Package) => pack.id),
+                jobs: response.data?.jobs?.map((job: Job) => job.id),
+                Equipment: response.data?.Equipment?.map((equip: Equipment) => equip.id)
             };
             return { data: event };
         default:

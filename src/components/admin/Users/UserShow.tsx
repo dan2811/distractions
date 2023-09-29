@@ -53,8 +53,13 @@ const Events = () => {
   return (
     <ReferenceArrayField source="jobs" reference="Job">
       <Datagrid rowClick="show" resource="event">
-        <ReferenceField source="eventId" reference="Event" label="Client">
-          <ReferenceField source="ownerId" reference="user" />
+        <ReferenceField
+          source="eventId"
+          reference="Event"
+          label="Client"
+          link="show"
+        >
+          <ReferenceField source="ownerId" reference="user" link="show" />
         </ReferenceField>
         <ReferenceField source="eventId" reference="Event">
           <TextField source="name" />

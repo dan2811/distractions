@@ -202,12 +202,7 @@ const PendingAndRejectedJobs = ({ event }: { event: RaEvent }) => {
   });
 
   return (
-    <Datagrid
-      data={jobsFilteredByInstrument}
-      bulkActionButtons={false}
-      resource="user"
-      rowClick="show"
-    >
+    <Datagrid data={jobsFilteredByInstrument} bulkActionButtons={false}>
       <ReferenceField source="musicianId" reference="user" link="show" />
       <TextField source="status" />
     </Datagrid>

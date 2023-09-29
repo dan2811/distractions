@@ -35,13 +35,17 @@ export const jobHandler = async (req: { body: RaPayload; }, res: NextApiResponse
                 },
             });
         case "getMany":
-            const getManyResult = await getManyHandler<Prisma.JobFindManyArgs>(req.body, prisma.job, {
+            const getManyResult: { data: AugmentedJob[]; } = await getManyHandler<Prisma.JobFindManyArgs>(req.body, prisma.job, {
                 include: {
                     Instruments: true,
                     musician: true
-                }
+                },
             });
-            res.json(getManyResult);
+            const mappedResult = getManyResult.data.map((job: Job) => ({
+                ...job,
+                Instruments: (job as AugmentedJob).Instruments?.map((instr: Instrument) => instr.id)
+            }));
+            res.json({ data: mappedResult });
             break;
         case "getOne":
             const response: { data: AugmentedJob; } = await getOneHandler<Prisma.JobFindUniqueArgs>(
