@@ -1,4 +1,4 @@
-import { type Instrument, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -7,6 +7,7 @@ import { Heading } from "~/components/Layout/Heading";
 import Layout from "~/components/Layout/Layout";
 import { Loading } from "~/components/Loading";
 import { api } from "~/utils/api";
+import ErrorIcon from "@mui/icons-material/Error";
 
 export default function Home() {
   const session = useSession();
@@ -148,10 +149,25 @@ type JobWithInstruments = Prisma.JobGetPayload<typeof jobWithInstruments>;
 
 const GigListItem = ({ job }: { job: JobWithInstruments }) => {
   const { push } = useRouter();
-  const { data: event, isLoading } = api.events.getOne.useQuery({
+  const {
+    data: event,
+    isLoading,
+    isError,
+  } = api.events.getOne.useQuery({
     id: job.eventId,
   });
-  if (!event) return <Loading />;
+  if (isLoading) return <Loading />;
+  if (isError)
+    return (
+      <>
+        <div className="flex gap-2 py-2 pl-2">
+          <ErrorIcon color="error" />
+          <p> Something went wrong with this event</p>
+        </div>
+        <hr />
+      </>
+    );
+  if (!event) return <p>Event not found</p>;
 
   const instruments = job.Instruments;
   return (

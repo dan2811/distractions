@@ -8,6 +8,7 @@ export const globalColors = {
     light: "#aaa",
     input: "#2A2A2A",
     accent: "#a8a07c",
+    error: "#ff0000",
   }
 };
 
