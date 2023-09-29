@@ -7,6 +7,7 @@ import { prisma } from "~/server/db";
 import { userHandler } from "./RaHandlers/userHandler";
 import { instrumentHandler } from "./RaHandlers/instrumentHandler";
 import { eventHandler } from "./RaHandlers/eventHandler";
+import { jobHandler } from "./RaHandlers/jobHandler";
 
 export default async function handler(req: { body: RaPayload; }, res: NextApiResponse) {
     let result;
@@ -20,6 +21,8 @@ export default async function handler(req: { body: RaPayload; }, res: NextApiRes
         case "event":
             result = await eventHandler(req, res);
             break;
+        case "job":
+            result = await jobHandler(req, res);
         default:
             result = await defaultHandler(req.body, prisma);
             break;

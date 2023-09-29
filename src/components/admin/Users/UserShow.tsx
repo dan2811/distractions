@@ -1,6 +1,7 @@
 import {
   ChipField,
   Datagrid,
+  DateField,
   Labeled,
   ReferenceArrayField,
   ReferenceField,
@@ -51,7 +52,7 @@ const Events = () => {
 
   return (
     <ReferenceArrayField source="jobs" reference="Job">
-      <Datagrid rowClick="show">
+      <Datagrid rowClick="show" resource="event">
         <ReferenceField source="eventId" reference="Event" label="Client">
           <ReferenceField source="ownerId" reference="user" />
         </ReferenceField>
@@ -59,7 +60,7 @@ const Events = () => {
           <TextField source="name" />
         </ReferenceField>
         <ReferenceField source="eventId" reference="Event">
-          <TextField source="date" />
+          <DateField source="date" />
         </ReferenceField>
         <ReferenceField source="eventId" reference="Event">
           <TextField source="location" />
