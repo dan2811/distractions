@@ -10,7 +10,7 @@ import FestivalIcon from "@mui/icons-material/Festival";
 import PianoIcon from "@mui/icons-material/Piano";
 
 import { useSession } from "next-auth/react";
-import { EventCreate, EventList, EventShow } from "./Events/Events";
+import { EventCreate, EventEdit, EventList, EventShow } from "./Events/Events";
 import {
   InstrumentCreate,
   InstrumentEdit,
@@ -31,6 +31,8 @@ import {
   PackageList,
   PackageShow,
 } from "./Package/Package";
+import Dashboard from "./Dashboard";
+import MyAppBar from "./AppBar";
 
 export const MyLayout = (props: LayoutProps) => (
   <>
@@ -38,20 +40,6 @@ export const MyLayout = (props: LayoutProps) => (
     <ReactQueryDevtools initialIsOpen={false} />
   </>
 );
-
-const MyAppBar = () => {
-  const session = useSession();
-  if (session.status !== "authenticated") {
-    return null;
-  }
-  const isSuperAdmin = session.data.user.role === "superAdmin";
-  return (
-    <AppBar>
-      <TitlePortal />
-      {isSuperAdmin ?? <InspectorButton />}
-    </AppBar>
-  );
-};
 
 const AdminApp = () => {
   const session = useSession();
@@ -62,7 +50,11 @@ const AdminApp = () => {
   const isSuperAdmin = session.data.user.role === "superAdmin";
 
   return (
-    <Admin dataProvider={dataProvider("/api")} layout={MyLayout}>
+    <Admin
+      dataProvider={dataProvider("/api")}
+      layout={MyLayout}
+      dashboard={Dashboard}
+    >
       <Resource
         recordRepresentation="name"
         name="user"
@@ -79,6 +71,7 @@ const AdminApp = () => {
         }
         list={EventList}
         show={EventShow}
+        edit={EventEdit}
         create={EventCreate}
         icon={FestivalIcon}
       />
