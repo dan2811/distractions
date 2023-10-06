@@ -1,6 +1,6 @@
 import type { Job, Prisma, Event, Package, Equipment } from "@prisma/client";
 import type { NextApiResponse } from "next";
-import { type RaPayload, defaultHandler, createHandler, getListHandler, getManyHandler, getOneHandler } from "ra-data-simple-prisma";
+import { type RaPayload, defaultHandler, createHandler, getListHandler, getManyHandler, getOneHandler, updateHandler } from "ra-data-simple-prisma";
 import { prisma } from "~/server/db";
 
 interface AugmentedEvent extends Event {
@@ -66,6 +66,22 @@ export const eventHandler = async (req: { body: RaPayload; }, res: NextApiRespon
                 Equipment: response.data?.Equipment?.map((equip: Equipment) => equip.id)
             };
             return { data: event };
+        case "update":
+            return await updateHandler<Prisma.EventUpdateArgs>(
+                req.body,
+                prisma.event,
+                {
+                    set: {
+                        EventType: "id",
+                        packages: "id",
+                        Equipment: "id",
+                        owner: "id"
+                    },
+                    skipFields: {
+                        jobs: true
+                    }
+                }
+            );
         default:
             return await defaultHandler(req.body, prisma);
     };

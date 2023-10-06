@@ -10,7 +10,7 @@ import { eventHandler } from "./RaHandlers/eventHandler";
 import { jobHandler } from "./RaHandlers/jobHandler";
 import { packageHandler } from "./RaHandlers/packageHandler";
 
-export default async function handler(req: { body: RaPayload; }, res: NextApiResponse) {
+const handler = async (req: { body: RaPayload; }, res: NextApiResponse) => {
     let result;
     switch (req.body.resource) {
         case "user":
@@ -39,6 +39,7 @@ export default async function handler(req: { body: RaPayload; }, res: NextApiRes
         // stringify for axiom logs
         console.log(JSON.stringify({ method: req.body.method, resource: req.body.resource, result }));
     }
+    return res.json(result);
+};
 
-    res.json(result);
-}
+export default handler;
