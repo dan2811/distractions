@@ -1,4 +1,5 @@
-import { type Event, type Instrument, PrismaClient, type User } from '@prisma/client';
+import { type Event, type Instrument, PrismaClient, type User, type Prisma } from '@prisma/client';
+import type { RequiredInstrumentsJSON } from '~/types';
 const prisma = new PrismaClient();
 
 const seedPackages = async () => {
@@ -256,14 +257,22 @@ const seedEventTypes = async () => {
     console.log("EVENT TYPES: ", { wedding, corporate, birthdayParty, destination });
 };
 
-const seedEvents = async () => {
+const seedEvents = async (instruments: Instrument[]) => {
+
+    const convertToInstrumentJSON = (instrument: { name: string; quantity: number; }): RequiredInstrumentsJSON => {
+        const id = instruments.find((instr) => instrument.name === instr.name)?.id ?? "";
+        if (!id) throw new Error(`Cannot find instrument with name ${instrument.name}`);
+        return { id, quantity: instrument.quantity };
+    };
 
     interface CreateEventInput {
         name: string;
         ownerEmail: string;
         eventType: string;
         packages: string[];
-        instruments: { name: string; quantity: number; }[];
+        instruments: {
+            name: string; quantity: number;
+        }[];
         price: number;
         location: string;
         date?: string;
@@ -291,7 +300,7 @@ const seedEvents = async () => {
                 packages: {
                     connect: packages.map((pack) => ({ name: pack }))
                 },
-                InstrumentsRequired: instruments,
+                InstrumentsRequired: instruments.map(convertToInstrumentJSON) as unknown as Prisma.EventCreateInput['InstrumentsRequired'],
                 price,
                 location,
             }
@@ -432,7 +441,8 @@ const seedJobs = async (instruments: Instrument[], users: User[], events: Event[
         instrumentIds: [instruments.find((instrument) => instrument.name === 'Bongos')?.id ?? ""],
         pay: 250,
         isMd: false,
-        notes: 'Please bring your own bongos'
+        notes: 'Please bring your own bongos',
+        status: "pending"
     };
     const job1 = await createJob(job1Config);
 
@@ -442,6 +452,7 @@ const seedJobs = async (instruments: Instrument[], users: User[], events: Event[
         instrumentIds: [instruments.find((instrument) => instrument.name === 'Drums')?.id ?? ""],
         pay: 250,
         isMd: false,
+        status: "pending"
     };
     const job2 = await createJob(job2Config);
 
@@ -451,6 +462,7 @@ const seedJobs = async (instruments: Instrument[], users: User[], events: Event[
         instrumentIds: [instruments.find((instrument) => instrument.name === 'Drums')?.id ?? ""],
         pay: 250,
         isMd: false,
+        status: "pending"
     };
     const job3 = await createJob(job3Config);
 
@@ -460,6 +472,7 @@ const seedJobs = async (instruments: Instrument[], users: User[], events: Event[
         instrumentIds: [instruments.find((instrument) => instrument.name === 'Drums')?.id ?? ""],
         pay: 250,
         isMd: false,
+        status: "pending"
     };
     const job4 = await createJob(job4Config);
 
@@ -479,6 +492,7 @@ const seedJobs = async (instruments: Instrument[], users: User[], events: Event[
         instrumentIds: [instruments.find((instrument) => instrument.name === 'Drums')?.id ?? ""],
         pay: 250,
         isMd: false,
+        status: "accepted"
     };
     const job6 = await createJob(job6Config);
 
@@ -492,7 +506,7 @@ const main = async () => {
         const instruments = await seedInstruments();
         await seedEventTypes();
         const users = await seedUsers();
-        const events = await seedEvents();
+        const events = await seedEvents(instruments);
         await seedJobs(instruments, users, events);
 
         await prisma.$disconnect();
