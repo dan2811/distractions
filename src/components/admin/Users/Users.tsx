@@ -9,6 +9,8 @@ import {
   SimpleForm,
   TextField,
   TextInput,
+  email,
+  required,
 } from "react-admin";
 
 export const UserList = () => {
@@ -49,8 +51,12 @@ export const UserCreate = () => {
   return (
     <Create redirect="show">
       <SimpleForm>
-        <TextInput source="name" />
-        <TextInput source="email" type="email" />
+        <TextInput source="name" validate={required()} />
+        <TextInput
+          source="email"
+          type="email"
+          validate={[required(), email("Must be a valid email address")]}
+        />
         <TextInput source="phone" />
         <SelectInput
           source="role"
@@ -60,6 +66,7 @@ export const UserCreate = () => {
             { id: "musician", name: "Musician" },
             { id: "client", name: "Client" },
           ]}
+          validate={required("You must select a role")}
         />
         <ReferenceArrayField source="instruments" reference="Instrument" />
       </SimpleForm>
