@@ -12,6 +12,7 @@ import {
   SimpleShowLayout,
   TextField,
   TextInput,
+  required,
 } from "react-admin";
 
 export const EventTypeList = () => {
@@ -46,7 +47,7 @@ export const EventTypeCreate = () => {
   return (
     <Create redirect="list">
       <SimpleForm>
-        <TextInput source="name" />
+        <TextInput source="name" validate={required()} />
       </SimpleForm>
     </Create>
   );
@@ -56,7 +57,7 @@ export const EventTypeEdit = () => {
   return (
     <Edit redirect="list">
       <SimpleForm>
-        <TextInput source="name" />
+        <TextInput source="name" validate={required()} />
       </SimpleForm>
     </Edit>
   );

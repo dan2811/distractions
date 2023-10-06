@@ -12,6 +12,7 @@ import {
   TabbedShowLayout,
   TextField,
   TextInput,
+  required,
 } from "react-admin";
 
 export const PackageList = () => {
@@ -51,7 +52,7 @@ export const PackageEdit = () => {
   return (
     <Edit>
       <SimpleForm>
-        <TextInput source="name" />
+        <TextInput source="name" validate={required()} />
       </SimpleForm>
     </Edit>
   );
@@ -61,7 +62,7 @@ export const PackageCreate = () => {
   return (
     <Create redirect="show">
       <SimpleForm>
-        <TextInput source="name" />
+        <TextInput source="name" validate={required()} />
       </SimpleForm>
     </Create>
   );

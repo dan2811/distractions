@@ -13,6 +13,7 @@ import {
   TabbedShowLayout,
   TextField,
   TextInput,
+  required,
 } from "react-admin";
 
 export const InstrumentList = () => {
@@ -64,7 +65,7 @@ export const InstrumentEdit = () => {
   return (
     <Edit>
       <SimpleForm>
-        <TextInput source="name" />
+        <TextInput source="name" validate={required()} />
       </SimpleForm>
     </Edit>
   );
@@ -74,7 +75,7 @@ export const InstrumentCreate = () => {
   return (
     <Create redirect="show">
       <SimpleForm>
-        <TextInput source="name" />
+        <TextInput source="name" validate={required()} />
       </SimpleForm>
     </Create>
   );
