@@ -6,10 +6,12 @@ import {
   type DefaultUser,
 } from "next-auth";
 import { type JWT } from "next-auth/jwt";
-import Email from "next-auth/providers/email";
+import EmailProvider from "next-auth/providers/email";
 import GoogleProvider, { type GoogleProfile } from "next-auth/providers/google";
+import { globalColors } from "tailwind.config";
 import { prisma } from "~/server/db";
 import { type Role } from "~/types";
+import { sendVerificationRequest } from "./authEmails";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -67,8 +69,10 @@ export const authOptions: NextAuthOptions = {
     }
   },
   theme: {
-    brandColor: "#9760f2",
-    buttonText: "Sign in with Google",
+    colorScheme: "dark", // "auto" | "dark" | "light"
+    brandColor: globalColors.main.accent, // Must be a hex color code
+    logo: "/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo_dark.e8bdd739.png&w=384&q=75", // Absolute URL to image
+    buttonText: globalColors.main.dark // must be a hex color code
   },
   session: {
     strategy: "jwt",
@@ -89,22 +93,9 @@ export const authOptions: NextAuthOptions = {
       },
       allowDangerousEmailAccountLinking: true
     }),
-    Email({
-      server: {
-        host: process.env.EMAIL_SERVER_HOST!,
-        port: Number(process.env.EMAIL_SERVER_PORT!),
-        auth: {
-          user: process.env.EMAIL_SERVER_USER!,
-          pass: process.env.EMAIL_SERVER_PASSWORD!,
-        },
-      },
-      from: process.env.EMAIL_FROM!,
+    EmailProvider({
+      sendVerificationRequest: sendVerificationRequest,
     })
-    /**
-     * ...add more providers here.
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
   ]
 };
 
