@@ -80,13 +80,13 @@ export const NavBar = () => {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ pr: 2, display: { md: "none" }, flex: 1 }}
+            sx={{ pr: 2, display: { sm: "none" }, flex: 1 }}
           >
             <MenuIcon />
           </IconButton>
           <Box
             sx={{
-              display: { xs: "none", md: "block" },
+              display: { xs: "none", sm: "block" },
               flex: 1,
               justifyContent: "start",
             }}
