@@ -6,6 +6,7 @@ import "~/styles/globals.css";
 import { Toaster } from "react-hot-toast";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { globalColors } from "tailwind.config";
+import { Analytics } from "@vercel/analytics/react";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -35,6 +36,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
     <SessionProvider session={session}>
       <ThemeProvider theme={theme}>
         <Toaster position="bottom-center" reverseOrder={false} />
+        <Analytics />
         <Component {...pageProps} />
       </ThemeProvider>
     </SessionProvider>
