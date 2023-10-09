@@ -30,18 +30,85 @@ import {
   useRecordContext,
   NumberField,
   ChipField,
+  FilterLiveSearch,
+  FilterList,
+  FilterListItem,
+  SavedQueriesList,
+  useGetList,
+  Loading,
 } from "react-admin";
 import { InvoiceButton } from "./Invoices";
 import type { RaEvent } from "~/pages/api/RaHandlers/eventHandler";
-import type { Instrument, User } from "@prisma/client";
+import type { EventType, Instrument, User } from "@prisma/client";
 import type { AugmentedJob, RaJob } from "~/pages/api/RaHandlers/jobHandler";
-import { Chip, Tooltip } from "@mui/material";
+import { Card, CardContent, Chip, Tooltip } from "@mui/material";
 import type { JobStatus, RequiredInstrumentsJSON } from "~/types";
 import { RaInstrument } from "~/pages/api/RaHandlers/instrumentHandler";
+import TodayIcon from "@mui/icons-material/Today";
+import ColouredDateField from "../Fields/ColouredDateField";
+
+export const EventFilterSideBar = () => {
+  const { data, isLoading, error } = useGetList<EventType>("eventType");
+  const tomorrow = new Date(
+    new Date(new Date().setDate(new Date().getDate() + 1)).setHours(1, 0, 0, 0),
+  ).toISOString();
+
+  const yesterday = new Date(
+    new Date(new Date().setDate(new Date().getDate() - 1)).setHours(
+      24,
+      59,
+      59,
+      999,
+    ),
+  ).toISOString();
+  return (
+    <Card sx={{ order: -1, mr: 2, mt: 6, width: 250 }}>
+      <CardContent>
+        <SavedQueriesList />
+        <FilterLiveSearch source="name" label="Search by event name" />
+        <FilterList label="Date" icon={<TodayIcon />}>
+          {/* TODO: Needs fixing! */}
+          {/* <FilterListItem
+            label="Today's events"
+            value={{
+              date_lte: tomorrow,
+              date_gte: yesterday,
+            }}
+          /> */}
+          <FilterListItem
+            label="Previous events"
+            value={{
+              date_lt: yesterday,
+            }}
+          />
+          <FilterListItem
+            label="Future events"
+            value={{
+              date_gt: tomorrow,
+            }}
+          />
+        </FilterList>
+        <FilterList label="Event type" icon={<TodayIcon />}>
+          {isLoading || !data ? (
+            <Loading />
+          ) : (
+            data.map((eventType) => (
+              <FilterListItem
+                key={eventType.id}
+                label={eventType.name}
+                value={{ eventTypeId: eventType.id }}
+              />
+            ))
+          )}
+        </FilterList>
+      </CardContent>
+    </Card>
+  );
+};
 
 export const EventList = () => {
   return (
-    <List>
+    <List aside={<EventFilterSideBar />}>
       <DatagridConfigurable omit={["id"]} rowClick="show">
         <TextField source="id" />
         <TextField source="name" />
@@ -51,7 +118,7 @@ export const EventList = () => {
           link="show"
           label="Client"
         />
-        <DateField source="date" />
+        <ColouredDateField source="date" />
         <ReferenceField
           source="eventTypeId"
           reference="eventType"
@@ -104,19 +171,7 @@ const InstrumentsRequired = () => {
 
   return (
     <ArrayField source="InstrumentsRequired">
-      <Datagrid
-        bulkActionButtons={false}
-        rowClick="expand"
-        resource="event"
-        expand={
-          <FunctionField
-            source="musicians"
-            render={(instrument: RequiredInstrumentsJSON) => (
-              <PendingAndRejectedJobs jobs={jobs} instrument={instrument} />
-            )}
-          />
-        }
-      >
+      <Datagrid bulkActionButtons={false} rowClick="expand" resource="event">
         <ReferenceField source="id" reference="Instrument">
           <TextField source="name" />
         </ReferenceField>
