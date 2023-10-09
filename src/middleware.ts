@@ -1,4 +1,5 @@
 import { withAuth } from "next-auth/middleware";
+import { log } from "next-axiom";
 
 export default withAuth({
     callbacks: {
@@ -6,13 +7,14 @@ export default withAuth({
             // Check if the middleware is processing the
             // route which requires a specific role
             const path = req.nextUrl.pathname;
-            console.debug("User visiting path: ", path);
+            log.debug("USER_VISITING_PATH", { user: token, requestedPath: path });
+
             if (path.startsWith("/admin")) {
                 if (token?.role === "admin" || token?.role === "superAdmin") {
-                    console.log("ADMIN ACCESS GRANTED TO: ", JSON.stringify(token));
+                    log.info("ADMIN_ACCESS_GRANTED", { user: token });
                     return true;
                 }
-                console.log("ADMIN ACCESS DENIED TO: ", JSON.stringify(token));
+                log.warn("ADMIN_ACCESS_DENIED", { user: token });
                 return false;
             }
 

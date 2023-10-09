@@ -1,46 +1,47 @@
 import sgMail from "@sendgrid/mail";
+import { log } from "next-axiom";
 import { globalColors } from "tailwind.config";
 
 export const sendVerificationRequest = async (params: { identifier: string, url: string; }) => {
-    const { identifier: recipientEmailAddress, url } = params;
-    const appName = "The Distractions Band";
+  const { identifier: recipientEmailAddress, url } = params;
+  const appName = "The Distractions Band";
 
-    if (!process.env.SENDGRID_API_KEY) {
-        // We should never see this, because env variables are checked on startup. 
-        // But this allows typescript to infer the type as not null.
-        throw new Error("SENDGRID_API_KEY not set");
-    }
+  if (!process.env.SENDGRID_API_KEY) {
+    // We should never see this, because env variables are checked on startup. 
+    // But this allows typescript to infer the type as not null.
+    throw new Error("SENDGRID_API_KEY not set");
+  }
 
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-    const emailDetails = {
-        to: recipientEmailAddress,
-        from: process.env.EMAIL_FROM ?? "info@thedistractionsband.co.uk",
-        subject: "Sign in to The Distractions Band",
-        text: text(appName, url),
-        html: html(appName, url),
-    };
+  const emailDetails = {
+    to: recipientEmailAddress,
+    from: process.env.EMAIL_FROM ?? "info@thedistractionsband.co.uk",
+    subject: "Sign in to The Distractions Band",
+    text: text(appName, url),
+    html: html(appName, url),
+  };
 
-    try {
-        const result = await sgMail.send(emailDetails);
-        console.log(JSON.stringify(result));
-    } catch (e) {
-        console.log(e);
-    }
+  try {
+    const result = await sgMail.send(emailDetails);
+    log.info("LOGIN_EMAIL_SENT", { recipientEmailAddress, sendGridResponse: result });
+  } catch (e) {
+    log.error("EMAIL_LOGIN_ERROR", { details: e });
+  }
 };
 
 function html(appName: string, url: string) {
 
-    const color = {
-        background: globalColors.main.dark,
-        text: globalColors.main.accent,
-        mainBackground: globalColors.main.input,
-        buttonBackground: globalColors.main.menu,
-        buttonBorder: globalColors.main.accent,
-        buttonText: globalColors.main.accent,
-    };
+  const color = {
+    background: globalColors.main.dark,
+    text: globalColors.main.accent,
+    mainBackground: globalColors.main.input,
+    buttonBackground: globalColors.main.menu,
+    buttonBorder: globalColors.main.accent,
+    buttonText: globalColors.main.accent,
+  };
 
-    return `
+  return `
 <body>
   <table width="100%" border="0" cellspacing="20" cellpadding="0"
     style="background: ${color.mainBackground}; max-width: 600px; margin: auto; border-radius: 10px;">
@@ -75,7 +76,7 @@ function html(appName: string, url: string) {
 
 /** Email Text body (fallback for email clients that don't render HTML) */
 function text(appName: string, url: string) {
-    return `To sign in to ${appName}, use this link: ${url}`;
+  return `To sign in to ${appName}, use this link: ${url}`;
 }
 
 

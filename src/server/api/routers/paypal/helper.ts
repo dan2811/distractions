@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import { log } from "next-axiom";
 import { prisma } from "~/server/db";
 
 interface PaypalAccessTokenResponse {
@@ -13,7 +14,7 @@ interface PaypalAccessTokenResponse {
 }
 
 export const getPaypalAccessToken = async () => {
-    console.log("PAYPAL ACCESS TOKEN REQUESTED");
+    log.info("PAYPAL_ACCESS_TOKEN_REQUESTED");
 
     const existingTokens = await prisma.paypalAccessToken.findMany({
         select: {
@@ -31,11 +32,9 @@ export const getPaypalAccessToken = async () => {
     const validTokens = existingTokens.filter(token => new Date(token.createdAt).getTime() + token.expires_in * 1000 > Date.now());
 
     if (validTokens[0]) {
-        console.log("FOUND EXISTING VALID PAYPAL ACCESS TOKEN");
+        log.info("FOUND_EXISTING_VALID_PAYPAL_ACCESS_TOKEN");
         return validTokens[0].access_token;
     }
-
-    console.log("NO VALID PAYPAL ACCESS TOKEN FOUND, REQUESTING NEW ONE");
 
     const endpoint = "/v1/oauth2/token?grant_type=client_credentials";
     const encodedData = Buffer.from(process.env.PAYPAL_CLIENT_ID + ':' + process.env.PAYPAL_CLIENT_SECRET).toString('base64');
@@ -62,9 +61,12 @@ export const getPaypalAccessToken = async () => {
                 access_token: true,
             }
         });
+
+        log.info("PAYPAL_ACCESS_TOKEN_REQUEST_SUCCESS");
+
         return dbResponse.access_token;
     } catch (e) {
-        console.error("PAYPAL_ACCESS_TOKEN_REQUEST_ERROR: ", e);
+        log.error("PAYPAL_ACCESS_TOKEN_REQUEST_ERROR: ", { details: e });
         throw new TRPCError({
             message: "Error requesting PayPal access token",
             code: "INTERNAL_SERVER_ERROR",

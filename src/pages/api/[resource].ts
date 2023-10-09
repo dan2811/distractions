@@ -9,6 +9,7 @@ import { instrumentHandler } from "./RaHandlers/instrumentHandler";
 import { eventHandler } from "./RaHandlers/eventHandler";
 import { jobHandler } from "./RaHandlers/jobHandler";
 import { packageHandler } from "./RaHandlers/packageHandler";
+import { log } from "next-axiom";
 
 const handler = async (req: { body: RaPayload; }, res: NextApiResponse) => {
     let result;
@@ -32,13 +33,7 @@ const handler = async (req: { body: RaPayload; }, res: NextApiResponse) => {
             result = await defaultHandler(req.body, prisma);
             break;
     };
-
-    if (process.env.NODE_ENV === "development") {
-        console.log(req.body.method, req.body.resource, result);
-    } else {
-        // stringify for axiom logs
-        console.log(JSON.stringify({ method: req.body.method, resource: req.body.resource, result }));
-    }
+    log.info("REACT_ADMIN_ROUTE_HANDLER", { method: req.body.method, resource: req.body.resource, result });
     return res.json(result);
 };
 

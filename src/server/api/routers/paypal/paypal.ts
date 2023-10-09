@@ -6,6 +6,7 @@ import {
 } from "~/server/api/trpc";
 import { getPaypalAccessToken } from "./helper";
 import { prisma } from "~/server/db";
+import { log } from "next-axiom";
 
 const invoicer = {
     "name": {
@@ -141,7 +142,7 @@ export const paypalRouter = createTRPCRouter({
                 })
             });
             const json = await res.json() as PaypalDraftInvoiceResponse;
-            console.log("DRAFT_INVOICE_CREATED: ", json);
+            log.info("DRAFT_INVOICE_CREATED", json);
 
             try {
                 await prisma.event.update({
@@ -154,12 +155,12 @@ export const paypalRouter = createTRPCRouter({
                     }
                 });
             } catch (e) {
-                console.error("ISSUE UPDATING EVENT WITH INVOICE LINKS: ", e);
+                log.error("UPDATE_EVENT_WITH_INVOICE_DETAILS_ERROR", { details: e });
             }
 
             return json;
         } catch (e) {
-            console.log("error: ", e);
+            log.error("PAYPAL_DRAFT_INVOICE_ERROR", { details: e });
         }
     }),
     sendInvoice: adminProcedure.input(
@@ -168,7 +169,7 @@ export const paypalRouter = createTRPCRouter({
         })).mutation(async ({ input }) => {
             const accessToken = await getPaypalAccessToken();
             try {
-                console.log("SENDING_INVOICE: ", input);
+                log.info("SENDING_INVOICE", input);
                 const res = await fetch(`${process.env.PAYPAL_URL}/v2/invoicing/invoices/${input.invoiceId}/send`, {
                     method: 'POST',
                     headers: {
@@ -184,13 +185,11 @@ export const paypalRouter = createTRPCRouter({
                 });
 
                 const paypalResponse = await res.json() as string;
-                console.log("PAYPAL_SEND_INVOICE_RESPONSE: ", paypalResponse);
-
-
+                log.debug("PAYPAL_SEND_INVOICE_RESPONSE", { paypalResponse });
 
                 return paypalResponse;
             } catch (e) {
-                console.log("error: ", e);
+                log.error("PAYPAL_SEND_INVOICE_ERROR", { details: e });
                 throw new TRPCError({ message: "Error contacting paypal server", code: "INTERNAL_SERVER_ERROR" });
             }
         }),
