@@ -13,9 +13,36 @@ import {
   required,
 } from "react-admin";
 
+import {
+  SavedQueriesList,
+  FilterLiveSearch,
+  FilterList,
+  FilterListItem,
+} from "react-admin";
+import { Card, CardContent } from "@mui/material";
+import BadgeIcon from "@mui/icons-material/Badge";
+
+export const UserFilterSideBar = () => (
+  <Card sx={{ order: -1, mr: 2, mt: 6, width: 250 }}>
+    <CardContent>
+      <SavedQueriesList />
+      <FilterLiveSearch source="name" label="Search by name" />
+      <FilterList label="Role" icon={<BadgeIcon />}>
+        <FilterListItem label="Musician" value={{ role_enum: "musician" }} />
+        <FilterListItem label="Client" value={{ role_enum: "client" }} />
+        <FilterListItem label="Admin" value={{ role_enum: "admin" }} />
+        <FilterListItem
+          label="Super Admin"
+          value={{ role_enum: "superAdmin" }}
+        />
+      </FilterList>
+    </CardContent>
+  </Card>
+);
+
 export const UserList = () => {
   return (
-    <List>
+    <List aside={<UserFilterSideBar />}>
       <DatagridConfigurable rowClick="show" omit={["id"]}>
         <TextField source="id" />
         <TextField source="name" />
