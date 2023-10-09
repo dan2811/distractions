@@ -633,11 +633,6 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.17.14.tgz#a621ad26e7eb076d6846dd3d39557ddf9d89f04b"
   integrity sha512-ZE/5aB73CyGqgQULkLG87N9GnyGe5TcQjv34pwS8tfBs1IkCh0ASM69mydb2znqd6v0eX+9Ytvk6oQRqu8T1Vw==
 
-"@types/node@^20.1.0":
-  version "20.6.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.6.0.tgz#9d7daa855d33d4efec8aea88cd66db1c2f0ebe16"
-  integrity sha512-najjVq5KN2vsH2U/xyh2opaSEz6cZMR2SetLIlxlj08nOcmPOemJmUK2o4kUzfLqfrWE0PIrNeE16XhYDd3nqg==
-
 "@types/parse-json@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
@@ -1008,10 +1003,10 @@ axios@^0.26.0:
   dependencies:
     follow-redirects "^1.14.8"
 
-axios@^1.4.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.5.0.tgz#f02e4af823e2e46a9768cfc74691fdd0517ea267"
-  integrity sha512-D4DdjDo5CY50Qms0qGQTTw6Q44jl7zRwY7bthds06pUGfChBCTcQs+N743eFWGEd6pRTMd6A+I87aWyFV5wiZQ==
+axios@^1.5.0:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.5.1.tgz#11fbaa11fc35f431193a9564109c88c1f27b585f"
+  integrity sha512-Q28iYCWzNHjAm+yEAot5QaAMxhMghWLFVf7rRdwhUI+c2jix2DUXjAHXVi+s1ibs3mjPO/cCgbA++3BjD0vP/A==
   dependencies:
     follow-redirects "^1.15.0"
     form-data "^4.0.0"
@@ -1326,10 +1321,10 @@ detect-node@^2.0.4, detect-node@^2.1.0:
   resolved "https://registry.yarnpkg.com/detect-node/-/detect-node-2.1.0.tgz#c9c70775a49c3d03bc2c06d9a73be550f978f8b1"
   integrity sha512-T0NIuQpnTvFDATNuHN5roPwSBG83rFsuO+MXXH9/3N1eFbn4wcPjttvjMLEPWJ0RGUYgQE7cGgS3tNxbqCGM7g==
 
-deverything@^0.20.0:
-  version "0.20.0"
-  resolved "https://registry.yarnpkg.com/deverything/-/deverything-0.20.0.tgz#18557fdee4e0e6aab89653c3d1fceb7af6c5d43f"
-  integrity sha512-1VV93Oo2MSGhlkbHnwnceBtWwujFv8Z8ACclVGn88BdUsTB0aBK7UOvvXA1d4KDr3Gn3eT8uS+MY6htGtBnyaQ==
+deverything@^0.28.1:
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/deverything/-/deverything-0.28.1.tgz#794b92f64cedb3b77a9b22c9b3cddab8557da259"
+  integrity sha512-+0yRE+akoqvZVnEvnrhICyip2Hs+y1ndKkJm66SCUpGQVluGz3Z/vebIW3hpCgmKiXULTCKP9XEvaVV0Vk4lJQ==
 
 didyoumean@^1.2.2:
   version "1.2.2"
@@ -2979,16 +2974,14 @@ ra-core@^4.14.0:
     react-is "^17.0.2"
     react-query "^3.32.1"
 
-ra-data-simple-prisma@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/ra-data-simple-prisma/-/ra-data-simple-prisma-3.1.0.tgz#aa3e60193ef4de5557476182dfd40870c5261a68"
-  integrity sha512-LmFdyTUGCXWugEVuXeUKi7vHVxprU5at4zM99CjbbGn9hs1ipdiohwGIP2sLTHS8a0DmKx7sta2DJB+ENU04hg==
+ra-data-simple-prisma@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/ra-data-simple-prisma/-/ra-data-simple-prisma-3.1.1.tgz#a0219ffd7658fac410327d0d1032363b0497d2b1"
+  integrity sha512-wKq1wFQVDaeJz/jOdHohuMx40kekhWtdrWPwrMgjUrgq9KWOndiAgoolUoEkWlJ5+X0ctToAlTTY1wptQraImw==
   dependencies:
-    "@types/node" "^20.1.0"
-    axios "^1.4.0"
+    axios "^1.5.0"
     deepmerge "^4.3.1"
-    deverything "^0.20.0"
-    react-admin "^4.10.2"
+    deverything "^0.28.1"
     set-value "^4.1.0"
 
 ra-i18n-polyglot@^4.14.0:
@@ -3026,7 +3019,7 @@ ra-ui-materialui@^4.14.0:
     react-query "^3.32.1"
     react-transition-group "^4.4.1"
 
-react-admin@^4.10.2, react-admin@^4.14.0:
+react-admin@^4.14.0:
   version "4.14.0"
   resolved "https://registry.yarnpkg.com/react-admin/-/react-admin-4.14.0.tgz#2ffd57e563a82af78c228e3b8d29ceb503e45138"
   integrity sha512-I/BuMnCwKm8EKL1087P9cP1f/CAXI2dKQ44YNGL2/a2q19vcEs7/jIHKjFmiRVkvw+Pk8NIjsroSc2I+60eNGA==
