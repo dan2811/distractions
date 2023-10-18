@@ -2958,10 +2958,10 @@ queue-microtask@^1.2.2:
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
 
-ra-core@^4.14.0:
-  version "4.14.0"
-  resolved "https://registry.yarnpkg.com/ra-core/-/ra-core-4.14.0.tgz#d79bf60f319d371493e78bb0ce1b62cfe0c2860c"
-  integrity sha512-6w9aZn+mxnj6tQAPxZXkgmUTgSgypxdP5YZ47zQVUsM6W/ijK3BEGaUTGY2DdFxZqpt/fOU3XRIDpNO67LwTzA==
+ra-core@^4.15.0:
+  version "4.15.0"
+  resolved "https://registry.yarnpkg.com/ra-core/-/ra-core-4.15.0.tgz#f083f6647ce9aadab58d6aef4de83be9ee45b6a7"
+  integrity sha512-b+GS8ZiF4opn7HjuBAUqSw+kRkunt6Bc4NyTbf/cIwgcVggGvInL3M32O2V4a59eX1Yxl9nPTv0vQb4ig9ohHg==
   dependencies:
     clsx "^1.1.1"
     date-fns "^2.19.0"
@@ -2984,25 +2984,25 @@ ra-data-simple-prisma@^3.1.1:
     deverything "^0.28.1"
     set-value "^4.1.0"
 
-ra-i18n-polyglot@^4.14.0:
-  version "4.14.0"
-  resolved "https://registry.yarnpkg.com/ra-i18n-polyglot/-/ra-i18n-polyglot-4.14.0.tgz#f55179e8410af57331a89e1fe9f62a27e81e0110"
-  integrity sha512-wRVWfzLQinSGLdu/t5DKS8l73Lh/9FUYmh4Im9Lo2wPZPKIRFNm9rrIltlNUWLy2TvbtgoW7J7Gcprjz9LF24g==
+ra-i18n-polyglot@^4.15.0:
+  version "4.15.0"
+  resolved "https://registry.yarnpkg.com/ra-i18n-polyglot/-/ra-i18n-polyglot-4.15.0.tgz#4842a7352dd1f8567888cc70d783aaa62d463cf0"
+  integrity sha512-BiKXm4aRIjU6xA6gkgSLV3swgnL2lCFCAz6SC7142wEG5aW9rNacvjoOAadN8Pls+WzvlTVyqO5HbYRkpZQ72A==
   dependencies:
     node-polyglot "^2.2.2"
-    ra-core "^4.14.0"
+    ra-core "^4.15.0"
 
-ra-language-english@^4.14.0:
-  version "4.14.0"
-  resolved "https://registry.yarnpkg.com/ra-language-english/-/ra-language-english-4.14.0.tgz#7063d9e17000536e8b532889ed893fd4a43d37c9"
-  integrity sha512-nmk1B+AMQvCmY/xEVPdKZ+YpPlhfz66a+7zZx0Qhb5bjNIJeOOJZvjo5sgDralcnhKzveiyEe285z0AOY4YQgg==
+ra-language-english@^4.15.0:
+  version "4.15.0"
+  resolved "https://registry.yarnpkg.com/ra-language-english/-/ra-language-english-4.15.0.tgz#b0e42d12d920710c8f737c84100a06277c599c24"
+  integrity sha512-3QO+1r3Aug/0RulfwhD86FARLp2d1qPdE2GYL0xHENG+F0+7/JfqRg7tWn5WlAHK3amaAUaeIgQ9vtukwpt6Gw==
   dependencies:
-    ra-core "^4.14.0"
+    ra-core "^4.15.0"
 
-ra-ui-materialui@^4.14.0:
-  version "4.14.0"
-  resolved "https://registry.yarnpkg.com/ra-ui-materialui/-/ra-ui-materialui-4.14.0.tgz#17f725e313426bd20d2ba9496b9db85ff18ca353"
-  integrity sha512-JncUp9wLY+0qHI/Mwe2HSbMo8hJv0zUw4eVQ4dYpdEiYyBxZY7Zs1BFQ5175KsexTz1BwDcuXbFf+u82yRll6Q==
+ra-ui-materialui@^4.15.0:
+  version "4.15.0"
+  resolved "https://registry.yarnpkg.com/ra-ui-materialui/-/ra-ui-materialui-4.15.0.tgz#c649cedc5b7324c44573251ecb172d50cb11d185"
+  integrity sha512-JG1Wru6hsrFLQmyLbpm1gY059zrhfcmZ+rD83jUGQbbSrB6EBFX2miu8DjSqJItpL4F8D0sfFeufY/uo/MV6LA==
   dependencies:
     autosuggest-highlight "^3.1.1"
     clsx "^1.1.1"
@@ -3019,20 +3019,20 @@ ra-ui-materialui@^4.14.0:
     react-query "^3.32.1"
     react-transition-group "^4.4.1"
 
-react-admin@^4.14.0:
-  version "4.14.0"
-  resolved "https://registry.yarnpkg.com/react-admin/-/react-admin-4.14.0.tgz#2ffd57e563a82af78c228e3b8d29ceb503e45138"
-  integrity sha512-I/BuMnCwKm8EKL1087P9cP1f/CAXI2dKQ44YNGL2/a2q19vcEs7/jIHKjFmiRVkvw+Pk8NIjsroSc2I+60eNGA==
+react-admin@^4.15.0:
+  version "4.15.0"
+  resolved "https://registry.yarnpkg.com/react-admin/-/react-admin-4.15.0.tgz#6fcf7f66308f83e2568db5bae506aceb60b2b454"
+  integrity sha512-RH1ZnO3kuvynF0HuZXzyrbyYDiFqU37O4CAsao58NMZhn6gZrlso48TQThRpnahE+SendRBDccPWDT8EZeCElA==
   dependencies:
     "@emotion/react" "^11.4.1"
     "@emotion/styled" "^11.3.0"
     "@mui/icons-material" "^5.0.1"
     "@mui/material" "^5.0.2"
     history "^5.1.0"
-    ra-core "^4.14.0"
-    ra-i18n-polyglot "^4.14.0"
-    ra-language-english "^4.14.0"
-    ra-ui-materialui "^4.14.0"
+    ra-core "^4.15.0"
+    ra-i18n-polyglot "^4.15.0"
+    ra-language-english "^4.15.0"
+    ra-ui-materialui "^4.15.0"
     react-hook-form "^7.43.9"
     react-router "^6.1.0"
     react-router-dom "^6.1.0"

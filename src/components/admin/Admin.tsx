@@ -1,13 +1,14 @@
 "use client";
 import { Admin, Resource, type LayoutProps, Layout } from "react-admin";
 import { ReactQueryDevtools } from "react-query/devtools";
-import { AppBar, TitlePortal, InspectorButton } from "react-admin";
 import { dataProvider } from "ra-data-simple-prisma";
 import { UserCreate, UserEdit, UserList } from "./Users/Users";
 
 import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
 import FestivalIcon from "@mui/icons-material/Festival";
 import PianoIcon from "@mui/icons-material/Piano";
+import StadiumIcon from "@mui/icons-material/Stadium";
+import AudioFileIcon from "@mui/icons-material/AudioFile";
 
 import { useSession } from "next-auth/react";
 import { EventCreate, EventEdit, EventList, EventShow } from "./Events/Events";
@@ -33,6 +34,7 @@ import {
 } from "./Package/Package";
 import Dashboard from "./Dashboard";
 import MyAppBar from "./AppBar";
+import JobCreate from "./Jobs/Create";
 
 export const MyLayout = (props: LayoutProps) => (
   <>
@@ -86,11 +88,13 @@ const AdminApp = () => {
       />
       <Resource
         name="eventType"
+        options={{ label: "Event Types" }}
         recordRepresentation="name"
         list={EventTypeList}
         show={EventTypeShow}
         create={EventTypeCreate}
         edit={EventTypeEdit}
+        icon={StadiumIcon}
       />
       <Resource
         name="package"
@@ -99,7 +103,9 @@ const AdminApp = () => {
         show={PackageShow}
         create={PackageCreate}
         edit={PackageEdit}
+        icon={AudioFileIcon}
       />
+      <Resource name="job" create={JobCreate} />
     </Admin>
   );
 };
