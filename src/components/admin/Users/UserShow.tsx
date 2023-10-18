@@ -1,3 +1,4 @@
+import { Typography } from "@mui/material";
 import {
   ChipField,
   Datagrid,
@@ -22,11 +23,7 @@ export const UserShow = () => {
         <TextField source="email" />
         <TextField source="phone" emptyText="No phone number" />
         <TextField source="role" />
-        <ReferenceArrayField source="instruments" reference="Instrument">
-          <SingleFieldList linkType="show">
-            <ChipField source="name" />
-          </SingleFieldList>
-        </ReferenceArrayField>
+        <Instruments />
         <Labeled label="Events">
           <Events />
         </Labeled>
@@ -35,8 +32,28 @@ export const UserShow = () => {
   );
 };
 
+const Instruments = () => {
+  const user = useRecordContext<RaUser>();
+  if (user.role === "client") return null;
+  if (!user.instruments.length)
+    return (
+      <Labeled label="Instruments">
+        <Typography variant="body2">No instruments</Typography>
+      </Labeled>
+    );
+  return (
+    <Labeled label="Instruments">
+      <ReferenceArrayField source="instruments" reference="Instrument">
+        <SingleFieldList linkType="show">
+          <ChipField source="name" />
+        </SingleFieldList>
+      </ReferenceArrayField>
+    </Labeled>
+  );
+};
+
 const Events = () => {
-  const user: RaUser = useRecordContext();
+  const user = useRecordContext<RaUser>();
 
   if (user.role === "client") {
     return (
