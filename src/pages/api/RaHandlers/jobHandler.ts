@@ -1,8 +1,8 @@
-import type { Prisma, Job, Package, Equipment, Instrument } from "@prisma/client";
+import type { Prisma, Job, Instrument } from "@prisma/client";
 import type { NextApiResponse } from "next";
 import { type RaPayload, defaultHandler, createHandler, getListHandler, getManyHandler, getOneHandler } from "ra-data-simple-prisma";
 import { prisma } from "~/server/db";
-import NotifyMusician from "../notifications/NotifyMusician";
+import NotifyMusician from "../notifications/notifyMusician";
 import { logger } from "~/utils/Logging";
 
 export interface AugmentedJob extends Job {
