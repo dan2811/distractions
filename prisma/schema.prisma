@@ -124,7 +124,7 @@ model Job {
     Instruments  Instrument[]
     hotelNeeded  Boolean @default(false)
     hotelBooked  Boolean @default(false)
-    hotelInfo    String? 
+    hotelInfo    String?
 
     @@unique([musicianId, eventId])
 }
