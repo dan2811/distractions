@@ -86,7 +86,6 @@ const DetailsTab = () => {
       date: data?.date ? new Date(data.date).toLocaleDateString() : "",
       location: data?.location ?? "",
     });
-    console.log("use effect check");
   }, [data?.date, data?.location, data?.name, id]);
   if (!id) return 404;
 

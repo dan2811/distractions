@@ -5,7 +5,6 @@ import {
   Create,
   Datagrid,
   DatagridConfigurable,
-  DateField,
   DateInput,
   Edit,
   FunctionField,
@@ -26,7 +25,6 @@ import {
   TextInput,
   required,
   useDataProvider,
-  useGetMany,
   useRecordContext,
   NumberField,
   ChipField,
@@ -36,19 +34,22 @@ import {
   SavedQueriesList,
   useGetList,
   Loading,
+  useCreatePath,
+  CreateButton,
 } from "react-admin";
 import { InvoiceButton } from "./Invoices";
 import type { RaEvent } from "~/pages/api/RaHandlers/eventHandler";
-import type { EventType, Instrument, User } from "@prisma/client";
-import type { AugmentedJob, RaJob } from "~/pages/api/RaHandlers/jobHandler";
+import type { EventType } from "@prisma/client";
+import type { RaJob } from "~/pages/api/RaHandlers/jobHandler";
 import { Card, CardContent, Chip, Tooltip } from "@mui/material";
-import type { JobStatus, RequiredInstrumentsJSON } from "~/types";
-import { RaInstrument } from "~/pages/api/RaHandlers/instrumentHandler";
+import type { RequiredInstrumentsJSON } from "~/types";
 import TodayIcon from "@mui/icons-material/Today";
 import ColouredDateField from "../Fields/ColouredDateField";
+import type { RaUser } from "~/pages/api/RaHandlers/userHandler";
+import { globalColors } from "tailwind.config";
 
 export const EventFilterSideBar = () => {
-  const { data, isLoading, error } = useGetList<EventType>("eventType");
+  const { data, isLoading } = useGetList<EventType>("eventType");
   const tomorrow = new Date(
     new Date(new Date().setDate(new Date().getDate() + 1)).setHours(1, 0, 0, 0),
   ).toISOString();
@@ -108,7 +109,7 @@ export const EventFilterSideBar = () => {
 
 export const EventList = () => {
   return (
-    <List aside={<EventFilterSideBar />}>
+    <List aside={<EventFilterSideBar />} sort={{ field: "date", order: "ASC" }}>
       <DatagridConfigurable omit={["id"]} rowClick="show">
         <TextField source="id" />
         <TextField source="name" />
@@ -157,21 +158,47 @@ export const EventShow = () => {
 const InstrumentsRequired = () => {
   const record: RaEvent = useRecordContext();
   const dataprovider = useDataProvider();
-  const [jobs, setJobs] = useState<RaJob[]>([]);
+  const [eventJobs, setEventJobs] = useState<RaJob[]>([]);
+  const [musicians, setMusicians] = useState<RaUser[]>([]);
 
   useEffect(() => {
     const main = async () => {
-      const result = (await dataprovider.getMany("job", {
+      const jobs = await dataprovider.getMany<RaJob>("job", {
         ids: record.jobs,
-      })) as { data: RaJob[] };
-      setJobs(result.data);
+      });
+      setEventJobs(jobs.data);
     };
     void main();
   }, [dataprovider, record.jobs]);
 
+  useEffect(() => {
+    const main = async () => {
+      const musicians = await dataprovider.getMany("user", {
+        ids: eventJobs.map((job) => job.musicianId),
+      });
+      setMusicians(musicians.data);
+    };
+    void main();
+  }, [dataprovider, eventJobs]);
+
+  const parseJobStatus = (
+    status: string,
+  ): keyof typeof globalColors.jobStatus => {
+    switch (status) {
+      case "accepted":
+        return "accepted";
+      case "pending":
+        return "pending";
+      case "rejected":
+        return "rejected";
+      default:
+        return "other";
+    }
+  };
+
   return (
     <ArrayField source="InstrumentsRequired">
-      <Datagrid bulkActionButtons={false} rowClick="expand" resource="event">
+      <Datagrid bulkActionButtons={false} resource="event">
         <ReferenceField source="id" reference="Instrument">
           <TextField source="name" />
         </ReferenceField>
@@ -179,146 +206,75 @@ const InstrumentsRequired = () => {
         <FunctionField
           sortable={false}
           source="musicians"
-          render={(instrument: RequiredInstrumentsJSON) =>
-            getJobsForInstrument(instrument).map((job) => {
+          render={(instrument: RequiredInstrumentsJSON) => {
+            const jobs = getJobsForInstrument(instrument, eventJobs, musicians);
+            const chips = jobs.map(({ musician, job }) => {
               return (
                 <Chip
-                  key="chipText"
-                  label={`${job.musicianName}: ${job.status}`}
+                  key={instrument.id + musician?.name + job.id}
+                  label={`${job.isMd ? "MD - " : ""}${
+                    musician?.name ?? "unknown musician"
+                  }: ${job.status}`}
                   sx={{
                     backgroundColor:
-                      job.status === "pending"
-                        ? "#FFD580"
-                        : job.status === "accepted"
-                        ? "#90EE90"
-                        : "#f94449",
+                      globalColors.jobStatus[parseJobStatus(job.status)],
                   }}
                 />
               );
-            })
-          }
+            });
+
+            return chips;
+          }}
         />
+        <CreateJobButton eventId={record.id} />
       </Datagrid>
     </ArrayField>
   );
 };
 
-const getJobsForInstrument = (
-  instrument: RequiredInstrumentsJSON,
-): { musicianName: string; status: JobStatus }[] => {
-  return [
-    { musicianName: "John", status: "pending" },
-    { musicianName: "Jane", status: "accepted" },
-    { musicianName: "Joe", status: "rejected" },
-  ];
-};
-// const MusiciansThatHaveAcceptedTheJob = ({
-//   jobs,
-//   instrument,
-// }: {
-//   jobs: RaJob[];
-//   instrument: RequiredInstrumentsJSON;
-// }) => {
-//   const jobsForThisInstrument = jobs.filter((job) => {
-//     return job.Instruments.includes(instrument.id);
-//   });
-//   if (!jobsForThisInstrument.length) {
-//     return (
-//       <Button>
-//         <div>Add Musician</div>
-//       </Button>
-//     );
-//   }
-
-//   const acceptedJobsForThisInstrument = jobsForThisInstrument.filter(
-//     (job) => job.status === "accepted",
-//   );
-//   const pendingJobsForThisInstrument = jobsForThisInstrument.filter(
-//     (job) => job.status === "pending",
-//   );
-
-//   if (
-//     !acceptedJobsForThisInstrument.length &&
-//     !pendingJobsForThisInstrument.length
-//   ) {
-//     return (
-//       <Button>
-//         <div>Add Musician</div>
-//       </Button>
-//     );
-//   }
-
-//   const acceptedMusicianIds = acceptedJobsForThisInstrument.map(
-//     (job) => job.musicianId,
-//   );
-//   const pendingMusicianIds = pendingJobsForThisInstrument.map(
-//     (job) => job.musicianId,
-//   );
-
-//   console.log({ acceptedMusicianIds, pendingMusicianIds });
-//   return (
-//     <GetMusicianNames
-//       acceptedMusicianIds={acceptedMusicianIds}
-//       pendingMusicianIds={pendingMusicianIds}
-//     />
-//   );
-// };
-
-const GetMusicianNames = ({
-  acceptedMusicianIds,
-  pendingMusicianIds,
-}: {
-  acceptedMusicianIds: Identifier[];
-  pendingMusicianIds: Identifier[];
-}) => {
-  const dataprovider = useDataProvider();
-  const [musicians, setMusicians] = useState<User[]>([]);
-  const [pendingMusicians, setPendingMusicians] = useState<User[]>([]);
-
-  useEffect(() => {
-    const main = async () => {
-      const accepted = (await dataprovider.getMany("user", {
-        ids: acceptedMusicianIds,
-      })) as { data: User[] };
-      const pending = (await dataprovider.getMany("user", {
-        ids: pendingMusicianIds,
-      })) as { data: User[] };
-      setMusicians(accepted.data);
-      setPendingMusicians(pending.data);
-    };
-    void main();
-  }, [dataprovider, acceptedMusicianIds, pendingMusicianIds]);
-
+const CreateJobButton = ({ eventId }: { eventId: string }) => {
+  const record = useRecordContext();
+  const createPath = useCreatePath();
   return (
-    <div>
-      <p>ACCEPTED: {musicians.map((musician) => musician.name).join(", ")}</p>
-      <p>
-        PENDING: {pendingMusicians.map((musician) => musician.name).join(", ")}
-      </p>
-    </div>
+    <CreateButton
+      label="Add musician"
+      resource="job"
+      to={{
+        pathname: createPath({
+          resource: "job",
+          id: record.id,
+          type: "create",
+        }),
+        search: `?source=${JSON.stringify({
+          eventId,
+          Instruments: [record.id],
+        })}`,
+      }}
+    />
   );
 };
 
-const PendingAndRejectedJobs = ({
-  jobs,
-  instrument,
-}: {
-  jobs: RaJob[];
-  instrument: RequiredInstrumentsJSON;
-}) => {
-  const jobsFilteredByInstrument = jobs?.filter((job) => {
+const getJobsForInstrument = (
+  instrument: RequiredInstrumentsJSON,
+  eventJobs: RaJob[],
+  musicians: RaUser[],
+): { musician: RaUser | undefined; job: RaJob }[] => {
+  const jobsForThisInstrument = eventJobs.filter((job) => {
     return job.Instruments.map((instr) => instr).includes(instrument.id);
   });
+  if (!jobsForThisInstrument.length) {
+    return [];
+  }
+  // map musician names to jobs
+  const jobsWithMusicianNames = jobsForThisInstrument.map((job) => {
+    const musician = musicians.find((musician) => {
+      return musician.id === job.musicianId;
+    });
+    return { musician: musician, job };
+  });
 
-  return (
-    <Datagrid
-      data={jobsFilteredByInstrument}
-      bulkActionButtons={false}
-      empty={<p>No musicians have been offered this yet.</p>}
-    >
-      <ReferenceField source="musicianId" reference="user" link="show" />
-      <TextField source="status" />
-    </Datagrid>
+  return jobsWithMusicianNames.sort((a, b) =>
+    a.job.status.localeCompare(b.job.status),
   );
 };
 

@@ -17,7 +17,7 @@ export const jobHandler = async (req: { body: RaPayload; }, res: NextApiResponse
             return await createHandler<Prisma.JobCreateArgs>(req.body, prisma.job, {
                 connect: {
                     event: "id",
-                    instruments: "id",
+                    Instruments: "id",
                     musician: "id"
                 }
             });
