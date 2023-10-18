@@ -9,6 +9,13 @@ export const globalColors = {
     input: "#2A2A2A",
     accent: "#a8a07c",
     error: "#ff0000",
+  },
+  jobStatus: {
+    // MUST BE HEX CODES
+    accepted: "#E8FFE9",
+    pending: "#FFFDE8",
+    rejected: "#FFE8E8",
+    other: "#E8F5FF"
   }
 };
 
