@@ -36,6 +36,7 @@ import {
   Loading,
   useCreatePath,
   CreateButton,
+  DateField,
 } from "react-admin";
 import { InvoiceButton } from "./Invoices";
 import type { RaEvent } from "~/pages/api/RaHandlers/eventHandler";
@@ -135,7 +136,7 @@ export const EventShow = () => {
     <Show>
       <SimpleShowLayout>
         <TextField source="name" />
-        <TextField source="date" />
+        <DateField source="date" />
         <ReferenceField source="ownerId" reference="user" link="show" />
         <ReferenceField
           source="eventTypeId"
