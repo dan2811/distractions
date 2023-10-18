@@ -1,18 +1,9 @@
-import sgMail from "@sendgrid/mail";
-import { log } from "next-axiom";
 import { globalColors } from "tailwind.config";
+import { sendEmail } from "./email";
 
 export const sendVerificationRequest = async (params: { identifier: string, url: string; }) => {
   const { identifier: recipientEmailAddress, url } = params;
   const appName = "The Distractions Band";
-
-  if (!process.env.SENDGRID_API_KEY) {
-    // We should never see this, because env variables are checked on startup. 
-    // But this allows typescript to infer the type as not null.
-    throw new Error("SENDGRID_API_KEY not set");
-  }
-
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
   const emailDetails = {
     to: recipientEmailAddress,
@@ -22,12 +13,8 @@ export const sendVerificationRequest = async (params: { identifier: string, url:
     html: html(appName, url),
   };
 
-  try {
-    const result = await sgMail.send(emailDetails);
-    log.info("LOGIN_EMAIL_SENT", { recipientEmailAddress, sendGridResponse: result });
-  } catch (e) {
-    log.error("EMAIL_LOGIN_ERROR", { details: e });
-  }
+  await sendEmail(emailDetails);
+
 };
 
 function html(appName: string, url: string) {

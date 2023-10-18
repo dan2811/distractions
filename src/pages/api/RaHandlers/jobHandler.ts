@@ -2,6 +2,8 @@ import type { Prisma, Job, Package, Equipment, Instrument } from "@prisma/client
 import type { NextApiResponse } from "next";
 import { type RaPayload, defaultHandler, createHandler, getListHandler, getManyHandler, getOneHandler } from "ra-data-simple-prisma";
 import { prisma } from "~/server/db";
+import NotifyMusician from "../notifications/NotifyMusician";
+import { logger } from "~/utils/Logging";
 
 export interface AugmentedJob extends Job {
     Instruments: Instrument[];
@@ -14,13 +16,23 @@ export interface RaJob extends Job {
 export const jobHandler = async (req: { body: RaPayload; }, res: NextApiResponse) => {
     switch (req.body.method) {
         case "create":
-            return await createHandler<Prisma.JobCreateArgs>(req.body, prisma.job, {
+            const newJob = await createHandler<Prisma.JobCreateArgs>(req.body, prisma.job, {
                 connect: {
                     event: "id",
                     Instruments: "id",
                     musician: "id"
+                },
+                include: {
+                    Instruments: true,
+                    musician: true,
                 }
             });
+            try {
+                await NotifyMusician(newJob.data as RaJob);
+            } catch (e) {
+                logger.error("NOTIFY_MUSICIAN_ERROR", { details: e });
+            }
+            return newJob;
         case "getList":
             return await getListHandler<Prisma.JobFindManyArgs>(req.body, prisma.job, {
                 include: {

@@ -65,31 +65,63 @@ const DetailsTab = () => {
     location: data?.location ?? "",
   });
   const [editMode, setEditMode] = useState(false);
+
   const { isLoading: isMutationLoading, mutateAsync } =
     api.events.updateEvent.useMutation();
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    void toast.promise(mutateAsync(formValues), {
-      loading: "Saving...",
-      success: "Saved",
-      error: () => {
-        setEditMode(true);
-        return "Error when saving";
-      },
-    });
-  };
 
   useEffect(() => {
     setFormValues({
       eventId: id as string,
       name: data?.name ?? "",
-      date: data?.date ? new Date(data.date).toLocaleDateString() : "",
+      date: new Date(data?.date ?? "").toISOString().split("T")[0] ?? "",
       location: data?.location ?? "",
     });
   }, [data?.date, data?.location, data?.name, id]);
+
   if (!id) return 404;
 
   if (!data || isLoading) return <Loading />;
+
+  const tooLateToEdit: boolean =
+    Date.parse(data.date.toISOString()) <
+    new Date().setDate(
+      new Date().getDate() +
+        parseInt(process.env.NUM_DAYS_BEFORE_EVENT_LOCK ?? "14"),
+    );
+
+  console.log(
+    Date.parse(data.date.toISOString()),
+    new Date().setDate(
+      new Date().getDate() -
+        parseInt(process.env.NUM_DAYS_BEFORE_EVENT_LOCK ?? "14"),
+    ),
+  );
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (tooLateToEdit) {
+      toast.error("Too late to edit event details", { duration: 5000 });
+      return;
+    }
+    void toast.promise(
+      mutateAsync({
+        ...formValues,
+        date: new Date(formValues.date).toISOString(),
+      }),
+      {
+        loading: "Saving...",
+        success: () => {
+          setEditMode(false);
+          return "Saved";
+        },
+        error: () => {
+          setEditMode(true);
+          return "Error when saving";
+        },
+      },
+    );
+  };
+
   return (
     <form className="flex flex-col gap-2 py-2 pl-2" onSubmit={handleSubmit}>
       <Attribute
@@ -108,14 +140,20 @@ const DetailsTab = () => {
         setFormValues={setFormValues}
         editMode={editMode}
       />
-      <Attribute
-        fieldName="location"
-        label="Location"
-        inputType="text"
-        formValues={formValues}
-        setFormValues={setFormValues}
-        editMode={editMode}
-      />
+      <div className="grid grid-cols-6 p-2">
+        <label htmlFor="location" className="col-span-2 self-start">
+          Location:
+        </label>
+        <textarea
+          id="location"
+          value={formValues.location}
+          onChange={(e) =>
+            setFormValues({ ...formValues, location: e.target.value })
+          }
+          className="col-span-4 w-full resize-none p-1 disabled:bg-main-dark"
+          disabled={!editMode}
+        />
+      </div>
       <ul className="flex w-full flex-col pl-2">
         <p>Packages:</p>
 
@@ -125,14 +163,44 @@ const DetailsTab = () => {
           </li>
         ))}
       </ul>
-      <button
-        type={editMode ? "button" : "submit"}
-        disabled={isMutationLoading}
-        className="w-1/2 self-center bg-main-accent disabled:opacity-40"
-        onClick={() => setEditMode(!editMode)}
-      >
-        {editMode ? "Save" : "Edit Details"}
-      </button>
+      <span className="flex justify-center gap-3">
+        {!editMode ? (
+          <button
+            type={"button"}
+            disabled={isMutationLoading}
+            className="w-1/3 self-center bg-main-accent disabled:opacity-40"
+            onClick={(e) => {
+              e.preventDefault();
+              if (tooLateToEdit) {
+                toast.error("Too late to edit event details", {
+                  duration: 5000,
+                });
+              } else {
+                setEditMode(true);
+              }
+            }}
+          >
+            {"Edit Details"}
+          </button>
+        ) : (
+          <button
+            type="submit"
+            disabled={isMutationLoading}
+            className="w-1/3 self-center bg-main-accent disabled:opacity-40"
+          >
+            {"Save"}
+          </button>
+        )}
+        {editMode && (
+          <button
+            type="button"
+            onClick={() => setEditMode(false)}
+            className="w-1/3 self-center bg-main-accent disabled:opacity-40"
+          >
+            Cancel
+          </button>
+        )}
+      </span>
     </form>
   );
 };
@@ -161,20 +229,17 @@ const Attribute = ({
       <label htmlFor={fieldName} className="col-span-2 self-start">
         {label}:
       </label>
-      {editMode ? (
-        <input
-          type={inputType}
-          id={fieldName}
-          value={formValues[fieldName]}
-          onChange={(e) =>
-            setFormValues({ ...formValues, [fieldName]: e.target.value })
-          }
-          pattern={validationPattern}
-          className="col-span-4 w-full p-1"
-        />
-      ) : (
-        <p className="col-span-4 w-full">{formValues[fieldName]}</p>
-      )}
+      <input
+        type={inputType}
+        id={fieldName}
+        value={formValues[fieldName]}
+        onChange={(e) =>
+          setFormValues({ ...formValues, [fieldName]: e.target.value })
+        }
+        pattern={validationPattern}
+        className="col-span-4 w-full p-1 disabled:bg-main-dark"
+        disabled={!editMode}
+      />
     </div>
   );
 };

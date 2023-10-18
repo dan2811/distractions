@@ -28,6 +28,8 @@ export const env = createEnv({
     PAYPAL_URL: z.string().url(),
     PAYPAL_CLIENT_ID: z.string(),
     PAYPAL_CLIENT_SECRET: z.string(),
+    MAIN_URL: z.string().url(),
+    NUM_DAYS_BEFORE_EVENT_LOCK: z.string(),
   },
 
   /**
@@ -55,6 +57,8 @@ export const env = createEnv({
     PAYPAL_URL: process.env.PAYPAL_URL,
     PAYPAL_CLIENT_ID: process.env.PAYPAL_CLIENT_ID,
     PAYPAL_CLIENT_SECRET: process.env.PAYPAL_CLIENT_SECRET,
+    MAIN_URL: process.env.MAIN_URL,
+    NUM_DAYS_BEFORE_EVENT_LOCK: process.env.NUM_DAYS_BEFORE_EVENT_LOCK,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
