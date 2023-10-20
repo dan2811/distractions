@@ -1,8 +1,7 @@
-import type { Job, Prisma, Event, Package, Equipment, User } from "@prisma/client";
+import type { Job, Prisma, Event, Package, Equipment } from "@prisma/client";
 import type { NextApiResponse } from "next";
 import { type RaPayload, defaultHandler, createHandler, getListHandler, getManyHandler, getOneHandler, updateHandler } from "ra-data-simple-prisma";
 import { createDraftDepositInvoice, createDraftFinalInvoice } from "~/server/api/routers/paypal/helper";
-import { paypalRouter } from "~/server/api/routers/paypal/paypal";
 import { prisma } from "~/server/db";
 
 interface AugmentedEvent extends Event {

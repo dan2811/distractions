@@ -1,38 +1,12 @@
 import { type Event } from "@prisma/client";
 import React from "react";
 import { Heading } from "~/components/Layout/Heading";
-import { api } from "~/utils/api";
 
 interface PaymentTabProps {
   event: Event;
 }
 
 const PaymentTab = ({ event }: PaymentTabProps) => {
-  // TESTING:
-  // const { mutate, data: mutationData } =
-  //   api.paypal.createDraftDepositInvoice.useMutation();
-
-  // mutate({
-  //   amount: "100",
-  //   client: {
-  //     id: "clmkkme0m0000mf08tij6ewj1",
-  //     email: "djordandrums@gmail.com",
-  //     name: "Daniel",
-  //     surname: "Jordan",
-  //   },
-  //   event: {
-  //     id: event.id,
-  //     date: event.date,
-  //   },
-  // });
-
-  // console.log("is success: ", mutationData);
-
-  // const { mutate: sendInvoiceMutation } = api.paypal.sendInvoice.useMutation();
-
-  // console.log("mutation data: ", mutationData);
-  // if (!mutationData) return;
-  // sendInvoiceMutation({ invoiceId: mutationData.id });
   const { clientDepositInvoiceUrl, clientFinalInvoiceUrl } = event;
   return (
     <div className="flex flex-col gap-8">

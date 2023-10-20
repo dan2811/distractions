@@ -31,6 +31,8 @@ export const env = createEnv({
     MAIN_URL: z.string().url(),
     NUM_DAYS_BEFORE_EVENT_LOCK: z.string(),
     DAYS_BEFORE_EVENT_FINAL_BALANCE_DUE: z.string(),
+    UPLOADTHING_SECRET: z.string(),
+    UPLOADTHING_APP_ID: z.string(),
   },
 
   /**
@@ -62,6 +64,8 @@ export const env = createEnv({
     NUM_DAYS_BEFORE_EVENT_LOCK: process.env.NUM_DAYS_BEFORE_EVENT_LOCK,
     DAYS_BEFORE_EVENT_FINAL_BALANCE_DUE:
       process.env.DAYS_BEFORE_EVENT_FINAL_BALANCE_DUE,
+    UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
+    UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
