@@ -8,7 +8,6 @@ import {
   DateInput,
   Edit,
   FunctionField,
-  type Identifier,
   List,
   NumberInput,
   ReferenceArrayField,
@@ -37,17 +36,33 @@ import {
   useCreatePath,
   CreateButton,
   DateField,
+  BooleanField,
+  Button,
+  TabbedShowLayout,
+  ShowBase,
+  useNotify,
+  useRefresh,
 } from "react-admin";
 import { InvoiceButton } from "./Invoices";
 import type { RaEvent } from "~/pages/api/RaHandlers/eventHandler";
 import type { EventType } from "@prisma/client";
 import type { RaJob } from "~/pages/api/RaHandlers/jobHandler";
-import { Card, CardContent, Chip, Tooltip } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Chip,
+  Grid,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import type { RequiredInstrumentsJSON } from "~/types";
 import TodayIcon from "@mui/icons-material/Today";
 import ColouredDateField from "../Fields/ColouredDateField";
 import type { RaUser } from "~/pages/api/RaHandlers/userHandler";
 import { globalColors } from "tailwind.config";
+import { sendInvoice } from "~/server/api/routers/paypal/helper";
+import { useMutation } from "@tanstack/react-query";
+import { api } from "~/utils/api";
 
 export const EventFilterSideBar = () => {
   const { data, isLoading } = useGetList<EventType>("eventType");
@@ -134,25 +149,89 @@ export const EventList = () => {
 export const EventShow = () => {
   return (
     <Show>
-      <SimpleShowLayout>
-        <TextField source="name" />
-        <DateField source="date" />
-        <ReferenceField source="ownerId" reference="user" link="show" />
-        <ReferenceField
-          source="eventTypeId"
-          reference="eventType"
-          link="show"
-        />
-        <ReferenceArrayField source="packages" reference="package">
-          <SingleFieldList>
-            <ChipField source="name" />
-          </SingleFieldList>
-        </ReferenceArrayField>
-        <InvoiceButton type="deposit" />
-        <InvoiceButton type="final" />
-        <InstrumentsRequired />
-      </SimpleShowLayout>
+      <TabbedShowLayout>
+        <TabbedShowLayout.Tab label="details">
+          <DetailsTab />
+        </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab label="finance">
+          <FinanceTab />
+        </TabbedShowLayout.Tab>
+      </TabbedShowLayout>
     </Show>
+  );
+};
+
+const DetailsTab = () => (
+  <SimpleShowLayout>
+    <TextField source="name" />
+    <DateField source="date" />
+    <ReferenceField source="ownerId" reference="user" link="show" />
+    <ReferenceField source="eventTypeId" reference="eventType" link="show" />
+    <ReferenceArrayField source="packages" reference="package">
+      <SingleFieldList>
+        <ChipField source="name" />
+      </SingleFieldList>
+    </ReferenceArrayField>
+    <InstrumentsRequired />
+  </SimpleShowLayout>
+);
+
+const FinanceTab = () => {
+  const record = useRecordContext<RaEvent>();
+  if (!record) return null;
+  return (
+    <ShowBase resource="event">
+      <Grid container spacing={4}>
+        <Grid item xs={6}>
+          <Typography variant="h6">Deposit</Typography>
+          <SimpleShowLayout>
+            <BooleanField source="depositInvoiceSent" />
+            {!record.depositInvoiceSent && (
+              <SendInvoiceButton
+                invoiceId={record.depositInvoiceId}
+                type="deposit"
+              />
+            )}
+            <InvoiceButton type="deposit" />
+          </SimpleShowLayout>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="h6">Final Invoice</Typography>
+          <SimpleShowLayout>
+            <BooleanField source="finalInvoiceSent" />
+            {!record.finalInvoiceSent && (
+              <SendInvoiceButton
+                invoiceId={record.finalInvoiceId}
+                type="final"
+              />
+            )}
+            <InvoiceButton type="final" />
+          </SimpleShowLayout>
+        </Grid>
+      </Grid>
+    </ShowBase>
+  );
+};
+
+const SendInvoiceButton = ({
+  invoiceId,
+  type,
+}: {
+  invoiceId: string | null;
+  type: "deposit" | "final";
+}) => {
+  const notify = useNotify();
+  const refresh = useRefresh();
+  const { mutate } = api.paypal.sendInvoice.useMutation({
+    onSuccess: () => {
+      refresh();
+      notify("Invoice sent", { type: "success" });
+    },
+    onError: () => notify("Error sending invoice", { type: "error" }),
+  });
+  if (!invoiceId) return null;
+  return (
+    <Button label="Send invoice" onClick={() => mutate({ invoiceId, type })} />
   );
 };
 
@@ -303,6 +382,7 @@ export const EventCreate = () => {
         />
         <ReferenceArrayInput source="packages" reference="package" />
         <TextInput source="location" />
+        <NumberInput source="deposit" />
         <NumberInput source="price" />
         <ArrayInput source="InstrumentsRequired">
           <SimpleFormIterator inline>

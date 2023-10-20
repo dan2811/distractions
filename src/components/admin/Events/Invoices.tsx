@@ -16,7 +16,7 @@ export const InvoiceButton = ({ type }: InvoiceButtonProps) => {
   return (
     <a href={paypalInvoiceUrl} target="_blank">
       <Button>
-        <>View {type} invoice</>
+        <>View on paypal</>
       </Button>
     </a>
   );

@@ -1,6 +1,8 @@
-import type { Job, Prisma, Event, Package, Equipment } from "@prisma/client";
+import type { Job, Prisma, Event, Package, Equipment, User } from "@prisma/client";
 import type { NextApiResponse } from "next";
 import { type RaPayload, defaultHandler, createHandler, getListHandler, getManyHandler, getOneHandler, updateHandler } from "ra-data-simple-prisma";
+import { createDraftDepositInvoice, createDraftFinalInvoice } from "~/server/api/routers/paypal/helper";
+import { paypalRouter } from "~/server/api/routers/paypal/paypal";
 import { prisma } from "~/server/db";
 
 interface AugmentedEvent extends Event {
@@ -18,14 +20,27 @@ export interface RaEvent extends Event {
 export const eventHandler = async (req: { body: RaPayload; }, res: NextApiResponse) => {
     switch (req.body.method) {
         case "create":
-            return await createHandler<Prisma.EventCreateArgs>(req.body, prisma.event, {
+            const newEvent: {
+                data: Prisma.EventGetPayload<{
+                    include: {
+                        owner: true;
+                    };
+                }>;
+            } = await createHandler<Prisma.EventCreateArgs>(req.body, prisma.event, {
                 connect: {
                     EventType: "id",
                     packages: "id",
                     Equipment: "id",
                     owner: "id"
+                },
+                include: {
+                    owner: true
                 }
             });
+            const { deposit, price, owner } = newEvent.data;
+            await createDraftDepositInvoice(deposit.toString(), owner, newEvent.data);
+            await createDraftFinalInvoice(price.toString(), owner, newEvent.data);
+            return newEvent;
         case "getList":
             return await getListHandler<Prisma.EventFindManyArgs>(req.body, prisma.event, {
                 include: {
