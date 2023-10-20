@@ -49,7 +49,9 @@ model PaypalAccessToken {
 
 model User {
     id            String    @id @default(cuid())
+    /// can be the user's full name (set by oauth provider) or just first name if changed by user
     name          String?
+    surname       String?
     role          Role          @default(client)
     email         String        @unique
     emailVerified DateTime?
@@ -93,13 +95,18 @@ model Event {
     date                       DateTime
     InstrumentsRequired        Json
     location                   String?
-    price                      Float       @default(0)
+    price                      Float        @default(0)
+    deposit                    Float        @default(0)
     clientDepositInvoiceUrl    String?
     clientFinalInvoiceUrl      String?
     adminDepositInvoiceUrl     String?
     adminFinalInvoiceUrl       String?
-    createdAt                  DateTime           @default(now())
-    updatedAt                  DateTime           @updatedAt
+    depositInvoiceSent         Boolean      @default(false)
+    finalInvoiceSent           Boolean      @default(false)
+    depositInvoiceId           String?      @unique
+    finalInvoiceId             String?      @unique
+    createdAt                  DateTime     @default(now())
+    updatedAt                  DateTime     @updatedAt
     ownerId                    String
     owner                      User         @relation("bookings", fields: [ownerId], references: [id])
     eventTypeId                String
