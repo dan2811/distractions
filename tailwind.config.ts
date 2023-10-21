@@ -1,5 +1,6 @@
 import { type Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
+import { withUt } from "uploadthing/tw";
 
 export const globalColors = {
   main: {
@@ -24,8 +25,8 @@ export const globalFonts = {
   body: ['var(--font-noto)', ...fontFamily.sans],
 };
 
-export default {
-  content: ["./src/**/*.{js,ts,jsx,tsx}"],
+export default withUt({
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
       colors: globalColors,
@@ -33,5 +34,5 @@ export default {
     },
   },
   plugins: [],
-} satisfies Config;
+}) satisfies Config;
 

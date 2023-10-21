@@ -28,9 +28,12 @@ export const env = createEnv({
     PAYPAL_URL: z.string().url(),
     PAYPAL_CLIENT_ID: z.string(),
     PAYPAL_CLIENT_SECRET: z.string(),
+    PAYPAL_DEPOSIT_ACCOUNT_EMAIL: z.string(),
     MAIN_URL: z.string().url(),
     NUM_DAYS_BEFORE_EVENT_LOCK: z.string(),
     DAYS_BEFORE_EVENT_FINAL_BALANCE_DUE: z.string(),
+    UPLOADTHING_SECRET: z.string(),
+    UPLOADTHING_APP_ID: z.string(),
   },
 
   /**
@@ -58,10 +61,13 @@ export const env = createEnv({
     PAYPAL_URL: process.env.PAYPAL_URL,
     PAYPAL_CLIENT_ID: process.env.PAYPAL_CLIENT_ID,
     PAYPAL_CLIENT_SECRET: process.env.PAYPAL_CLIENT_SECRET,
+    PAYPAL_DEPOSIT_ACCOUNT_EMAIL: process.env.PAYPAL_DEPOSIT_ACCOUNT_EMAIL,
     MAIN_URL: process.env.MAIN_URL,
     NUM_DAYS_BEFORE_EVENT_LOCK: process.env.NUM_DAYS_BEFORE_EVENT_LOCK,
     DAYS_BEFORE_EVENT_FINAL_BALANCE_DUE:
       process.env.DAYS_BEFORE_EVENT_FINAL_BALANCE_DUE,
+    UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
+    UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

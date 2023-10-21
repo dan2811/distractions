@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrayField,
   ArrayInput,
@@ -42,6 +42,9 @@ import {
   ShowBase,
   useNotify,
   useRefresh,
+  EditButton,
+  ReferenceOneField,
+  Link,
 } from "react-admin";
 import { InvoiceButton } from "./Invoices";
 import type { RaEvent } from "~/pages/api/RaHandlers/eventHandler";
@@ -60,9 +63,8 @@ import TodayIcon from "@mui/icons-material/Today";
 import ColouredDateField from "../Fields/ColouredDateField";
 import type { RaUser } from "~/pages/api/RaHandlers/userHandler";
 import { globalColors } from "tailwind.config";
-import { sendInvoice } from "~/server/api/routers/paypal/helper";
-import { useMutation } from "@tanstack/react-query";
 import { api } from "~/utils/api";
+import { UploadDropzone } from "~/utils/uploadthing";
 
 export const EventFilterSideBar = () => {
   const { data, isLoading } = useGetList<EventType>("eventType");
@@ -161,21 +163,75 @@ export const EventShow = () => {
   );
 };
 
-const DetailsTab = () => (
-  <SimpleShowLayout>
-    <TextField source="name" />
-    <DateField source="date" />
-    <ReferenceField source="ownerId" reference="user" link="show" />
-    <ReferenceField source="eventTypeId" reference="eventType" link="show" />
-    <ReferenceArrayField source="packages" reference="package">
-      <SingleFieldList>
-        <ChipField source="name" />
-      </SingleFieldList>
-    </ReferenceArrayField>
-    <InstrumentsRequired />
-  </SimpleShowLayout>
-);
-
+const DetailsTab = () => {
+  const notify = useNotify();
+  const record = useRecordContext();
+  const refresh = useRefresh();
+  return (
+    <ShowBase resource="event">
+      <Grid container spacing={4}>
+        <Grid item xs={6}>
+          <SimpleShowLayout>
+            <TextField source="name" />
+            <DateField source="date" />
+            <ReferenceField source="ownerId" reference="user" link="show" />
+            <ReferenceField
+              source="eventTypeId"
+              reference="eventType"
+              link="show"
+            />
+            <ReferenceArrayField source="packages" reference="package">
+              <SingleFieldList>
+                <ChipField source="name" />
+              </SingleFieldList>
+            </ReferenceArrayField>
+          </SimpleShowLayout>
+        </Grid>
+        <Grid item xs={6} className="flex flex-col justify-start align-middle">
+          <SimpleShowLayout>
+            <ReferenceOneField
+              reference="Contract"
+              target="eventId"
+              label="Contract"
+            >
+              <SimpleShowLayout>
+                <FunctionField
+                  render={(record: { url: string; name: string }) => {
+                    return (
+                      <Link to={record.url} target="_blank">
+                        {record.name}
+                      </Link>
+                    );
+                  }}
+                />
+                <DateField source="updatedAt" label="Last updated" showTime />
+              </SimpleShowLayout>
+            </ReferenceOneField>
+            <Typography variant="body1" className="text-red-700">
+              Uploading a contract will automatically email the client to ask
+              them to sign.
+            </Typography>
+            <UploadDropzone
+              endpoint="contractUploader"
+              input={{ eventId: record.id.toString() }}
+              onClientUploadComplete={() => {
+                notify("Upload Completed", { type: "success" });
+                refresh();
+              }}
+              onUploadError={(error: Error) =>
+                notify(`ERROR! ${error.message}`, { type: "error" })
+              }
+              content={{ label: "Upload contract" }}
+            />
+          </SimpleShowLayout>
+        </Grid>
+        <Grid item xs={12}>
+          <InstrumentsRequired />
+        </Grid>
+      </Grid>
+    </ShowBase>
+  );
+};
 const FinanceTab = () => {
   const record = useRecordContext<RaEvent>();
   if (!record) return null;
@@ -278,7 +334,11 @@ const InstrumentsRequired = () => {
 
   return (
     <ArrayField source="InstrumentsRequired">
-      <Datagrid bulkActionButtons={false} resource="event">
+      <Datagrid
+        bulkActionButtons={false}
+        resource="event"
+        empty={<EditButton label="Add Musicians" />}
+      >
         <ReferenceField source="id" reference="Instrument">
           <TextField source="name" />
         </ReferenceField>

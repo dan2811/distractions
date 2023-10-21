@@ -88,13 +88,13 @@ const invoicer = {
         "country_code": "GB"
     },
     // THIS MUST BE THE EMAIL ADDRESS OF A PAYPAL BUSINESS ACCOUNT
-    "email_address": "sb-nwmqu5280595@business.example.com",
+    "email_address": process.env.PAYPAL_DEPOSIT_ACCOUNT_EMAIL,
     "phones": [{
         "country_code": "44",
-        "national_number": "01156668276",
+        "national_number": "07977991235",
         "phone_type": "HOME"
     }],
-    "website": "www.thedistractionsband.co.uk",
+    "website": process.env.MAIN_URL,
 };
 
 interface PaypalDraftInvoiceResponse {

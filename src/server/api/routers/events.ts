@@ -39,6 +39,7 @@ export const eventRouter = createTRPCRouter({
     return prisma.event.findUnique({
       include: {
         packages: true,
+        contract: true
       },
       where: {
         id: input.id,

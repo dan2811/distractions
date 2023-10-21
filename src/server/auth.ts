@@ -43,9 +43,8 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     jwt({ token, user }: { token: JWT; user: DefaultUser | undefined; }) {
       if (user) {
-        // Assign role to token for use in middleware to check for admin access
+        // add extra key/value(s) to the token
         token.sub = user.id;
-        // Some nasty casting to keep TS happy when trying to get phone number and role into the token
         token.phone = (user as User).phone;
         token.role = (user as User).role;
       }
@@ -85,6 +84,8 @@ export const authOptions: NextAuthOptions = {
       profile: (profile: GoogleProfile) => {
         return {
           id: profile.sub,
+          given_name: profile.given_name,
+          family_name: profile.family_name,
           name: profile.name,
           email: profile.email,
           image: profile.picture,
