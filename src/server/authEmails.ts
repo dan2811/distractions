@@ -1,5 +1,5 @@
 import { globalColors } from "tailwind.config";
-import { sendEmail } from "./email";
+import { sendEmail } from "../utils/email";
 
 export const sendVerificationRequest = async (params: { identifier: string, url: string; }) => {
   const { identifier: recipientEmailAddress, url } = params;
