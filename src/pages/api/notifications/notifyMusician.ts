@@ -1,4 +1,4 @@
-import { type EmailDetails, sendEmail } from '~/server/email';
+import { type EmailDetails, sendEmail } from '~/utils/email';
 import type { RaJob } from '../RaHandlers/jobHandler';
 import { prisma } from '~/server/db';
 import { logger } from '~/utils/Logging';
