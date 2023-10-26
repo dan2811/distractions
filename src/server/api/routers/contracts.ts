@@ -14,5 +14,18 @@ export const contractRouter = createTRPCRouter({
                 id: input.id,
             }
         });
+    }),
+    signContract: protectedProcedure.input(z.object({
+        id: z.string(),
+        signatureUrl: z.string(),
+    })).mutation(({ input: { id, signatureUrl } }) => {
+        return prisma.contract.update({
+            where: {
+                id,
+            },
+            data: {
+                signatureUrl,
+            }
+        });
     })
 });
