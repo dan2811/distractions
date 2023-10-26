@@ -16,6 +16,12 @@ export const sendEmail = async (emailDetails: EmailDetails) => {
         throw new Error("SENDGRID_API_KEY not set");
     }
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+    if (process.env.NODE_ENV === "development") {
+        console.log("Not sending email in development mode, would've sent this: ", emailDetails);
+        return;
+    }
+
     try {
         const result = await sgMail.send(emailDetails);
         logger.info("EMAIL_SENT", { emailDetails, sendGridResponse: result });
