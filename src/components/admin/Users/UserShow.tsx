@@ -35,7 +35,7 @@ export const UserShow = () => {
 const Instruments = () => {
   const user = useRecordContext<RaUser>();
   if (user.role === "client") return null;
-  if (!user.instruments.length)
+  if (!user?.instruments?.length)
     return (
       <Labeled label="Instruments">
         <Typography variant="body2">No instruments</Typography>

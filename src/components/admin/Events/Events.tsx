@@ -50,6 +50,7 @@ import { InvoiceButton } from "./Invoices";
 import type { RaEvent } from "~/pages/api/RaHandlers/eventHandler";
 import type { EventType } from "@prisma/client";
 import type { RaJob } from "~/pages/api/RaHandlers/jobHandler";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Card,
   CardContent,
@@ -165,8 +166,9 @@ export const EventShow = () => {
 
 const DetailsTab = () => {
   const notify = useNotify();
-  const record = useRecordContext();
+  const record = useRecordContext<RaEvent>();
   const refresh = useRefresh();
+  const [showUploadField, setShowUploadField] = useState(false);
   return (
     <ShowBase resource="event">
       <Grid container spacing={4}>
@@ -207,22 +209,51 @@ const DetailsTab = () => {
                 <DateField source="updatedAt" label="Last updated" showTime />
               </SimpleShowLayout>
             </ReferenceOneField>
-            <Typography variant="body1" className="text-red-700">
-              Uploading a contract will automatically email the client to ask
-              them to sign.
-            </Typography>
-            <UploadDropzone
-              endpoint="contractUploader"
-              input={{ eventId: record.id.toString() }}
-              onClientUploadComplete={() => {
-                notify("Upload Completed", { type: "success" });
-                refresh();
-              }}
-              onUploadError={(error: Error) =>
-                notify(`ERROR! ${error.message}`, { type: "error" })
-              }
-              content={{ label: "Upload contract" }}
-            />
+            {showUploadField ? (
+              <>
+                <span className="flex justify-between">
+                  <span>
+                    <Typography variant="body1" className="text-red-700">
+                      Uploading a contract will automatically email the client
+                      to ask them to sign.
+                    </Typography>
+                    <Typography variant="caption" className="text-red-700">
+                      Use a sensible file name as the client will download this
+                      file.
+                    </Typography>
+                  </span>
+                  <Button onClick={() => setShowUploadField(false)}>
+                    <CloseIcon />
+                  </Button>
+                </span>
+                <UploadDropzone
+                  endpoint="contractUploader"
+                  input={{
+                    eventId: record.id.toString(),
+                    clientId: record.ownerId.toString(),
+                  }}
+                  onClientUploadComplete={() => {
+                    notify("Upload Completed", { type: "success" });
+                    refresh();
+                  }}
+                  onUploadError={(error: Error) =>
+                    notify(`ERROR! ${error.message}`, { type: "error" })
+                  }
+                  content={{
+                    label: "Upload contract",
+                  }}
+                />
+              </>
+            ) : (
+              <Button
+                variant="contained"
+                onClick={() => setShowUploadField(true)}
+              >
+                <Typography style={{ fontSize: 15 }}>
+                  Upload new contract
+                </Typography>
+              </Button>
+            )}
           </SimpleShowLayout>
         </Grid>
         <Grid item xs={12}>

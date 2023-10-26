@@ -1,4 +1,4 @@
-import type { Job, Prisma, Event, Package, Equipment } from "@prisma/client";
+import type { Job, Prisma, Event, Package, Equipment, Contract } from "@prisma/client";
 import type { NextApiResponse } from "next";
 import { type RaPayload, defaultHandler, createHandler, getListHandler, getManyHandler, getOneHandler, updateHandler } from "ra-data-simple-prisma";
 import { createDraftDepositInvoice, createDraftFinalInvoice } from "~/server/api/routers/paypal/helper";
@@ -8,12 +8,14 @@ interface AugmentedEvent extends Event {
     packages: Package[];
     Equipment: Equipment[];
     jobs: Job[];
+    contract: Contract;
 }
 
 export interface RaEvent extends Event {
     packages: string[];
     Equipment: string[];
     jobs: string[];
+    contract: string;
 }
 
 export const eventHandler = async (req: { body: RaPayload; }, res: NextApiResponse) => {
@@ -70,6 +72,7 @@ export const eventHandler = async (req: { body: RaPayload; }, res: NextApiRespon
                     include: {
                         packages: true,
                         jobs: true,
+                        contract: true
                     },
                 },
             );
@@ -77,7 +80,8 @@ export const eventHandler = async (req: { body: RaPayload; }, res: NextApiRespon
                 ...response.data,
                 packages: response.data?.packages?.map((pack: Package) => pack.id),
                 jobs: response.data?.jobs?.map((job: Job) => job.id),
-                Equipment: response.data?.Equipment?.map((equip: Equipment) => equip.id)
+                Equipment: response.data?.Equipment?.map((equip: Equipment) => equip.id),
+                contract: response.data?.contract?.id
             };
             return { data: event };
         case "update":
