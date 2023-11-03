@@ -1,4 +1,5 @@
 import type { Instrument, Job, Prisma, User } from "@prisma/client";
+import { NextResponse } from "next/server";
 import { type RaPayload, defaultHandler, createHandler, getListHandler, getManyHandler, getOneHandler, updateHandler } from "ra-data-simple-prisma";
 import { prisma } from "~/server/db";
 
@@ -12,7 +13,7 @@ export interface RaUser extends User {
     jobs: string[];
 }
 
-export const userHandler = async (req: { body: RaPayload; }) => {
+export const userHandler = async (req: { body: RaPayload; }, _: NextResponse) => {
     switch (req.body.method) {
         case "create":
             return await createHandler<Prisma.UserCreateArgs>(req.body, prisma.user, {

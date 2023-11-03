@@ -1,4 +1,5 @@
 import type { Job, Prisma, Event, Package, Equipment, Contract } from "@prisma/client";
+import { NextResponse } from "next/server";
 import { type RaPayload, defaultHandler, createHandler, getListHandler, getManyHandler, getOneHandler, updateHandler } from "ra-data-simple-prisma";
 import { createDraftDepositInvoice, createDraftFinalInvoice } from "~/server/api/routers/paypal/helper";
 import { prisma } from "~/server/db";
@@ -18,7 +19,7 @@ export interface RaEvent extends Event {
     contract: string;
 }
 
-export const eventHandler = async (req: { body: RaPayload; }) => {
+export const eventHandler = async (req: { body: RaPayload; }, _: NextResponse) => {
     switch (req.body.method) {
         case "create":
             const newEvent: {

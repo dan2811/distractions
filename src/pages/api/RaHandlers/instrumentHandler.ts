@@ -1,4 +1,5 @@
 import type { Job, Prisma, Instrument, User } from "@prisma/client";
+import { NextResponse } from "next/server";
 import { type RaPayload, defaultHandler, getListHandler, getManyHandler, getOneHandler } from "ra-data-simple-prisma";
 import { prisma } from "~/server/db";
 
@@ -12,7 +13,7 @@ export interface RaInstrument extends Instrument {
     jobs: string[];
 }
 
-export const instrumentHandler = async (req: { body: RaPayload; }) => {
+export const instrumentHandler = async (req: { body: RaPayload; }, _: NextResponse) => {
     switch (req.body.method) {
         case "getList":
             return await getListHandler<Prisma.InstrumentFindManyArgs>(req.body, prisma.instrument, {
