@@ -3,7 +3,6 @@ import {
   Create,
   Datagrid,
   Edit,
-  Link,
   List,
   ReferenceField,
   ReferenceManyField,

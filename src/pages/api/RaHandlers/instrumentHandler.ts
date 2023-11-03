@@ -1,5 +1,4 @@
 import type { Job, Prisma, Instrument, User } from "@prisma/client";
-import type { NextApiResponse } from "next";
 import { type RaPayload, defaultHandler, getListHandler, getManyHandler, getOneHandler } from "ra-data-simple-prisma";
 import { prisma } from "~/server/db";
 
