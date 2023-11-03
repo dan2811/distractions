@@ -3,7 +3,7 @@ import { type RaPayload, defaultHandler, createHandler, getListHandler, getManyH
 import { prisma } from "~/server/db";
 import NotifyMusician from "../notifications/notifyMusician";
 import { logger } from "~/utils/Logging";
-import { NextResponse } from "next/server";
+import type { NextApiResponse } from "next";
 
 export interface AugmentedJob extends Job {
     Instruments: Instrument[];
@@ -13,7 +13,7 @@ export interface RaJob extends Job {
     Instruments: string[];
 }
 
-export const jobHandler = async (req: { body: RaPayload; }, _: NextResponse) => {
+export const jobHandler = async (req: { body: RaPayload; }, _: NextApiResponse) => {
     switch (req.body.method) {
         case "create":
             const newJob = await createHandler<Prisma.JobCreateArgs>(req.body, prisma.job, {

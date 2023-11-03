@@ -1,5 +1,5 @@
 import type { Prisma, Package, Event } from "@prisma/client";
-import { NextResponse } from "next/server";
+import type { NextApiResponse } from "next";
 import { type RaPayload, defaultHandler, createHandler, getListHandler, getManyHandler, getOneHandler } from "ra-data-simple-prisma";
 import { prisma } from "~/server/db";
 
@@ -11,7 +11,7 @@ export interface RaPackage extends Package {
     events: string[];
 }
 
-export const packageHandler = async (req: { body: RaPayload; }, _: NextResponse) => {
+export const packageHandler = async (req: { body: RaPayload; }, _: NextApiResponse) => {
     switch (req.body.method) {
         case "create":
             return await createHandler<Prisma.PackageCreateArgs>(req.body, prisma.package);
