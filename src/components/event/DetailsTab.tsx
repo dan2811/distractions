@@ -7,9 +7,10 @@ import React, {
   useEffect,
 } from "react";
 import { toast } from "react-hot-toast";
-import { Loading } from "~/components/Loading";
+import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { type RouterInputs, api } from "~/utils/api";
-import { Heading } from "../Layout/Heading";
+import Image from "next/image";
+import Showband from "public/assets/images/showband.webp";
 
 export const DetailsTab = () => {
   const router = useRouter();
@@ -41,7 +42,7 @@ export const DetailsTab = () => {
 
   if (!id) return 404;
 
-  if (!data || isLoading) return <Loading />;
+  if (!data || isLoading) return <LoadingSpinner />;
 
   const tooLateToEdit: boolean =
     Date.parse(data.date.toISOString()) <
@@ -85,9 +86,14 @@ export const DetailsTab = () => {
 
   return (
     <>
-      <Heading>
-        <h2>Details</h2>
-      </Heading>
+      <Image
+        src={Showband}
+        alt="showband"
+        className="max-h-60 w-full object-cover object-bottom"
+      />
+      <h1 className="text-center text-xl font-light">
+        {data.name ?? "Your event"}
+      </h1>
       <form className="flex flex-col gap-2 py-2 pl-2" onSubmit={handleSubmit}>
         <Attribute
           fieldName="name"
@@ -103,7 +109,7 @@ export const DetailsTab = () => {
           inputType="date"
           formValues={formValues}
           setFormValues={setFormValues}
-          editMode={editMode}
+          editMode={false}
         />
         <div className="grid grid-cols-6 p-2">
           <label htmlFor="location" className="col-span-2 self-start">
@@ -203,7 +209,7 @@ const Attribute = ({
           setFormValues({ ...formValues, [fieldName]: e.target.value })
         }
         pattern={validationPattern}
-        className="col-span-4 w-full p-1 disabled:bg-main-dark"
+        className="col-span-4 w-full bg-main-input p-2 disabled:bg-main-dark"
         disabled={!editMode}
       />
     </div>

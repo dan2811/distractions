@@ -45,6 +45,8 @@ model PaypalAccessToken {
     expires_in Int
     nonce String
     createdAt DateTime @default(now())
+    /// Final balance or deposit
+    account String
 }
 
 model User {
@@ -134,6 +136,7 @@ model Contract {
 model GeneralDocuments {
     id           String         @id @default(cuid())
     name         String             @unique
+    description  String?
     url          String
     createdAt    DateTime           @default(now())
     updatedAt    DateTime           @updatedAt
