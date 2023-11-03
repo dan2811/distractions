@@ -1,8 +1,8 @@
 import type { Job, Prisma, Event, Package, Equipment, Contract } from "@prisma/client";
-import type { NextApiResponse } from "next";
 import { type RaPayload, defaultHandler, createHandler, getListHandler, getManyHandler, getOneHandler, updateHandler } from "ra-data-simple-prisma";
 import { createDraftDepositInvoice, createDraftFinalInvoice } from "~/server/api/routers/paypal/helper";
 import { prisma } from "~/server/db";
+import { logger } from "~/utils/Logging";
 
 interface AugmentedEvent extends Event {
     packages: Package[];
@@ -18,7 +18,7 @@ export interface RaEvent extends Event {
     contract: string;
 }
 
-export const eventHandler = async (req: { body: RaPayload; }, res: NextApiResponse) => {
+export const eventHandler = async (req: { body: RaPayload; }) => {
     switch (req.body.method) {
         case "create":
             const newEvent: {
@@ -113,7 +113,8 @@ export const eventHandler = async (req: { body: RaPayload; }, res: NextApiRespon
                 console.log("UPDATE RES: ", res);
                 return res;
             } catch (e) {
-                throw new Error(`Error updating event: ${e}`);
+                logger.error(`Error updating event: `, e as Record<string, unknown>);
+                throw new Error(`Error updating event`);
             }
         default:
             console.log("USING DEFAULT RA HANDLER");

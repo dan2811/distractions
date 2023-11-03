@@ -13,7 +13,7 @@ export interface RaInstrument extends Instrument {
     jobs: string[];
 }
 
-export const instrumentHandler = async (req: { body: RaPayload; }, res: NextApiResponse) => {
+export const instrumentHandler = async (req: { body: RaPayload; }) => {
     switch (req.body.method) {
         case "getList":
             return await getListHandler<Prisma.InstrumentFindManyArgs>(req.body, prisma.instrument, {

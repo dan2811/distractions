@@ -13,7 +13,7 @@ export interface RaJob extends Job {
     Instruments: string[];
 }
 
-export const jobHandler = async (req: { body: RaPayload; }, res: NextApiResponse) => {
+export const jobHandler = async (req: { body: RaPayload; }) => {
     switch (req.body.method) {
         case "create":
             const newJob = await createHandler<Prisma.JobCreateArgs>(req.body, prisma.job, {
