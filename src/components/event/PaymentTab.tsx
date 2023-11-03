@@ -1,6 +1,5 @@
 import { type Event } from "@prisma/client";
 import React from "react";
-import Showband from "public/assets/images/showband.webp";
 import Image from "next/image";
 
 interface PaymentTabProps {
@@ -13,7 +12,7 @@ const PaymentTab = ({ event }: PaymentTabProps) => {
     <div className="flex flex-col gap-8">
       <article>
         <Image
-          src={Showband}
+          src="public/assets/images/showband.webp"
           alt="showband"
           className="max-h-60 w-full object-cover object-bottom"
         />
