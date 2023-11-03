@@ -5,18 +5,24 @@ import { useRef, useState, type LegacyRef } from "react";
 import toast from "react-hot-toast";
 import SignatureCanvas from "react-signature-canvas";
 import type ReactSignatureCanvas from "react-signature-canvas";
-import { Loading } from "../Loading";
+import { LoadingSpinner } from "../LoadingSpinner";
 import Image from "next/image";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import SaveIcon from "@mui/icons-material/Save";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export const DocumentsTab = ({
   event,
 }: {
   event: Prisma.EventGetPayload<{ include: { contract: true } }>;
 }) => {
-  const { data: contract, isLoading: isContractLoading } =
-    api.contracts.getContract.useQuery({
-      id: event?.contract?.id ?? "",
-    });
+  const {
+    data: contract,
+    isLoading: isContractLoading,
+    refetch: refetchContract,
+  } = api.contracts.getContract.useQuery({
+    id: event?.contract?.id ?? "",
+  });
   const { mutateAsync: signContract, isLoading: signingContract } =
     api.contracts.signContract.useMutation();
   const sigCanvas = useRef<ReactSignatureCanvas>();
@@ -57,10 +63,11 @@ export const DocumentsTab = ({
         return;
       }
       await signContract({ signatureUrl, id: contract.id });
-      setSavingSignature(false);
       toast.success("Contract signed", {
         duration: 4000,
       });
+      await refetchContract();
+      setSavingSignature(false);
     } catch (e) {
       toast.error("Something went wrong, please try again later", {
         duration: 4000,
@@ -81,26 +88,27 @@ export const DocumentsTab = ({
       <div className="flex h-full flex-col">
         <h3>Your event contract</h3>
         {isContractLoading ? (
-          <Loading />
+          <LoadingSpinner />
         ) : (
           <a
             href={contract?.url}
             target="_blank"
             onClick={() => setViewed(true)}
           >
+            <AssignmentIcon />
             {contract?.name}
           </a>
         )}
       </div>
       {savingSignature ? (
-        <Loading />
+        <LoadingSpinner />
       ) : contract?.signatureUrl ? (
-        <div className="align w-1/2 self-center bg-white">
+        <div className="align w-fit self-center bg-white">
           <Image
-            src={contract?.signatureUrl as string}
+            src={contract.signatureUrl}
             alt="Your signature"
-            width={200}
-            height={1}
+            width={100}
+            height={100}
           />
         </div>
       ) : (
@@ -134,8 +142,10 @@ export const DocumentsTab = ({
           <button
             onClick={() => void handleSignContract()}
             disabled={signingContract}
+            className="grid grid-cols-2 gap-2"
           >
-            Save
+            <SaveIcon className="place-self-end self-center" />
+            <span className="place-self-start self-center">Save</span>
           </button>
           <button
             onClick={() => {
@@ -143,8 +153,10 @@ export const DocumentsTab = ({
                 sigCanvas.current.clear();
               }
             }}
+            className="grid grid-cols-2 gap-2"
           >
-            Reset
+            <DeleteIcon className="place-self-end self-center" />
+            <span className="place-self-start self-center">Reset</span>
           </button>
         </>
       )}
