@@ -4,3 +4,5 @@ export interface RequiredInstrumentsJSON {
     quantity: number;
     id: string;
 }
+
+export type PaypalAccountType = "deposit" | "final";

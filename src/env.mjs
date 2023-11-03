@@ -34,6 +34,8 @@ export const env = createEnv({
     DAYS_BEFORE_EVENT_FINAL_BALANCE_DUE: z.string(),
     UPLOADTHING_SECRET: z.string(),
     UPLOADTHING_APP_ID: z.string(),
+    PAYPAL_FINAL_BALANCE_CLIENT_ID: z.string(),
+    PAYPAL_FINAL_BALANCE_SECRET: z.string(),
   },
 
   /**
@@ -68,6 +70,8 @@ export const env = createEnv({
       process.env.DAYS_BEFORE_EVENT_FINAL_BALANCE_DUE,
     UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
     UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
+    PAYPAL_FINAL_BALANCE_CLIENT_ID: process.env.PAYPAL_FINAL_BALANCE_CLIENT_ID,
+    PAYPAL_FINAL_BALANCE_SECRET: process.env.PAYPAL_FINAL_BALANCE_SECRET,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
