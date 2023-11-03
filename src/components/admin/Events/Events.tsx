@@ -48,7 +48,7 @@ import {
 } from "react-admin";
 import { InvoiceButton } from "./Invoices";
 import type { RaEvent } from "~/pages/api/RaHandlers/eventHandler";
-import type { EventType } from "@prisma/client";
+import type { Contract, EventType } from "@prisma/client";
 import type { RaJob } from "~/pages/api/RaHandlers/jobHandler";
 import CloseIcon from "@mui/icons-material/Close";
 import {
@@ -66,6 +66,7 @@ import type { RaUser } from "~/pages/api/RaHandlers/userHandler";
 import { globalColors } from "tailwind.config";
 import { api } from "~/utils/api";
 import { UploadDropzone } from "~/utils/uploadthing";
+import Image from "next/image";
 
 export const EventFilterSideBar = () => {
   const { data, isLoading } = useGetList<EventType>("eventType");
@@ -207,15 +208,33 @@ const DetailsTab = () => {
                   }}
                 />
                 <DateField source="updatedAt" label="Last updated" showTime />
+                <FunctionField
+                  label="Client signature"
+                  render={(record: Contract) => {
+                    if (typeof record.signatureUrl === "string") {
+                      const sigUrl = record.signatureUrl;
+                      return (
+                        <Image
+                          src={sigUrl}
+                          width={100}
+                          height={100}
+                          alt="client signature"
+                        />
+                      );
+                    } else {
+                      return <span>Not signed</span>;
+                    }
+                  }}
+                />
               </SimpleShowLayout>
             </ReferenceOneField>
             {showUploadField ? (
-              <>
+              <Card className="p-2">
                 <span className="flex justify-between">
                   <span>
                     <Typography variant="body1" className="text-red-700">
                       Uploading a contract will automatically email the client
-                      to ask them to sign.
+                      asking them to sign.
                     </Typography>
                     <Typography variant="caption" className="text-red-700">
                       Use a sensible file name as the client will download this
@@ -243,7 +262,7 @@ const DetailsTab = () => {
                     label: "Upload contract",
                   }}
                 />
-              </>
+              </Card>
             ) : (
               <Button
                 variant="contained"
@@ -495,7 +514,15 @@ export const EventCreate = () => {
 
 export const EventEdit = () => {
   return (
-    <Edit redirect="show">
+    <Edit
+      redirect="show"
+      transform={(data: { contract: { id: string } }) => {
+        return {
+          ...data,
+          contract: data.contract.id,
+        };
+      }}
+    >
       <SimpleForm>
         <Tooltip title="The client will see the name of this event.">
           <TextInput
