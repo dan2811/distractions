@@ -33,8 +33,7 @@ export const packageHandler = async (req: { body: RaPayload; }, res: NextApiResp
                     events: true
                 }
             });
-            res.json(getManyResult);
-            break;
+            return getManyResult;
         case "getOne":
             const response: { data: AugmentedPackage; } = await getOneHandler<Prisma.PackageFindUniqueArgs>(
                 req.body,

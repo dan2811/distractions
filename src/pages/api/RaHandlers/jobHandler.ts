@@ -57,8 +57,7 @@ export const jobHandler = async (req: { body: RaPayload; }, res: NextApiResponse
                 ...job,
                 Instruments: (job as AugmentedJob).Instruments?.map((instr: Instrument) => instr.id)
             }));
-            res.json({ data: mappedResult });
-            break;
+            return { data: mappedResult };
         case "getOne":
             const response: { data: AugmentedJob; } = await getOneHandler<Prisma.JobFindUniqueArgs>(
                 req.body,

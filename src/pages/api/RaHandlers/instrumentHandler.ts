@@ -36,8 +36,7 @@ export const instrumentHandler = async (req: { body: RaPayload; }, res: NextApiR
                     jobs: true,
                 }
             });
-            res.json(getManyResult);
-            break;
+            return getManyResult;
         case "getOne":
             const response: { data: AugmentedInstrument; } = await getOneHandler<Prisma.InstrumentFindUniqueArgs>(
                 req.body,
