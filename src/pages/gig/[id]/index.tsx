@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import toast, { CheckmarkIcon, ErrorIcon } from "react-hot-toast";
 import Layout from "~/components/Layout/Layout";
-import { Loading } from "~/components/Loading";
+import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { api } from "~/utils/api";
 
 const GigDetails = () => {
@@ -25,7 +25,7 @@ const GigDetails = () => {
     setState(parseInt(currentTab as string));
   }, [currentTab]);
 
-  if (isLoading) return <Loading />;
+  if (isLoading) return <LoadingSpinner />;
 
   if (!data) return <p>Gig not found</p>;
 
@@ -80,7 +80,7 @@ const DetailsTab = ({ event }: { event: Event }) => {
 
   if (isJobError || isEventError) return "Error loading data";
 
-  if (isEventLoading && !eventData) return <Loading />;
+  if (isEventLoading && !eventData) return <LoadingSpinner />;
 
   if (!eventData) router.back();
 
@@ -135,7 +135,7 @@ const DetailsTab = ({ event }: { event: Event }) => {
         </>
       )}
       {isJobLoading ? (
-        <Loading />
+        <LoadingSpinner />
       ) : !jobData?.notes ? null : (
         <>
           <h2 className="text-xl text-main-accent">Notes</h2>
@@ -186,7 +186,7 @@ const ClientInfo = ({ clientId }: { clientId: string }) => {
     <>
       <h2 className="text-xl text-main-accent">Client</h2>
       {isClientLoading ? (
-        <Loading />
+        <LoadingSpinner />
       ) : (
         <p className="text-lg">{clientData?.name}</p>
       )}

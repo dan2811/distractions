@@ -2,7 +2,7 @@ import { BottomNavigation, BottomNavigationAction } from "@mui/material";
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
 import Layout from "~/components/Layout/Layout";
-import { Loading } from "~/components/Loading";
+import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { DetailsTab } from "~/components/event/DetailsTab";
 import { DocumentsTab } from "~/components/event/DocumentsTab";
 import PaymentTab from "~/components/event/PaymentTab";
@@ -21,7 +21,7 @@ const EventDetails = () => {
     setState(parseInt(currentTab as string));
   }, [currentTab]);
 
-  if (isLoading) return <Loading />;
+  if (isLoading) return <LoadingSpinner />;
 
   if (!data) return <p>Event not found</p>;
 
