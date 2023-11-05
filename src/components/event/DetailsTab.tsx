@@ -10,6 +10,7 @@ import { toast } from "react-hot-toast";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { type RouterInputs, api } from "~/utils/api";
 import Image from "next/image";
+import Showband from "/public/assets/images/showband.webp";
 
 export const DetailsTab = () => {
   const router = useRouter();
@@ -86,8 +87,10 @@ export const DetailsTab = () => {
   return (
     <>
       <Image
-        src="/public/assets/images/showband.webp"
+        src={Showband}
         alt="showband"
+        // width={200}
+        // height={200}
         className="max-h-60 w-full object-cover object-bottom"
       />
       <h1 className="text-center text-xl font-light">

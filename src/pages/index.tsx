@@ -24,7 +24,7 @@ export default function Home() {
       <Layout>
         {!isUserAuthed && <AuthButton />}
         {isUserAuthed && (
-          <div className="h-screen w-full overflow-y-hidden bg-black bg-opacity-40 bg-[url('/assets/images/dwayne.png')] bg-cover bg-fixed bg-blend-darken">
+          <div className="h-screen w-full overflow-y-hidden bg-black bg-opacity-40 bg-[url('../../public/assets/images/dwayne.png')] bg-cover bg-fixed bg-blend-darken">
             <Bookings />
             {session.data.user.role !== "client" && <GigOffers />}
             {session.data.user.role !== "client" && <Gigs />}
