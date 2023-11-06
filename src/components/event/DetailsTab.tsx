@@ -89,8 +89,6 @@ export const DetailsTab = () => {
       <Image
         src={Showband}
         alt="showband"
-        // width={200}
-        // height={200}
         className="max-h-60 w-full object-cover object-bottom"
       />
       <h1 className="text-center text-xl font-light">
