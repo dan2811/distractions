@@ -9,6 +9,8 @@ import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { api } from "~/utils/api";
 import ErrorIcon from "@mui/icons-material/Error";
 import InfoIcon from "@mui/icons-material/Info";
+import Dwayne from "../../public/assets/images/Dwayne.png";
+import Image from "next/image";
 
 export default function Home() {
   const session = useSession();
@@ -24,11 +26,16 @@ export default function Home() {
       <Layout>
         {!isUserAuthed && <AuthButton />}
         {isUserAuthed && (
-          <div className="h-screen w-full overflow-y-hidden bg-black bg-opacity-40 bg-[url('../../public/assets/images/dwayne.png')] bg-cover bg-fixed bg-blend-darken">
+          <>
+            <Image
+              src={Dwayne}
+              alt="showband"
+              className="fixed -z-30 h-screen w-full overflow-y-hidden bg-black bg-opacity-40 bg-[url('../../public/assets/images/dwayne.png')] bg-cover bg-fixed bg-top bg-blend-darken"
+            />
             <Bookings />
             {session.data.user.role !== "client" && <GigOffers />}
             {session.data.user.role !== "client" && <Gigs />}
-          </div>
+          </>
         )}
       </Layout>
     </>
