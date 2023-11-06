@@ -27,10 +27,11 @@ export default function Home() {
         {!isUserAuthed && <AuthButton />}
         {isUserAuthed && (
           <>
+            <div className="fixed -z-40 h-screen w-screen bg-black bg-opacity-30 " />
             <Image
               src={Dwayne}
               alt="showband"
-              className="fixed -z-30 h-screen w-full overflow-y-hidden bg-black bg-opacity-40 bg-[url('../../public/assets/images/dwayne.png')] bg-cover bg-fixed bg-top bg-blend-darken"
+              className="fixed -z-50 bg-black bg-blend-darken "
             />
             <Bookings />
             {session.data.user.role !== "client" && <GigOffers />}
@@ -117,7 +118,7 @@ const Gigs = () => {
               appear here.
             </p>
           )}
-          <p className="font-body">
+          <p className="flex flex-col gap-4 p-4 font-body">
             {data?.map((job) => <GigListItem job={job} key={job.id} />)}
           </p>
         </>
@@ -141,7 +142,7 @@ const GigOffers = () => {
       {isLoading ? (
         <LoadingSpinner />
       ) : (
-        <p className="font-body">
+        <p className="flex flex-col gap-4 p-4 font-body">
           {!data?.length && (
             <p className="p-2 font-body">
               You currently have no gig offers. When you get an offer, it will
@@ -178,7 +179,6 @@ const GigListItem = ({ job }: { job: JobWithInstruments }) => {
           <ErrorIcon color="error" />
           <p> Something went wrong with this event</p>
         </div>
-        <hr />
       </>
     );
   if (!event) return <p>Event not found</p>;
@@ -187,7 +187,7 @@ const GigListItem = ({ job }: { job: JobWithInstruments }) => {
   return (
     <>
       <div
-        className="flex flex-col gap-2 py-2 pl-2"
+        className="flex h-1/2 w-full items-center justify-between gap-2 rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 text-center bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md"
         onClick={() => void push(`gig/${event.id}?tab=0`)}
       >
         <p>
@@ -200,7 +200,6 @@ const GigListItem = ({ job }: { job: JobWithInstruments }) => {
           <p>{instruments.map((instrument) => instrument.name).join(", ")}</p>
         )}
       </div>
-      <hr />
     </>
   );
 };
