@@ -1,15 +1,15 @@
-import { Heading } from "../Layout/Heading";
 import type { Prisma } from "@prisma/client";
 import { api } from "~/utils/api";
-import { useRef, useState, type LegacyRef } from "react";
+import { useRef, useState, type LegacyRef, type MutableRefObject } from "react";
 import toast from "react-hot-toast";
 import SignatureCanvas from "react-signature-canvas";
 import type ReactSignatureCanvas from "react-signature-canvas";
-import { LoadingSpinner } from "../LoadingSpinner";
 import Image from "next/image";
-import AssignmentIcon from "@mui/icons-material/Assignment";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Showband from "/public/assets/images/showband.webp";
+import { LoadingSpinner } from "../LoadingSpinner";
+import type { UseQueryResult } from "@tanstack/react-query";
 
 export const DocumentsTab = ({
   event,
@@ -23,9 +23,76 @@ export const DocumentsTab = ({
   } = api.contracts.getContract.useQuery({
     id: event?.contract?.id ?? "",
   });
+
+  return (
+    <div className="pb-12">
+      <Image
+        src={Showband}
+        alt="showband"
+        className="max-h-60 w-full object-cover object-bottom"
+      />
+      <h1 className="text-center text-xl font-light">
+        {event.name ?? "Your event"}
+      </h1>
+
+      {isContractLoading ? (
+        <LoadingSpinner />
+      ) : contract?.url ? (
+        <DocumentCard
+          id={contract.id}
+          description="This is the contract for your event, please read it carefully. Click the sign button and provide your signature to confirm your agreement."
+          name="Your Contract"
+          url={contract.url}
+          signable={true}
+          // TODO: Nasty typing!! Please fix me!!
+          refetch={refetchContract as RefetchType}
+        />
+      ) : (
+        <p className="text-center">
+          Your contract will appear here as soon as it is ready.
+        </p>
+      )}
+
+      <DocumentCard
+        id={"some-id"}
+        name="Some doc"
+        description="some desc about the document. It could be quite loong yanoe! Verry veyr longo bongo mongo jombo! Maybe even onto 3 lines! MaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybe"
+        signable={true}
+        url="lkjd"
+      />
+    </div>
+  );
+};
+
+type RefetchType = UseQueryResult<"contracts">["refetch"];
+
+interface DocumentCardProps {
+  id: string;
+  name: string;
+  description: string;
+  url?: string;
+  signable?: boolean;
+  refetch?: RefetchType;
+}
+
+const DocumentCard = ({
+  id,
+  name,
+  description,
+  url,
+  signable = false,
+  refetch,
+}: DocumentCardProps) => {
+  const [hasSigned, setHasSigned] = useState(false);
+  const [viewed, setViewed] = useState(false);
+  const [savingSignature, setSavingSignature] = useState(false);
+  const [signaturePadOpen, setSignaturePadOpen] = useState(false);
+
   const { mutateAsync: signContract, isLoading: signingContract } =
     api.contracts.signContract.useMutation();
+
   const sigCanvas = useRef<ReactSignatureCanvas>();
+
   const formatIntoPng = () => {
     if (sigCanvas?.current) {
       const dataURL = sigCanvas?.current.toDataURL();
@@ -33,9 +100,6 @@ export const DocumentsTab = ({
     }
     throw new Error("No signature canvas");
   };
-  const [viewed, setViewed] = useState(false);
-  const [savingSignature, setSavingSignature] = useState(false);
-  const [hasSigned, setHasSigned] = useState(false);
 
   const handleSignContract = async () => {
     if (!viewed) {
@@ -53,113 +117,119 @@ export const DocumentsTab = ({
     setSavingSignature(true);
     try {
       const signatureUrl = formatIntoPng();
-      if (!contract?.id) {
+      if (!id) {
         toast.error(
           "Something went wrong, please reload the page and try again",
           {
             duration: 4000,
           },
         );
+        setSavingSignature(false);
         return;
       }
-      await signContract({ signatureUrl, id: contract.id });
+      await signContract({ signatureUrl, id });
       toast.success("Contract signed", {
         duration: 4000,
       });
-      await refetchContract();
+
+      if (!refetch) {
+        toast.error("Something has gone wrong, please contact support");
+        setSavingSignature(false);
+        return;
+      }
+      await refetch();
       setSavingSignature(false);
     } catch (e) {
       toast.error("Something went wrong, please try again later", {
         duration: 4000,
       });
+      setSavingSignature(false);
     }
   };
+  if (!url) return null;
+  if (savingSignature) return <LoadingSpinner />;
+  return (
+    <div className="flex flex-col gap-6 p-4">
+      <span className="grid h-1/2 w-full grid-cols-2 items-center justify-between gap-2 rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 text-center bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+        <h2 className="col-span-2">{name ?? "Your Document"}</h2>
+        <p className="col-span-2 overflow-auto">{description}</p>
+        <a
+          href={url}
+          target="_blank"
+          className="col-span-1 min-w-full"
+          onClick={() => setViewed(true)}
+        >
+          <button className="w-full">VIEW</button>
+        </a>
+        {signable && (
+          <button
+            className="col-span-1"
+            onClick={() => setSignaturePadOpen(!signaturePadOpen)}
+          >
+            {signaturePadOpen ? "CANCEL" : "SIGN"}
+          </button>
+        )}
+        {signaturePadOpen && (
+          <SignaturePad
+            setHasSigned={setHasSigned}
+            handleSignContract={handleSignContract}
+            isSigningContract={signingContract}
+            sigCanvas={sigCanvas}
+          />
+        )}
+      </span>
+    </div>
+  );
+};
+
+interface SignaturePadProps {
+  setHasSigned: (input: boolean) => void;
+  handleSignContract: () => Promise<void>;
+  isSigningContract: boolean;
+  sigCanvas: MutableRefObject<SignatureCanvas | undefined>;
+}
+
+const SignaturePad = ({
+  setHasSigned,
+  handleSignContract,
+  isSigningContract,
+  sigCanvas,
+}: SignaturePadProps) => {
   return (
     <>
-      <Heading>
-        <h2>Documents</h2>
-      </Heading>
-
-      <span>
-        Here you can view, download and sign important documents that you may
-        need.
-      </span>
-
-      <div className="flex h-full flex-col">
-        <h3>Your event contract</h3>
-        {isContractLoading ? (
-          <LoadingSpinner />
-        ) : (
-          <a
-            href={contract?.url}
-            target="_blank"
-            onClick={() => setViewed(true)}
-          >
-            <AssignmentIcon />
-            {contract?.name}
-          </a>
-        )}
-      </div>
-      {savingSignature ? (
-        <LoadingSpinner />
-      ) : contract?.signatureUrl ? (
-        <div className="align w-fit self-center bg-white">
-          <Image
-            src={contract.signatureUrl}
-            alt="Your signature"
-            width={100}
-            height={100}
-          />
-        </div>
-      ) : (
-        <>
-          <span>
-            After you have read your contract, sign in the white box below and
-            click save.
-          </span>
-          <div className="flex h-1/2 w-full justify-center">
-            <SignatureCanvas
-              ref={sigCanvas as LegacyRef<ReactSignatureCanvas> | undefined}
-              canvasProps={
-                {
-                  className: "sigCanvas",
-                  style: {
-                    backgroundColor: "#fff",
-                  },
-                  height: "full",
-                  width: "full",
-                } as React.CanvasHTMLAttributes<HTMLCanvasElement>
-              }
-              onBegin={() => setHasSigned(true)}
-            />
-          </div>
-        </>
-      )}
-      {contract?.signatureUrl ? (
-        <span>Contract signed</span>
-      ) : (
-        <>
-          <button
-            onClick={() => void handleSignContract()}
-            disabled={signingContract}
-            className="grid grid-cols-2 gap-2"
-          >
-            <SaveIcon className="place-self-end self-center" />
-            <span className="place-self-start self-center">Save</span>
-          </button>
-          <button
-            onClick={() => {
-              if (sigCanvas.current) {
-                sigCanvas.current.clear();
-              }
-            }}
-            className="grid grid-cols-2 gap-2"
-          >
-            <DeleteIcon className="place-self-end self-center" />
-            <span className="place-self-start self-center">Reset</span>
-          </button>
-        </>
-      )}
+      <button
+        onClick={() => {
+          if (sigCanvas.current) {
+            sigCanvas.current.clear();
+          }
+        }}
+        className="flex justify-center gap-2"
+      >
+        <DeleteIcon />
+        <span>RESET</span>
+      </button>
+      <button
+        onClick={() => void handleSignContract()}
+        disabled={isSigningContract}
+        className="flex justify-center gap-2"
+      >
+        <SaveIcon />
+        <span>SAVE</span>
+      </button>
+      <SignatureCanvas
+        ref={sigCanvas as LegacyRef<ReactSignatureCanvas> | undefined}
+        canvasProps={
+          {
+            className: "sigCanvas",
+            style: {
+              backgroundColor: "#fff",
+            },
+            height: "full",
+            width: "full",
+          } as React.CanvasHTMLAttributes<HTMLCanvasElement>
+        }
+        onBegin={() => setHasSigned(true)}
+      />
     </>
   );
 };
