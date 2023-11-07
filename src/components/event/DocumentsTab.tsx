@@ -24,6 +24,9 @@ export const DocumentsTab = ({
     id: event?.contract?.id ?? "",
   });
 
+  const { data: generalDocuments, isLoading: isGeneralDocumentsLoading } =
+    api.generalDocuments.getGeneralDocuments.useQuery();
+
   return (
     <div className="pb-12">
       <Image
@@ -52,14 +55,15 @@ export const DocumentsTab = ({
           Your contract will appear here as soon as it is ready.
         </p>
       )}
-
-      <DocumentCard
-        id={"some-id"}
-        name="Some doc"
-        description="some desc about the document. It could be quite loong yanoe! Verry veyr longo bongo mongo jombo! Maybe even onto 3 lines! MaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybeMaybe"
-        signable={true}
-        url="lkjd"
-      />
+      {generalDocuments?.map((document) => (
+        <DocumentCard
+          key={document.id}
+          id={document.id}
+          name={document.name}
+          description={document.description}
+          url={document.url}
+        />
+      ))}
     </div>
   );
 };
@@ -156,7 +160,7 @@ const DocumentCard = ({
         <a
           href={url}
           target="_blank"
-          className="col-span-1 min-w-full"
+          className={`col-span-${signable ? "1" : "2"} min-w-full`}
           onClick={() => setViewed(true)}
         >
           <button className="w-full">VIEW</button>
