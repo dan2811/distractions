@@ -40,6 +40,10 @@ const EventDetails = () => {
         onChange={(event, newValue: number) => {
           void router.push(`/event/${id as string}?tab=${newValue}`);
         }}
+        sx={{
+          borderTop: "0.5px solid rgba(168, 160, 124, 0.5)",
+          boxShadow: "0px -5px 10px 0px rgba(0,0,0,0.75)",
+        }}
         className="fixed bottom-0 w-full"
       >
         <BottomNavigationAction label="Details" />
