@@ -11,6 +11,7 @@ import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { type RouterInputs, api } from "~/utils/api";
 import Image from "next/image";
 import Showband from "/public/assets/images/showband.webp";
+import { Chip } from "@mui/material";
 
 export const DetailsTab = () => {
   const router = useRouter();
@@ -94,85 +95,39 @@ export const DetailsTab = () => {
       <h1 className="text-center text-xl font-light">
         {data.name ?? "Your event"}
       </h1>
-      <form className="flex flex-col gap-2 py-2 pl-2" onSubmit={handleSubmit}>
-        <Attribute
-          fieldName="name"
-          label="Event Name"
-          inputType="text"
-          formValues={formValues}
-          setFormValues={setFormValues}
-          editMode={editMode}
-        />
-        <Attribute
-          fieldName="date"
-          label="Date"
-          inputType="date"
-          formValues={formValues}
-          setFormValues={setFormValues}
-          editMode={false}
-        />
-        <div className="grid grid-cols-6 p-2">
-          <label htmlFor="location" className="col-span-2 self-start">
-            Location:
-          </label>
-          <textarea
-            id="location"
-            value={formValues.location}
-            onChange={(e) =>
-              setFormValues({ ...formValues, location: e.target.value })
-            }
-            className="col-span-4 w-full resize-none p-1 disabled:bg-main-dark"
-            disabled={!editMode}
-          />
-        </div>
-        <ul className="flex w-full flex-col pl-2">
-          <p>Packages:</p>
-
-          {data.packages.map((pkg) => (
-            <li key={pkg.id} className="w-2/5 text-right">
-              - {pkg.name}
-            </li>
-          ))}
-        </ul>
-        <span className="flex justify-center gap-3">
-          {!editMode ? (
-            <button
-              type={"button"}
-              disabled={isMutationLoading}
-              className="w-1/3 self-center bg-main-accent disabled:opacity-40"
-              onClick={(e) => {
-                e.preventDefault();
-                if (tooLateToEdit) {
-                  toast.error("Too late to edit event details", {
-                    duration: 5000,
-                  });
-                } else {
-                  setEditMode(true);
-                }
-              }}
-            >
-              {"Edit Details"}
-            </button>
-          ) : (
-            <button
-              type="submit"
-              disabled={isMutationLoading}
-              className="w-1/3 self-center bg-main-accent disabled:opacity-40"
-            >
-              {"Save"}
-            </button>
-          )}
-          {editMode && (
-            <button
-              type="button"
-              onClick={() => setEditMode(false)}
-              className="w-1/3 self-center bg-main-accent disabled:opacity-40"
-            >
-              Cancel
-            </button>
-          )}
+      <div className="flex flex-col gap-6 p-4">
+        <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+          <div>
+            <h2>Date</h2>
+            <p>{new Date(data.date).toLocaleDateString()}</p>
+          </div>
         </span>
-      </form>
+        <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+          <div>
+            <h2>Location</h2>
+            <p>{data.location}</p>
+          </div>
+          <button className="flex w-1/2 justify-center place-self-end self-center">
+            EDIT
+          </button>
+        </span>
+        <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+          <div className="col-span-2 flex flex-col gap-2">
+            <h2>Packages</h2>
+            <div className="col-span-2 flex w-full flex-wrap gap-2">
+              {data.packages.map((pkg) => {
+                return (
+                  <Chip
+                    key={pkg.id}
+                    label={pkg.name}
+                    className="bg-main-accent bg-opacity-50 text-white"
+                  />
+                );
+              })}
+            </div>
+          </div>
+        </span>
+      </div>
     </>
   );
 };
@@ -198,9 +153,11 @@ const Attribute = ({
 }: AttributeProps<RouterInputs["events"]["updateEvent"]>) => {
   return (
     <div className="grid grid-cols-6 p-2">
-      <label htmlFor={fieldName} className="col-span-2 self-start">
-        {label}:
-      </label>
+      {editMode && (
+        <label htmlFor={fieldName} className="col-span-2 self-start">
+          {label}:
+        </label>
+      )}
       <input
         type={inputType}
         id={fieldName}
@@ -209,7 +166,7 @@ const Attribute = ({
           setFormValues({ ...formValues, [fieldName]: e.target.value })
         }
         pattern={validationPattern}
-        className="col-span-4 w-full bg-main-input p-2 disabled:bg-main-dark"
+        className="col-span-4 w-full bg-main-input p-2 disabled:bg-opacity-0"
         disabled={!editMode}
       />
     </div>
