@@ -120,7 +120,10 @@ export const DetailsTab = () => {
                   <Chip
                     key={pkg.id}
                     label={pkg.name}
-                    className="bg-main-accent bg-opacity-50 text-white"
+                    sx={{
+                      backgroundColor: "rgba(168, 160, 124, 0.5)",
+                      color: "white",
+                    }}
                   />
                 );
               })}
