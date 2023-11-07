@@ -3,6 +3,7 @@ import { getServerAuthSession } from "./auth";
 import { prisma } from "./db";
 import { z } from "zod";
 import { type EmailDetails, sendEmail } from "~/utils/email";
+import { logger } from "~/utils/Logging";
 
 const f = createUploadthing();
 // FileRouter for your app, can contain multiple FileRoutes
@@ -62,6 +63,17 @@ export const ourFileRouter = {
             } catch (e) {
                 console.error("Error notifying client of new contract: ", e);
             }
+        }),
+    generalDocumentUploader: f({ pdf: { maxFileSize: "16MB" } })
+        .middleware(async ({ req, res }) => {
+            //only allow admins to upload contracts
+            const session = await getServerAuthSession({ req, res });
+            const isAdmin = session?.user.role === "admin" || session?.user.role === "superAdmin";
+            if (!isAdmin) throw new Error("Unauthorized");
+            return { user: session?.user };
+        })
+        .onUploadComplete(({ file, metadata }) => {
+            logger.info("General document uploaded", { file, metadata });
         }),
 } satisfies FileRouter;
 
