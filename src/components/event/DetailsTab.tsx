@@ -9,8 +9,6 @@ import React, {
 import { toast } from "react-hot-toast";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { type RouterInputs, api } from "~/utils/api";
-import Image from "next/image";
-import Showband from "/public/assets/images/showband.webp";
 import { Chip } from "@mui/material";
 
 export const DetailsTab = () => {
@@ -86,52 +84,42 @@ export const DetailsTab = () => {
   };
 
   return (
-    <>
-      <Image
-        src={Showband}
-        alt="showband"
-        className="max-h-60 w-full object-cover object-bottom"
-      />
-      <h1 className="text-center text-xl font-light">
-        {data.name ?? "Your event"}
-      </h1>
-      <div className="flex flex-col gap-6 p-4">
-        <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
-          <div>
-            <h2>Date</h2>
-            <p>{new Date(data.date).toLocaleDateString()}</p>
+    <div className="flex flex-col gap-6 p-4">
+      <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+        <div>
+          <h2>Date</h2>
+          <p>{new Date(data.date).toLocaleDateString()}</p>
+        </div>
+      </span>
+      <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+        <div>
+          <h2>Location</h2>
+          <p>{data.location}</p>
+        </div>
+        <button className="flex w-1/2 justify-center place-self-end self-center">
+          EDIT
+        </button>
+      </span>
+      <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+        <div className="col-span-2 flex flex-col gap-2">
+          <h2>Packages</h2>
+          <div className="col-span-2 flex w-full flex-wrap gap-2">
+            {data.packages.map((pkg) => {
+              return (
+                <Chip
+                  key={pkg.id}
+                  label={pkg.name}
+                  sx={{
+                    backgroundColor: "rgba(168, 160, 124, 0.5)",
+                    color: "white",
+                  }}
+                />
+              );
+            })}
           </div>
-        </span>
-        <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
-          <div>
-            <h2>Location</h2>
-            <p>{data.location}</p>
-          </div>
-          <button className="flex w-1/2 justify-center place-self-end self-center">
-            EDIT
-          </button>
-        </span>
-        <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
-          <div className="col-span-2 flex flex-col gap-2">
-            <h2>Packages</h2>
-            <div className="col-span-2 flex w-full flex-wrap gap-2">
-              {data.packages.map((pkg) => {
-                return (
-                  <Chip
-                    key={pkg.id}
-                    label={pkg.name}
-                    sx={{
-                      backgroundColor: "rgba(168, 160, 124, 0.5)",
-                      color: "white",
-                    }}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        </span>
-      </div>
-    </>
+        </div>
+      </span>
+    </div>
   );
 };
 

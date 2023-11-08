@@ -4,10 +4,8 @@ import { useRef, useState, type LegacyRef, type MutableRefObject } from "react";
 import toast from "react-hot-toast";
 import SignatureCanvas from "react-signature-canvas";
 import type ReactSignatureCanvas from "react-signature-canvas";
-import Image from "next/image";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Showband from "/public/assets/images/showband.webp";
 import { LoadingSpinner } from "../LoadingSpinner";
 import type { UseQueryResult } from "@tanstack/react-query";
 
@@ -28,16 +26,7 @@ export const DocumentsTab = ({
     api.generalDocuments.getGeneralDocuments.useQuery();
 
   return (
-    <div className="pb-12">
-      <Image
-        src={Showband}
-        alt="showband"
-        className="max-h-60 w-full object-cover object-bottom"
-      />
-      <h1 className="text-center text-xl font-light">
-        {event.name ?? "Your event"}
-      </h1>
-
+    <div>
       {isContractLoading ? (
         <LoadingSpinner />
       ) : contract?.url ? (
@@ -154,7 +143,7 @@ const DocumentCard = ({
   if (savingSignature) return <LoadingSpinner />;
   return (
     <div className="flex flex-col gap-6 p-4">
-      <span className="grid h-1/2 w-full grid-cols-2 items-center justify-between gap-2 rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 text-center bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+      <span className="grid w-full grid-cols-2 items-center justify-between gap-2 rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 text-center bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
         <h2 className="col-span-2">{name ?? "Your Document"}</h2>
         <p className="col-span-2 overflow-auto">{description}</p>
         <a

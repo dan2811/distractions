@@ -1,4 +1,6 @@
-import { BottomNavigation, BottomNavigationAction } from "@mui/material";
+import { BottomNavigation, BottomNavigationAction, Card } from "@mui/material";
+import Image from "next/image";
+import Showband from "/public/assets/images/showband.png";
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
 import Layout from "~/components/Layout/Layout";
@@ -15,10 +17,10 @@ const EventDetails = () => {
     id: id as string,
   });
 
-  const [state, setState] = useState(0);
+  const [tab, setTab] = useState(0);
 
   useEffect(() => {
-    setState(parseInt(currentTab as string));
+    setTab(parseInt(currentTab as string));
   }, [currentTab]);
 
   if (isLoading) return <LoadingSpinner />;
@@ -33,10 +35,12 @@ const EventDetails = () => {
 
   return (
     <Layout>
+      <EventHeader eventName={data.name} />
       {tabs[parseInt(currentTab as string)]}
+      <Card className="h-16 w-full" />
       <BottomNavigation
         showLabels
-        value={state}
+        value={tab}
         onChange={(event, newValue: number) => {
           void router.push(`/event/${id as string}?tab=${newValue}`);
         }}
@@ -44,13 +48,28 @@ const EventDetails = () => {
           borderTop: "0.5px solid rgba(168, 160, 124, 0.5)",
           boxShadow: "0px -5px 10px 0px rgba(0,0,0,0.75)",
         }}
-        className="fixed bottom-0 w-full"
+        className="fixed bottom-0 h-14 w-full"
       >
         <BottomNavigationAction label="Details" />
         <BottomNavigationAction label="Payments" />
         <BottomNavigationAction label="Documents" />
       </BottomNavigation>
     </Layout>
+  );
+};
+
+const EventHeader = ({ eventName }: { eventName?: string }) => {
+  return (
+    <>
+      <Image
+        src={Showband}
+        alt="showband"
+        className="w-full object-cover object-bottom"
+      />
+      <h1 className="text-center text-xl font-light">
+        {eventName ?? "Your event"}
+      </h1>
+    </>
   );
 };
 
