@@ -48,8 +48,8 @@ export const eventRouter = createTRPCRouter({
   }),
   updateEvent: protectedProcedure.input(z.object({
     eventId: z.string(),
-    name: z.string(),
-    date: z.string(),
+    name: z.string().optional(),
+    date: z.string().optional(),
     location: z.string().optional(),
   })).mutation(({ input }) => {
     const { eventId, ...data } = input;

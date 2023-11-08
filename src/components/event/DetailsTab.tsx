@@ -13,31 +13,17 @@ import { Chip } from "@mui/material";
 
 export const DetailsTab = () => {
   const router = useRouter();
-  const id = router.query.id;
-  const { data, isLoading } = api.events.getOne.useQuery({
-    id: id as string,
-  });
-  const [formValues, setFormValues] = useState<
-    RouterInputs["events"]["updateEvent"]
-  >({
-    eventId: id as string,
-    name: data?.name ?? "",
-    date: data?.date ? new Date(data.date).toLocaleDateString() : "",
+  const id = router.query.id as string;
+
+  const { data, isLoading, refetch } = api.events.getOne.useQuery({ id });
+  const [editMode, setEditMode] = useState(false);
+  const [formValues, setFormValues] = useState({
+    eventId: id,
     location: data?.location ?? "",
   });
-  const [editMode, setEditMode] = useState(false);
 
   const { isLoading: isMutationLoading, mutateAsync } =
     api.events.updateEvent.useMutation();
-
-  useEffect(() => {
-    setFormValues({
-      eventId: id as string,
-      name: data?.name ?? "",
-      date: new Date(data?.date ?? "").toISOString().split("T")[0] ?? "",
-      location: data?.location ?? "",
-    });
-  }, [data?.date, data?.location, data?.name, id]);
 
   if (!id) return 404;
 
@@ -50,37 +36,25 @@ export const DetailsTab = () => {
         parseInt(process.env.NUM_DAYS_BEFORE_EVENT_LOCK ?? "14"),
     );
 
-  console.log(
-    Date.parse(data.date.toISOString()),
-    new Date().setDate(
-      new Date().getDate() -
-        parseInt(process.env.NUM_DAYS_BEFORE_EVENT_LOCK ?? "14"),
-    ),
-  );
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (tooLateToEdit) {
       toast.error("Too late to edit event details", { duration: 5000 });
       return;
     }
-    void toast.promise(
-      mutateAsync({
-        ...formValues,
-        date: new Date(formValues.date).toISOString(),
-      }),
-      {
-        loading: "Saving...",
-        success: () => {
-          setEditMode(false);
-          return "Saved";
-        },
-        error: () => {
-          setEditMode(true);
-          return "Error when saving";
-        },
+    console.log(e);
+    void toast.promise(mutateAsync(formValues), {
+      loading: "Saving...",
+      success: () => {
+        void refetch();
+        setEditMode(false);
+        return "Saved";
       },
-    );
+      error: () => {
+        setEditMode(true);
+        return "Error when saving";
+      },
+    });
   };
 
   return (
@@ -91,15 +65,33 @@ export const DetailsTab = () => {
           <p>{new Date(data.date).toLocaleDateString()}</p>
         </div>
       </span>
-      <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
-        <div>
-          <h2>Location</h2>
-          <p>{data.location}</p>
-        </div>
-        <button className="flex w-1/2 justify-center place-self-end self-center">
-          EDIT
-        </button>
-      </span>
+      <form onSubmit={handleSubmit}>
+        <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+          <div>
+            <h2>Location</h2>
+            {editMode ? (
+              <textarea
+                defaultValue={data.location ?? ""}
+                className="h-3/4 w-full px-1"
+                value={formValues.location}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, location: e.target.value })
+                }
+              />
+            ) : (
+              <p className="px-1">{data.location}</p>
+            )}
+          </div>
+          {!tooLateToEdit && (
+            <div className="flex w-1/2 flex-col justify-between gap-4 place-self-end self-center">
+              <button type="button" onClick={() => setEditMode(!editMode)}>
+                {editMode ? "CANCEL" : "EDIT"}
+              </button>
+              {editMode && <button type="submit">SAVE</button>}
+            </div>
+          )}
+        </span>
+      </form>
       <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
         <div className="col-span-2 flex flex-col gap-2">
           <h2>Packages</h2>
