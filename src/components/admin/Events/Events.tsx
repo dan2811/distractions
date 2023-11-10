@@ -48,8 +48,9 @@ import {
 } from "react-admin";
 import { InvoiceButton } from "./Invoices";
 import type { RaEvent } from "~/pages/api/RaHandlers/eventHandler";
-import type { EventType } from "@prisma/client";
+import type { Contract, EventType } from "@prisma/client";
 import type { RaJob } from "~/pages/api/RaHandlers/jobHandler";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Card,
   CardContent,
@@ -65,6 +66,7 @@ import type { RaUser } from "~/pages/api/RaHandlers/userHandler";
 import { globalColors } from "tailwind.config";
 import { api } from "~/utils/api";
 import { UploadDropzone } from "~/utils/uploadthing";
+import Image from "next/image";
 
 export const EventFilterSideBar = () => {
   const { data, isLoading } = useGetList<EventType>("eventType");
@@ -165,8 +167,9 @@ export const EventShow = () => {
 
 const DetailsTab = () => {
   const notify = useNotify();
-  const record = useRecordContext();
+  const record = useRecordContext<RaEvent>();
   const refresh = useRefresh();
+  const [showUploadField, setShowUploadField] = useState(false);
   return (
     <ShowBase resource="event">
       <Grid container spacing={4}>
@@ -205,24 +208,71 @@ const DetailsTab = () => {
                   }}
                 />
                 <DateField source="updatedAt" label="Last updated" showTime />
+                <FunctionField
+                  label="Client signature"
+                  render={(record: Contract) => {
+                    if (typeof record.signatureUrl === "string") {
+                      const sigUrl = record.signatureUrl;
+                      return (
+                        <Image
+                          src={sigUrl}
+                          width={100}
+                          height={100}
+                          alt="client signature"
+                        />
+                      );
+                    } else {
+                      return <span>Not signed</span>;
+                    }
+                  }}
+                />
               </SimpleShowLayout>
             </ReferenceOneField>
-            <Typography variant="body1" className="text-red-700">
-              Uploading a contract will automatically email the client to ask
-              them to sign.
-            </Typography>
-            <UploadDropzone
-              endpoint="contractUploader"
-              input={{ eventId: record.id.toString() }}
-              onClientUploadComplete={() => {
-                notify("Upload Completed", { type: "success" });
-                refresh();
-              }}
-              onUploadError={(error: Error) =>
-                notify(`ERROR! ${error.message}`, { type: "error" })
-              }
-              content={{ label: "Upload contract" }}
-            />
+            {showUploadField ? (
+              <Card className="p-2">
+                <span className="flex justify-between">
+                  <span>
+                    <Typography variant="body1" className="text-red-700">
+                      Uploading a contract will automatically email the client
+                      asking them to sign.
+                    </Typography>
+                    <Typography variant="caption" className="text-red-700">
+                      Use a sensible file name as the client will download this
+                      file.
+                    </Typography>
+                  </span>
+                  <Button onClick={() => setShowUploadField(false)}>
+                    <CloseIcon />
+                  </Button>
+                </span>
+                <UploadDropzone
+                  endpoint="contractUploader"
+                  input={{
+                    eventId: record.id.toString(),
+                    clientId: record.ownerId.toString(),
+                  }}
+                  onClientUploadComplete={() => {
+                    notify("Upload Completed", { type: "success" });
+                    refresh();
+                  }}
+                  onUploadError={(error: Error) =>
+                    notify(`ERROR! ${error.message}`, { type: "error" })
+                  }
+                  content={{
+                    label: "Upload contract",
+                  }}
+                />
+              </Card>
+            ) : (
+              <Button
+                variant="contained"
+                onClick={() => setShowUploadField(true)}
+              >
+                <Typography style={{ fontSize: 15 }}>
+                  Upload new contract
+                </Typography>
+              </Button>
+            )}
           </SimpleShowLayout>
         </Grid>
         <Grid item xs={12}>
@@ -464,7 +514,15 @@ export const EventCreate = () => {
 
 export const EventEdit = () => {
   return (
-    <Edit redirect="show">
+    <Edit
+      redirect="show"
+      transform={(data: { contract: { id: string } }) => {
+        return {
+          ...data,
+          contract: data.contract.id,
+        };
+      }}
+    >
       <SimpleForm>
         <Tooltip title="The client will see the name of this event.">
           <TextInput

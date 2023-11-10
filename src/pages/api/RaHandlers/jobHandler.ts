@@ -1,9 +1,9 @@
 import type { Prisma, Job, Instrument } from "@prisma/client";
-import type { NextApiResponse } from "next";
 import { type RaPayload, defaultHandler, createHandler, getListHandler, getManyHandler, getOneHandler } from "ra-data-simple-prisma";
 import { prisma } from "~/server/db";
 import NotifyMusician from "../notifications/notifyMusician";
 import { logger } from "~/utils/Logging";
+import type { NextApiResponse } from "next";
 
 export interface AugmentedJob extends Job {
     Instruments: Instrument[];
@@ -13,7 +13,7 @@ export interface RaJob extends Job {
     Instruments: string[];
 }
 
-export const jobHandler = async (req: { body: RaPayload; }, res: NextApiResponse) => {
+export const jobHandler = async (req: { body: RaPayload; }, _: NextApiResponse) => {
     switch (req.body.method) {
         case "create":
             const newJob = await createHandler<Prisma.JobCreateArgs>(req.body, prisma.job, {
@@ -57,8 +57,7 @@ export const jobHandler = async (req: { body: RaPayload; }, res: NextApiResponse
                 ...job,
                 Instruments: (job as AugmentedJob).Instruments?.map((instr: Instrument) => instr.id)
             }));
-            res.json({ data: mappedResult });
-            break;
+            return { data: mappedResult };
         case "getOne":
             const response: { data: AugmentedJob; } = await getOneHandler<Prisma.JobFindUniqueArgs>(
                 req.body,

@@ -1,6 +1,5 @@
 import { type Event } from "@prisma/client";
 import React from "react";
-import { Heading } from "~/components/Layout/Heading";
 
 interface PaymentTabProps {
   event: Event;
@@ -9,34 +8,25 @@ interface PaymentTabProps {
 const PaymentTab = ({ event }: PaymentTabProps) => {
   const { clientDepositInvoiceUrl, clientFinalInvoiceUrl } = event;
   return (
-    <div className="flex flex-col gap-8">
-      <article>
-        <Heading>
-          <h2>Payments</h2>
-        </Heading>
-        {!clientDepositInvoiceUrl && !clientFinalInvoiceUrl && (
-          <section className="p-2">
-            Nothing to pay yet, we&apos;ll send you an invoice soon, your
-            invoices will also appear here once they have been sent.
-            <br />
-            <br />
-            Please make sure your email address is correct by clicking on the
-            profile icon at the top right.
-          </section>
+    <div className="flex flex-col gap-6 p-4">
+      <section className="grid w-full grid-cols-3 items-center justify-between gap-2 rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 text-center bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+        <h2>Deposit</h2>
+        <p>£{event.deposit}</p>
+        {clientDepositInvoiceUrl && (
+          <a href={clientDepositInvoiceUrl} target="_blank">
+            <button>Pay</button>
+          </a>
         )}
-        <div>
-          {clientDepositInvoiceUrl && (
-            <a href={clientDepositInvoiceUrl} target="_blank">
-              <button>Pay deposit</button>
-            </a>
-          )}
-          {clientFinalInvoiceUrl && (
-            <a href={clientFinalInvoiceUrl} target="_blank">
-              <button>Pay remaining balance</button>
-            </a>
-          )}
-        </div>
-      </article>
+      </section>
+      <section className="grid w-full grid-cols-3 items-center justify-between gap-2 rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 text-center bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+        <h2>Final balance</h2>
+        <p>£{event.price}</p>
+        {clientFinalInvoiceUrl && (
+          <a href={clientFinalInvoiceUrl} target="_blank">
+            <button>Pay</button>
+          </a>
+        )}
+      </section>
     </div>
   );
 };

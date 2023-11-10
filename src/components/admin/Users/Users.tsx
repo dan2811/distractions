@@ -68,7 +68,7 @@ export const UserEdit = () => {
             { id: "client", name: "Client" },
           ]}
         />
-        <ReferenceArrayInput source="instrument" reference="instrument" />
+        <ReferenceArrayInput source="instruments" reference="instrument" />
       </SimpleForm>
     </Edit>
   );

@@ -7,41 +7,27 @@ import React, {
   useEffect,
 } from "react";
 import { toast } from "react-hot-toast";
-import { Loading } from "~/components/Loading";
+import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { type RouterInputs, api } from "~/utils/api";
-import { Heading } from "../Layout/Heading";
+import { Chip } from "@mui/material";
 
 export const DetailsTab = () => {
   const router = useRouter();
-  const id = router.query.id;
-  const { data, isLoading } = api.events.getOne.useQuery({
-    id: id as string,
-  });
-  const [formValues, setFormValues] = useState<
-    RouterInputs["events"]["updateEvent"]
-  >({
-    eventId: id as string,
-    name: data?.name ?? "",
-    date: data?.date ? new Date(data.date).toLocaleDateString() : "",
+  const id = router.query.id as string;
+
+  const { data, isLoading, refetch } = api.events.getOne.useQuery({ id });
+  const [editMode, setEditMode] = useState(false);
+  const [formValues, setFormValues] = useState({
+    eventId: id,
     location: data?.location ?? "",
   });
-  const [editMode, setEditMode] = useState(false);
 
   const { isLoading: isMutationLoading, mutateAsync } =
     api.events.updateEvent.useMutation();
 
-  useEffect(() => {
-    setFormValues({
-      eventId: id as string,
-      name: data?.name ?? "",
-      date: new Date(data?.date ?? "").toISOString().split("T")[0] ?? "",
-      location: data?.location ?? "",
-    });
-  }, [data?.date, data?.location, data?.name, id]);
-
   if (!id) return 404;
 
-  if (!data || isLoading) return <Loading />;
+  if (!data || isLoading) return <LoadingSpinner />;
 
   const tooLateToEdit: boolean =
     Date.parse(data.date.toISOString()) <
@@ -50,124 +36,82 @@ export const DetailsTab = () => {
         parseInt(process.env.NUM_DAYS_BEFORE_EVENT_LOCK ?? "14"),
     );
 
-  console.log(
-    Date.parse(data.date.toISOString()),
-    new Date().setDate(
-      new Date().getDate() -
-        parseInt(process.env.NUM_DAYS_BEFORE_EVENT_LOCK ?? "14"),
-    ),
-  );
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (tooLateToEdit) {
       toast.error("Too late to edit event details", { duration: 5000 });
       return;
     }
-    void toast.promise(
-      mutateAsync({
-        ...formValues,
-        date: new Date(formValues.date).toISOString(),
-      }),
-      {
-        loading: "Saving...",
-        success: () => {
-          setEditMode(false);
-          return "Saved";
-        },
-        error: () => {
-          setEditMode(true);
-          return "Error when saving";
-        },
+    console.log(e);
+    void toast.promise(mutateAsync(formValues), {
+      loading: "Saving...",
+      success: () => {
+        void refetch();
+        setEditMode(false);
+        return "Saved";
       },
-    );
+      error: () => {
+        setEditMode(true);
+        return "Error when saving";
+      },
+    });
   };
 
   return (
-    <>
-      <Heading>
-        <h2>Details</h2>
-      </Heading>
-      <form className="flex flex-col gap-2 py-2 pl-2" onSubmit={handleSubmit}>
-        <Attribute
-          fieldName="name"
-          label="Event Name"
-          inputType="text"
-          formValues={formValues}
-          setFormValues={setFormValues}
-          editMode={editMode}
-        />
-        <Attribute
-          fieldName="date"
-          label="Date"
-          inputType="date"
-          formValues={formValues}
-          setFormValues={setFormValues}
-          editMode={editMode}
-        />
-        <div className="grid grid-cols-6 p-2">
-          <label htmlFor="location" className="col-span-2 self-start">
-            Location:
-          </label>
-          <textarea
-            id="location"
-            value={formValues.location}
-            onChange={(e) =>
-              setFormValues({ ...formValues, location: e.target.value })
-            }
-            className="col-span-4 w-full resize-none p-1 disabled:bg-main-dark"
-            disabled={!editMode}
-          />
+    <div className="flex flex-col gap-6 p-4">
+      <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+        <div>
+          <h2>Date</h2>
+          <p>{new Date(data.date).toLocaleDateString()}</p>
         </div>
-        <ul className="flex w-full flex-col pl-2">
-          <p>Packages:</p>
-
-          {data.packages.map((pkg) => (
-            <li key={pkg.id} className="w-2/5 text-right">
-              - {pkg.name}
-            </li>
-          ))}
-        </ul>
-        <span className="flex justify-center gap-3">
-          {!editMode ? (
-            <button
-              type={"button"}
-              disabled={isMutationLoading}
-              className="w-1/3 self-center bg-main-accent disabled:opacity-40"
-              onClick={(e) => {
-                e.preventDefault();
-                if (tooLateToEdit) {
-                  toast.error("Too late to edit event details", {
-                    duration: 5000,
-                  });
-                } else {
-                  setEditMode(true);
+      </span>
+      <form onSubmit={handleSubmit}>
+        <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+          <div>
+            <h2>Location</h2>
+            {editMode ? (
+              <textarea
+                defaultValue={data.location ?? ""}
+                className="h-3/4 w-full px-1"
+                value={formValues.location}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, location: e.target.value })
                 }
-              }}
-            >
-              {"Edit Details"}
-            </button>
-          ) : (
-            <button
-              type="submit"
-              disabled={isMutationLoading}
-              className="w-1/3 self-center bg-main-accent disabled:opacity-40"
-            >
-              {"Save"}
-            </button>
-          )}
-          {editMode && (
-            <button
-              type="button"
-              onClick={() => setEditMode(false)}
-              className="w-1/3 self-center bg-main-accent disabled:opacity-40"
-            >
-              Cancel
-            </button>
+              />
+            ) : (
+              <p className="px-1">{data.location}</p>
+            )}
+          </div>
+          {!tooLateToEdit && (
+            <div className="flex w-1/2 flex-col justify-between gap-4 place-self-end self-center">
+              <button type="button" onClick={() => setEditMode(!editMode)}>
+                {editMode ? "CANCEL" : "EDIT"}
+              </button>
+              {editMode && <button type="submit">SAVE</button>}
+            </div>
           )}
         </span>
       </form>
-    </>
+      <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+        <div className="col-span-2 flex flex-col gap-2">
+          <h2>Packages</h2>
+          <div className="col-span-2 flex w-full flex-wrap gap-2">
+            {data.packages.map((pkg) => {
+              return (
+                <Chip
+                  key={pkg.id}
+                  label={pkg.name}
+                  sx={{
+                    backgroundColor: "rgba(168, 160, 124, 0.5)",
+                    color: "white",
+                  }}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </span>
+    </div>
   );
 };
 
@@ -192,9 +136,11 @@ const Attribute = ({
 }: AttributeProps<RouterInputs["events"]["updateEvent"]>) => {
   return (
     <div className="grid grid-cols-6 p-2">
-      <label htmlFor={fieldName} className="col-span-2 self-start">
-        {label}:
-      </label>
+      {editMode && (
+        <label htmlFor={fieldName} className="col-span-2 self-start">
+          {label}:
+        </label>
+      )}
       <input
         type={inputType}
         id={fieldName}
@@ -203,7 +149,7 @@ const Attribute = ({
           setFormValues({ ...formValues, [fieldName]: e.target.value })
         }
         pattern={validationPattern}
-        className="col-span-4 w-full p-1 disabled:bg-main-dark"
+        className="col-span-4 w-full bg-main-input p-2 disabled:bg-opacity-0"
         disabled={!editMode}
       />
     </div>

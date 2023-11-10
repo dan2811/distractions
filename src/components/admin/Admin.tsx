@@ -9,6 +9,7 @@ import FestivalIcon from "@mui/icons-material/Festival";
 import PianoIcon from "@mui/icons-material/Piano";
 import StadiumIcon from "@mui/icons-material/Stadium";
 import AudioFileIcon from "@mui/icons-material/AudioFile";
+import ArticleIcon from "@mui/icons-material/Article";
 
 import { useSession } from "next-auth/react";
 import { EventCreate, EventEdit, EventList, EventShow } from "./Events/Events";
@@ -35,6 +36,11 @@ import {
 import Dashboard from "./Dashboard";
 import MyAppBar from "./AppBar";
 import JobCreate from "./Jobs/Create";
+import {
+  GeneralDocumentCreate,
+  GeneralDocumentList,
+  GeneralDocumentShow,
+} from "./GeneralDocuments/GeneralDocumentList";
 
 export const MyLayout = (props: LayoutProps) => (
   <>
@@ -104,6 +110,15 @@ const AdminApp = () => {
         create={PackageCreate}
         edit={PackageEdit}
         icon={AudioFileIcon}
+      />
+      <Resource
+        name="generalDocument"
+        options={{ label: "General Documents" }}
+        recordRepresentation="name"
+        list={GeneralDocumentList}
+        show={GeneralDocumentShow}
+        create={GeneralDocumentCreate}
+        icon={ArticleIcon}
       />
       <Resource name="job" create={JobCreate} />
     </Admin>

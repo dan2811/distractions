@@ -11,7 +11,7 @@ export interface RaPackage extends Package {
     events: string[];
 }
 
-export const packageHandler = async (req: { body: RaPayload; }, res: NextApiResponse) => {
+export const packageHandler = async (req: { body: RaPayload; }, _: NextApiResponse) => {
     switch (req.body.method) {
         case "create":
             return await createHandler<Prisma.PackageCreateArgs>(req.body, prisma.package);
@@ -33,8 +33,7 @@ export const packageHandler = async (req: { body: RaPayload; }, res: NextApiResp
                     events: true
                 }
             });
-            res.json(getManyResult);
-            break;
+            return getManyResult;
         case "getOne":
             const response: { data: AugmentedPackage; } = await getOneHandler<Prisma.PackageFindUniqueArgs>(
                 req.body,

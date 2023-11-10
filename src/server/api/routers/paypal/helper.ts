@@ -1,7 +1,16 @@
 import type { Event, User } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { prisma } from "~/server/db";
+import type { PaypalAccountType } from "~/types";
 import { logger } from "~/utils/Logging";
+
+const getEncodedPaypalData = (type: PaypalAccountType) => {
+    if (type === "deposit") {
+        return Buffer.from(process.env.PAYPAL_CLIENT_ID + ':' + process.env.PAYPAL_CLIENT_SECRET).toString('base64');
+    } else {
+        return Buffer.from(process.env.PAYPAL_FINAL_BALANCE_CLIENT_ID + ':' + process.env.PAYPAL_FINAL_BALANCE_SECRET).toString('base64');
+    }
+};
 
 interface PaypalAccessTokenResponse {
     // comma separated list of scopes
@@ -14,7 +23,7 @@ interface PaypalAccessTokenResponse {
     nonce: string;
 }
 
-export const getPaypalAccessToken = async () => {
+export const getPaypalAccessToken = async (type: PaypalAccountType) => {
     logger.info("PAYPAL_ACCESS_TOKEN_REQUESTED");
 
     const existingTokens = await prisma.paypalAccessToken.findMany({
@@ -24,8 +33,13 @@ export const getPaypalAccessToken = async () => {
             access_token: true
         },
         where: {
-            createdAt: {
-                gte: new Date(Date.now() - 3600 * 1000)
+            AND: {
+                createdAt: {
+                    gte: new Date(Date.now() - 3600 * 1000)
+                },
+                account: {
+                    equals: type
+                }
             }
         }
     });
@@ -38,10 +52,11 @@ export const getPaypalAccessToken = async () => {
     }
 
     const endpoint = "/v1/oauth2/token?grant_type=client_credentials";
-    const encodedData = Buffer.from(process.env.PAYPAL_CLIENT_ID + ':' + process.env.PAYPAL_CLIENT_SECRET).toString('base64');
+    const encodedData = getEncodedPaypalData(type);
+    const hostname = new URL(process.env.PAYPAL_URL!).hostname;
     const options = {
         "method": "POST",
-        "hostname": "api.sandbox.paypal.com",
+        "hostname": hostname,
         "port": null,
         "path": endpoint,
         "headers": {
@@ -55,9 +70,9 @@ export const getPaypalAccessToken = async () => {
     try {
         const res = await fetch(process.env.PAYPAL_URL + endpoint, options);
         const json = await res.json() as PaypalAccessTokenResponse;
-
+        logger.info("PAYPAL_ACCESS_TOKEN_REQUEST: ", json);
         const dbResponse = await prisma.paypalAccessToken.create({
-            data: json,
+            data: { ...json, account: type },
             select: {
                 access_token: true,
             }
@@ -124,7 +139,7 @@ interface PaypalDraftInvoiceResponse {
 }
 
 export const createDraftDepositInvoice = async (amount: string, client: Pick<User, "id" | "name" | "email" | "surname">, event: Pick<Event, "id" | "date" | "name">) => {
-    const accessToken = await getPaypalAccessToken();
+    const accessToken = await getPaypalAccessToken("deposit");
     try {
         const res = await fetch(`${process.env.PAYPAL_URL}/v2/invoicing/invoices`, {
             method: 'POST',
@@ -212,7 +227,7 @@ export const createDraftDepositInvoice = async (amount: string, client: Pick<Use
 };
 
 export const createDraftFinalInvoice = async (amount: string, client: Pick<User, "id" | "name" | "email" | "surname">, event: Pick<Event, "id" | "date" | "name">) => {
-    const accessToken = await getPaypalAccessToken();
+    const accessToken = await getPaypalAccessToken("final");
     try {
 
         const defaultDueDate = new Date(event.date.setDate(event.date.getDate() - parseInt(process.env.DAYS_BEFORE_EVENT_FINAL_BALANCE_DUE!)));
@@ -235,7 +250,7 @@ export const createDraftFinalInvoice = async (amount: string, client: Pick<User,
                     //client will not see "memo"
                     "memo": `Event ID: ${event.id}, Event name: ${event.name}`,
                     "payment_term": {
-                        "term_type": "DUE_ON_RECEIPT",
+                        "term_type": "DUE_ON_DATE_SPECIFIED",
                         "due_date": dueDate.toISOString().split("T")[0],
                     }
                 },
@@ -303,8 +318,8 @@ export const createDraftFinalInvoice = async (amount: string, client: Pick<User,
     }
 };
 
-export const sendInvoice = async (invoiceId: string, type: "deposit" | "final") => {
-    const accessToken = await getPaypalAccessToken();
+export const sendInvoice = async (invoiceId: string, type: PaypalAccountType) => {
+    const accessToken = await getPaypalAccessToken(type);
     try {
         logger.info(JSON.stringify({ message: "SENDING_INVOICE", invoiceId }));
         const res = await fetch(`${process.env.PAYPAL_URL}/v2/invoicing/invoices/${invoiceId}/send`, {

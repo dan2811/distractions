@@ -1,6 +1,6 @@
 import type { Instrument, Job, Prisma, User } from "@prisma/client";
 import type { NextApiResponse } from "next";
-import { type RaPayload, defaultHandler, createHandler, getListHandler, getManyHandler, getOneHandler } from "ra-data-simple-prisma";
+import { type RaPayload, defaultHandler, createHandler, getListHandler, getManyHandler, getOneHandler, updateHandler } from "ra-data-simple-prisma";
 import { prisma } from "~/server/db";
 
 interface AugmentedUser extends User {
@@ -13,7 +13,7 @@ export interface RaUser extends User {
     jobs: string[];
 }
 
-export const userHandler = async (req: { body: RaPayload; }, res: NextApiResponse) => {
+export const userHandler = async (req: { body: RaPayload; }, _: NextApiResponse) => {
     switch (req.body.method) {
         case "create":
             return await createHandler<Prisma.UserCreateArgs>(req.body, prisma.user, {
@@ -41,8 +41,7 @@ export const userHandler = async (req: { body: RaPayload; }, res: NextApiRespons
                     instruments: true
                 }
             });
-            res.json(getManyResult);
-            break;
+            return getManyResult;
         case "getOne":
             const response: { data: AugmentedUser; } = await getOneHandler<Prisma.UserFindUniqueArgs>(
                 req.body,
@@ -60,6 +59,27 @@ export const userHandler = async (req: { body: RaPayload; }, res: NextApiRespons
                 jobs: response.data?.jobs?.map((job: Job) => job.id),
             };
             return { data: user };
+        case "update":
+            const updateResult: { data: AugmentedUser; } = await updateHandler<Prisma.UserUpdateArgs>(
+                req.body,
+                prisma.user,
+                {
+                    set: {
+                        instruments: "id",
+                        jobs: "id",
+                    },
+                    include: {
+                        instruments: true,
+                        jobs: true,
+                    },
+                },
+            );
+            const updatedUser: RaUser = {
+                ...updateResult.data,
+                instruments: updateResult.data?.instruments?.map((instrument: Instrument) => instrument.id),
+                jobs: updateResult.data?.jobs?.map((job: Job) => job.id),
+            };
+            return { data: updatedUser };
         default:
             return await defaultHandler(req.body, prisma);
     };

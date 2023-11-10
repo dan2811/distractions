@@ -5,7 +5,7 @@ import { withUt } from "uploadthing/tw";
 export const globalColors = {
   main: {
     menu: "black",
-    dark: "#1A1A1A",
+    dark: "#black",
     light: "#aaa",
     input: "#2A2A2A",
     accent: "#a8a07c",

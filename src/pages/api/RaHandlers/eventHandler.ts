@@ -1,22 +1,25 @@
-import type { Job, Prisma, Event, Package, Equipment } from "@prisma/client";
+import type { Job, Prisma, Event, Package, Equipment, Contract } from "@prisma/client";
 import type { NextApiResponse } from "next";
 import { type RaPayload, defaultHandler, createHandler, getListHandler, getManyHandler, getOneHandler, updateHandler } from "ra-data-simple-prisma";
 import { createDraftDepositInvoice, createDraftFinalInvoice } from "~/server/api/routers/paypal/helper";
 import { prisma } from "~/server/db";
+import { logger } from "~/utils/Logging";
 
 interface AugmentedEvent extends Event {
     packages: Package[];
     Equipment: Equipment[];
     jobs: Job[];
+    contract: Contract;
 }
 
 export interface RaEvent extends Event {
     packages: string[];
     Equipment: string[];
     jobs: string[];
+    contract: string;
 }
 
-export const eventHandler = async (req: { body: RaPayload; }, res: NextApiResponse) => {
+export const eventHandler = async (req: { body: RaPayload; }, _: NextApiResponse) => {
     switch (req.body.method) {
         case "create":
             const newEvent: {
@@ -45,23 +48,31 @@ export const eventHandler = async (req: { body: RaPayload; }, res: NextApiRespon
                 include: {
                     packages: true,
                     jobs: true,
+                    contract: true
                 },
                 map: (events: Event[]): Event[] => {
                     return events?.map((event) => ({
                         ...event,
                         packages: (event as AugmentedEvent).packages?.map((pack: Package) => pack.id),
-                        job: (event as AugmentedEvent).jobs?.map((job: Job) => job.id)
+                        job: (event as AugmentedEvent).jobs?.map((job: Job) => job.id),
+                        contract: (event as AugmentedEvent).contract?.id
                     } as Event));
                 },
             });
         case "getMany":
-            const getManyResult = await getManyHandler<Prisma.EventFindManyArgs>(req.body, prisma.event, {
+            return getManyHandler<Prisma.EventFindManyArgs>(req.body, prisma.event, {
                 include: {
                     packages: true
-                }
+                },
+                transform(data: AugmentedEvent[]) {
+                    return data.map((event) => ({
+                        ...event,
+                        packages: event.packages?.map((pack: Package) => pack.id),
+                        job: event.jobs?.map((job: Job) => job.id),
+                        contract: event.contract?.id
+                    } as Event));
+                },
             });
-            res.json(getManyResult);
-            break;
         case "getOne":
             const response: { data: AugmentedEvent; } = await getOneHandler<Prisma.EventFindUniqueArgs>(
                 req.body,
@@ -70,6 +81,7 @@ export const eventHandler = async (req: { body: RaPayload; }, res: NextApiRespon
                     include: {
                         packages: true,
                         jobs: true,
+                        contract: true
                     },
                 },
             );
@@ -77,26 +89,36 @@ export const eventHandler = async (req: { body: RaPayload; }, res: NextApiRespon
                 ...response.data,
                 packages: response.data?.packages?.map((pack: Package) => pack.id),
                 jobs: response.data?.jobs?.map((job: Job) => job.id),
-                Equipment: response.data?.Equipment?.map((equip: Equipment) => equip.id)
+                Equipment: response.data?.Equipment?.map((equip: Equipment) => equip.id),
+                contract: response.data?.contract?.id
             };
             return { data: event };
         case "update":
-            return await updateHandler<Prisma.EventUpdateArgs>(
-                req.body,
-                prisma.event,
-                {
-                    set: {
-                        EventType: "id",
-                        packages: "id",
-                        Equipment: "id",
-                        owner: "id"
-                    },
-                    skipFields: {
-                        jobs: true
+            try {
+
+                const res = await updateHandler<Prisma.EventUpdateArgs>(
+                    req.body,
+                    prisma.event,
+                    {
+                        set: {
+                            EventType: "id",
+                            packages: "id",
+                            Equipment: "id",
+                            owner: "id",
+                        },
+                        skipFields: {
+                            jobs: true
+                        }
                     }
-                }
-            );
+                );
+                console.log("UPDATE RES: ", res);
+                return res;
+            } catch (e) {
+                logger.error(`Error updating event: `, e as Record<string, unknown>);
+                throw new Error(`Error updating event`);
+            }
         default:
+            console.log("USING DEFAULT RA HANDLER");
             return await defaultHandler(req.body, prisma);
     };
 };
