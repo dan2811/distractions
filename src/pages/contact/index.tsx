@@ -4,7 +4,10 @@ import Layout from "~/components/Layout/Layout";
 
 const contact = () => {
   return (
-    <Layout>
+    <Layout
+      pageName="Contact"
+      pageDescription="Get in touch with us about your booking."
+    >
       <Heading>
         <h2>Contact</h2>
       </Heading>

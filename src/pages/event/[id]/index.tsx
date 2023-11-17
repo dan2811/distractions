@@ -34,7 +34,10 @@ const EventDetails = () => {
   ];
 
   return (
-    <Layout>
+    <Layout
+      pageName="Your event"
+      pageDescription="Everything you need to know about your booking with us."
+    >
       <EventHeader eventName={data.name} />
       {tabs[parseInt(currentTab as string)]}
       <Card className="h-16 w-full" />

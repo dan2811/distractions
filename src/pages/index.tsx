@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
 import { useSession } from "next-auth/react";
-import Head from "next/head";
 import { useRouter } from "next/router";
 import { AuthButton } from "~/components/Auth";
 import { Heading } from "~/components/Layout/Heading";
@@ -17,29 +16,25 @@ export default function Home() {
   const isUserAuthed = session.status === "authenticated";
 
   return (
-    <>
-      <Head>
-        <title>The Distractions Band</title>
-        <meta name="description" content="Manage your booking" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Layout>
-        {!isUserAuthed && <AuthButton />}
-        {isUserAuthed && (
-          <>
-            <div className="fixed -z-40 h-screen w-screen bg-black bg-opacity-30 " />
-            <Image
-              src={Dwayne}
-              alt="showband"
-              className="fixed -z-50 bg-black bg-blend-darken "
-            />
-            <Bookings />
-            {session.data.user.role !== "client" && <GigOffers />}
-            {session.data.user.role !== "client" && <Gigs />}
-          </>
-        )}
-      </Layout>
-    </>
+    <Layout
+      pageName="The Distractions Band"
+      pageDescription="Manage your booking"
+    >
+      {!isUserAuthed && <AuthButton />}
+      {isUserAuthed && (
+        <>
+          <div className="fixed -z-40 h-screen w-screen bg-black bg-opacity-30 " />
+          <Image
+            src={Dwayne}
+            alt="showband"
+            className="fixed -z-50 bg-black bg-blend-darken"
+          />
+          <Bookings />
+          {session.data.user.role !== "client" && <GigOffers />}
+          {session.data.user.role !== "client" && <Gigs />}
+        </>
+      )}
+    </Layout>
   );
 }
 
@@ -50,7 +45,7 @@ const Bookings = () => {
   return (
     <div>
       <Heading>
-        <h2>Your Bookings</h2>
+        <h2>Bookings</h2>
       </Heading>
       {isLoading && session.data?.user.role === "client" ? (
         <LoadingSpinner />
@@ -106,7 +101,7 @@ const Gigs = () => {
   return (
     <div>
       <Heading>
-        <h2>Your Gigs</h2>
+        <h2>Gigs</h2>
       </Heading>
       {isLoading ? (
         <LoadingSpinner />
@@ -137,7 +132,7 @@ const GigOffers = () => {
   return (
     <div>
       <Heading>
-        <h2>Your Gig Offers</h2>
+        <h2>Gig Offers</h2>
       </Heading>
       {isLoading ? (
         <LoadingSpinner />
@@ -175,14 +170,13 @@ const GigListItem = ({ job }: { job: JobWithInstruments }) => {
   if (isError)
     return (
       <>
-        <div className="flex gap-2 py-2 pl-2">
+        <div>
           <ErrorIcon color="error" />
           <p> Something went wrong with this event</p>
         </div>
       </>
     );
   if (!event) return <p>Event not found</p>;
-
   const instruments = job.Instruments;
   return (
     <>
