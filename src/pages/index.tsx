@@ -9,6 +9,7 @@ import { api } from "~/utils/api";
 import ErrorIcon from "@mui/icons-material/Error";
 import InfoIcon from "@mui/icons-material/Info";
 import Dwayne from "../../public/assets/images/Dwayne.png";
+import HornPlayer from "../../public/assets/images/horn-player.png";
 import Image from "next/image";
 
 export default function Home() {
@@ -20,7 +21,18 @@ export default function Home() {
       pageName="The Distractions Band"
       pageDescription="Manage your booking"
     >
-      {!isUserAuthed && <AuthButton />}
+      {!isUserAuthed && (
+        <div>
+          <Image
+            src={HornPlayer}
+            alt="Horn player"
+            className="fixed -z-50 bg-black bg-blend-darken"
+          />
+          <div className="fixed grid h-screen w-full grid-cols-1 place-content-end pb-28">
+            <AuthButton />
+          </div>
+        </div>
+      )}
       {isUserAuthed && (
         <>
           <div className="fixed -z-40 h-screen w-screen bg-black bg-opacity-30 " />

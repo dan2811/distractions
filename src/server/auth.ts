@@ -73,6 +73,9 @@ export const authOptions: NextAuthOptions = {
     logo: "/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo_dark.e8bdd739.png&w=384&q=75", // Absolute URL to image
     buttonText: globalColors.main.dark // must be a hex color code
   },
+  pages: {
+    signIn: "/auth/signin"
+  },
   session: {
     strategy: "jwt",
   },
