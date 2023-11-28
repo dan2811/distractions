@@ -18,14 +18,14 @@ export const userRouter = createTRPCRouter({
       data: {
         ...input,
         instruments: {
-          connect: input.instruments?.map((instrument) => ({
+          set: input.instruments?.map((instrument) => ({
             id: instrument,
           })),
         },
       }
     });
   }),
-  getClient: protectedProcedure.input(z.object({
+  getUser: protectedProcedure.input(z.object({
     id: z.string(),
   })).query(({ input }) => {
     return prisma.user.findFirst({

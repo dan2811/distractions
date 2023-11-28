@@ -183,7 +183,7 @@ const JobOffer = ({
 
 const ClientInfo = ({ clientId }: { clientId: string }) => {
   const { data: clientData, isLoading: isClientLoading } =
-    api.users.getClient.useQuery({
+    api.users.getUser.useQuery({
       id: clientId,
     });
 

@@ -10,6 +10,7 @@ export const globalColors = {
     input: "#1f1f1f",
     accent: "#a8a07c",
     error: "#ff0000",
+    white: "#ffffff",
   },
   jobStatus: {
     // MUST BE HEX CODES

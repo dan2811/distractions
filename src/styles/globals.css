@@ -15,6 +15,7 @@ button {
 }
 
 input,
-textarea {
+textarea,
+select {
   @apply rounded bg-main-input;
 }

@@ -6,7 +6,7 @@ export const AuthButton = () => {
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       <button
-        className="bg-main-accent px-10 py-3 font-semibold text-white no-underline"
+        className="bg-main-accent px-10 py-3 font-light text-white no-underline"
         onClick={sessionData ? () => void signOut() : () => void signIn()}
       >
         {sessionData ? "SIGN OUT" : "SIGN IN"}
