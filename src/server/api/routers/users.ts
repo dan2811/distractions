@@ -9,12 +9,20 @@ export const userRouter = createTRPCRouter({
   update: protectedProcedure.input(z.object({
     email: z.string().optional(),
     phone: z.string().optional(),
+    instruments: z.array(z.string()).optional(),
   })).mutation(({ ctx, input }) => {
     return prisma.user.update({
       where: {
         id: ctx.session.user.id,
       },
-      data: input
+      data: {
+        ...input,
+        instruments: {
+          connect: input.instruments?.map((instrument) => ({
+            id: instrument,
+          })),
+        },
+      }
     });
   }),
   getClient: protectedProcedure.input(z.object({
