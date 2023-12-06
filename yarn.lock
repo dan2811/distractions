@@ -786,7 +786,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-signature-canvas@^1.0.4":
+"@types/react-signature-canvas@^1.0.5":
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/@types/react-signature-canvas/-/react-signature-canvas-1.0.5.tgz#7fa2e091bda04a336e5e8d992548143e3bb8e3a2"
   integrity sha512-jzqEeDR6kxxhg1Ck462zH+C+qMu8hoV5zz0hqnQCp0Q0tHuFEAN2/f0c4NlHyDUfAALX+HPi+eK5SBRdqsEeEg==
