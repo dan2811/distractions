@@ -69,9 +69,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     authOptions as NextAuthOptions,
   );
 
-  // If the user is already logged in, redirect.
-  // Note: Make sure not to redirect to the same page
-  // To avoid an infinite loop!
   if (session) {
     return { redirect: { destination: "/" } };
   }
