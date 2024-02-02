@@ -32,7 +32,12 @@ const GigDetails = () => {
   const tabs = [<DetailsTab event={data} key={1} />];
 
   return (
-    <Layout>
+    <Layout
+      pageName={`Gig - ${new Date(data.date).toLocaleDateString("en-GB", {
+        dateStyle: "short",
+      })}`}
+      pageDescription="Everything you need to know about your gig."
+    >
       {tabs[parseInt(currentTab as string)]}
       <BottomNavigation
         showLabels
@@ -178,7 +183,7 @@ const JobOffer = ({
 
 const ClientInfo = ({ clientId }: { clientId: string }) => {
   const { data: clientData, isLoading: isClientLoading } =
-    api.users.getClient.useQuery({
+    api.users.getUser.useQuery({
       id: clientId,
     });
 

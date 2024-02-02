@@ -7,9 +7,10 @@ export const globalColors = {
     menu: "black",
     dark: "#black",
     light: "#aaa",
-    input: "#2A2A2A",
+    input: "#1f1f1f",
     accent: "#a8a07c",
     error: "#ff0000",
+    white: "#ffffff",
   },
   jobStatus: {
     // MUST BE HEX CODES

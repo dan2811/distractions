@@ -5,6 +5,7 @@ import { paypalRouter } from "./routers/paypal/paypal";
 import { jobRouter } from "./routers/jobs";
 import { contractRouter } from "./routers/contracts";
 import { generalDocumentRouter } from "./routers/generalDocuments";
+import { instrumentRouter } from "./routers/instruments";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ import { generalDocumentRouter } from "./routers/generalDocuments";
 export const appRouter = createTRPCRouter({
   events: eventRouter,
   users: userRouter,
+  instruments: instrumentRouter,
   paypal: paypalRouter,
   jobs: jobRouter,
   contracts: contractRouter,

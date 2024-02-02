@@ -209,18 +209,17 @@ const SignaturePad = ({
         <SaveIcon />
         <span>SAVE</span>
       </button>
+      {/* @ts-expect-error unknown */}
       <SignatureCanvas
         ref={sigCanvas as LegacyRef<ReactSignatureCanvas> | undefined}
-        canvasProps={
-          {
-            className: "sigCanvas",
-            style: {
-              backgroundColor: "#fff",
-            },
-            height: "full",
-            width: "full",
-          } as React.CanvasHTMLAttributes<HTMLCanvasElement>
-        }
+        canvasProps={{
+          className: "sigCanvas",
+          style: {
+            backgroundColor: "#fff",
+          },
+          height: "100%",
+          width: "100%",
+        }}
         onBegin={() => setHasSigned(true)}
       />
     </>

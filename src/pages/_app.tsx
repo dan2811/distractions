@@ -16,7 +16,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
     palette: {
       primary: {
         main: globalColors.main.accent,
-        contrastText: globalColors.main.light,
+        contrastText: globalColors.main.white,
       },
       secondary: {
         main: globalColors.main.input,
@@ -26,8 +26,8 @@ const MyApp: AppType<{ session: Session | null }> = ({
         paper: globalColors.main.menu,
       },
       text: {
-        primary: globalColors.main.accent,
-        secondary: globalColors.main.light,
+        primary: globalColors.main.white,
+        secondary: globalColors.main.white,
       },
     },
   });
