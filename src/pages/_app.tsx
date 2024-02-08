@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { globalColors } from "tailwind.config";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -36,6 +37,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
     <SessionProvider session={session}>
       <ThemeProvider theme={theme}>
         <Toaster position="bottom-center" reverseOrder={false} />
+        <SpeedInsights />
         <Analytics />
         <Component {...pageProps} />
       </ThemeProvider>
