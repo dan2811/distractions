@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "npx prisma migrate resolve --applied 0_init && npx prisma migrate deploy && next build",
+    "prebuild": "npx prisma migrate deploy",
+    "build": "next build",
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
