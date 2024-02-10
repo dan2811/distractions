@@ -97,7 +97,7 @@ const ProfileAttribute = ({
     void refetch();
   };
   return (
-    <div className="w-full rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+    <div className="w-full rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md md:max-w-md">
       <form onSubmit={handleSubmit} className="grid grid-cols-6">
         <label
           htmlFor={fieldName}
@@ -157,7 +157,7 @@ const InstrumentsSelect = ({ userId }: { userId: string }) => {
     );
   };
   return (
-    <div className="w-full rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+    <div className="w-full rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md md:max-w-md">
       <form className="grid grid-cols-6 gap-2" onSubmit={handleSubmit}>
         <label
           htmlFor="instruments"

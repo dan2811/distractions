@@ -26,7 +26,7 @@ export const DocumentsTab = ({
     api.generalDocuments.getGeneralDocuments.useQuery();
 
   return (
-    <div>
+    <div className="w-full md:max-w-lg md:place-self-center">
       {isContractLoading ? (
         <LoadingSpinner />
       ) : contract?.url ? (
@@ -142,8 +142,8 @@ const DocumentCard = ({
   if (!url) return null;
   if (savingSignature) return <LoadingSpinner />;
   return (
-    <div className="flex flex-col gap-6 p-4">
-      <span className="grid w-full grid-cols-2 items-center justify-between gap-2 rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 text-center bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+    <div className="gap-6 p-4 md:max-w-lg">
+      <span className="grid w-full grid-cols-2 items-center justify-between gap-2 place-self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 text-center bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
         <h2 className="col-span-2">{name ?? "Your Document"}</h2>
         <p className="col-span-2 overflow-auto">{description}</p>
         <a
@@ -209,19 +209,20 @@ const SignaturePad = ({
         <SaveIcon />
         <span>SAVE</span>
       </button>
-      {/* @ts-expect-error unknown */}
-      <SignatureCanvas
-        ref={sigCanvas as LegacyRef<ReactSignatureCanvas> | undefined}
-        canvasProps={{
-          className: "sigCanvas",
-          style: {
-            backgroundColor: "#fff",
-          },
-          height: "100%",
-          width: "100%",
-        }}
-        onBegin={() => setHasSigned(true)}
-      />
+
+        {/* @ts-expect-error unknown */}
+        <SignatureCanvas
+          ref={sigCanvas as LegacyRef<ReactSignatureCanvas> | undefined}
+          canvasProps={{
+            className: "sigCanvas",
+            style: {
+              backgroundColor: "#fff",
+            },
+            height: "200%",
+            width: "300%",
+          }}
+          onBegin={() => setHasSigned(true)}
+        />
     </>
   );
 };

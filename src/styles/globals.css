@@ -10,7 +10,8 @@ h2 {
   @apply font-headers text-2xl font-normal;
 }
 
-button {
+button,
+button[type="submit"] {
   @apply rounded-md bg-main-accent p-2 font-headers text-xl font-normal text-white;
 }
 
