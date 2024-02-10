@@ -1,7 +1,11 @@
 import { globalColors } from "tailwind.config";
 import { sendEmail } from "../utils/email";
 
-export const sendVerificationRequest = async (params: { identifier: string, url: string; }) => {
+export const sendVerificationRequest = async (params: {
+  identifier: string;
+  url: string;
+}) => {
+  console.log("sendVerificationRequest", params);
   const { identifier: recipientEmailAddress, url } = params;
   const appName = "The Distractions Band";
 
@@ -12,13 +16,14 @@ export const sendVerificationRequest = async (params: { identifier: string, url:
     text: text(appName, url),
     html: html(appName, url),
   };
-
-  await sendEmail(emailDetails);
-
+  try {
+    await sendEmail(emailDetails);
+  } catch (e) {
+    console.error("Error sending email", e);
+  }
 };
 
 function html(appName: string, url: string) {
-
   const color = {
     background: globalColors.main.dark,
     text: globalColors.main.accent,
@@ -65,5 +70,3 @@ function html(appName: string, url: string) {
 function text(appName: string, url: string) {
   return `To sign in to ${appName}, use this link: ${url}`;
 }
-
-

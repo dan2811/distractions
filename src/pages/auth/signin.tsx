@@ -10,11 +10,12 @@ import RosieVocals from "../../../public/assets/images/vocals-rosie.webp";
 import GoogleSignin from "../../../public/assets/images/google_signin.png";
 import Logo from "../../../public/assets/images/logo_full_dark.png";
 import Image from "next/image";
+import { useState } from "react";
 
 export default function SignIn({
   providers,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  console.log(providers);
+  const [email, setEmail] = useState("");
   return (
     <div className="h-screen w-screen">
       <Image
@@ -27,19 +28,33 @@ export default function SignIn({
         {Object.values(providers).map((provider) => {
           if (provider.name === "Email")
             return (
-              <div
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  try {
+                    void signIn(provider.id, {
+                      email,
+                    });
+                  } catch (e) {
+                    console.error(e);
+                  }
+                }}
                 key={provider.name}
                 className="flex w-full max-w-md flex-col gap-2 px-20"
               >
                 <p className="self-center">Or</p>
-                <input type="email" placeholder="Email" className="p-2" />
-                <button
-                  className="w-full"
-                  onClick={() => void signIn(provider.id)}
-                >
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="Email"
+                  className="p-2"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <button className="w-full" type="submit">
                   Sign in with {provider.name}
                 </button>
-              </div>
+              </form>
             );
           return (
             <div key={provider.name} className="w-full max-w-md px-20">
