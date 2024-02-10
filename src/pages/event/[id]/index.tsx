@@ -67,7 +67,7 @@ const EventHeader = ({ eventName }: { eventName?: string }) => {
       <Image
         src={Showband}
         alt="showband"
-        className="w-full object-cover object-bottom"
+        className="w-full place-self-center object-cover object-bottom md:max-w-3xl"
       />
       <h1 className="text-center text-xl font-light">
         {eventName ?? "Your event"}

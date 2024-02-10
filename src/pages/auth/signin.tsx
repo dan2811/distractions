@@ -17,11 +17,11 @@ export default function SignIn({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [email, setEmail] = useState("");
   return (
-    <div className="h-screen w-screen">
+    <div className="flex h-screen w-screen flex-col items-center">
       <Image
         src={RosieVocals}
         alt="female singer"
-        className="fixed top-32 -z-50"
+        className="fixed top-32 -z-50 object-scale-down md:top-48 md:w-2/3 md:object-contain lg:top-48 lg:w-1/2 xl:w-1/3"
       />
       <Image src={Logo} alt="The Distractions Band Ltd." className="p-16" />
       <div className="fixed bottom-0 flex h-1/3 w-full flex-col place-items-center justify-center">

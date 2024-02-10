@@ -4,7 +4,6 @@ import React, {
   type HTMLInputTypeAttribute,
   type SetStateAction,
   useState,
-  useEffect,
 } from "react";
 import { toast } from "react-hot-toast";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
@@ -58,7 +57,7 @@ export const DetailsTab = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-4">
+    <div className="flex flex-col gap-6 place-self-center p-4 md:max-w-lg">
       <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
         <div>
           <h2>Date</h2>
