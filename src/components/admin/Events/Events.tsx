@@ -486,7 +486,7 @@ export const EventCreate = () => {
           source="date"
           parse={(val: string) => new Date(val).toISOString()}
         />
-        <ReferenceInput source="owner" reference="user" />
+        <ReferenceInput source="owner" name="Client" reference="user" />
         <ReferenceInput
           source="EventType"
           reference="eventType"
