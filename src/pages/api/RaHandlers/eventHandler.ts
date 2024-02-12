@@ -114,7 +114,7 @@ export const eventHandler = async (req: { body: RaPayload; }, _: NextApiResponse
                 console.log("UPDATE RES: ", res);
                 return res;
             } catch (e) {
-                logger.error(`Error updating event: `, e as Record<string, unknown>);
+                console.error(`Error updating event: `, e as Record<string, unknown>);
                 throw new Error(`Error updating event`);
             }
         default:

@@ -12,7 +12,7 @@ export default async function NotifyMusician(job: RaJob): Promise<void> {
     });
 
     if (!musician) {
-        logger.error("MUSICIAN_NOT_FOUND", { musicianId });
+        console.error("MUSICIAN_NOT_FOUND", { musicianId });
         return;
     }
 

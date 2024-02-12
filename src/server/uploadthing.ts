@@ -73,7 +73,7 @@ export const ourFileRouter = {
             return { user: session?.user };
         })
         .onUploadComplete(({ file, metadata }) => {
-            logger.info("General document uploaded", { file, metadata });
+            console.info("General document uploaded", { file, metadata });
         }),
 } satisfies FileRouter;
 

@@ -24,7 +24,7 @@ interface PaypalAccessTokenResponse {
 }
 
 export const getPaypalAccessToken = async (type: PaypalAccountType) => {
-    logger.info("PAYPAL_ACCESS_TOKEN_REQUESTED");
+    console.info("PAYPAL_ACCESS_TOKEN_REQUESTED");
 
     const existingTokens = await prisma.paypalAccessToken.findMany({
         select: {
@@ -47,7 +47,7 @@ export const getPaypalAccessToken = async (type: PaypalAccountType) => {
     const validTokens = existingTokens.filter(token => new Date(token.createdAt).getTime() + token.expires_in * 1000 > Date.now());
 
     if (validTokens[0]) {
-        logger.info("FOUND_EXISTING_VALID_PAYPAL_ACCESS_TOKEN");
+        console.info("FOUND_EXISTING_VALID_PAYPAL_ACCESS_TOKEN");
         return validTokens[0].access_token;
     }
 
@@ -70,7 +70,7 @@ export const getPaypalAccessToken = async (type: PaypalAccountType) => {
     try {
         const res = await fetch(process.env.PAYPAL_URL + endpoint, options);
         const json = await res.json() as PaypalAccessTokenResponse;
-        logger.info("PAYPAL_ACCESS_TOKEN_REQUEST: ", json);
+        console.info("PAYPAL_ACCESS_TOKEN_REQUEST: ", json);
         const dbResponse = await prisma.paypalAccessToken.create({
             data: { ...json, account: type },
             select: {
@@ -78,11 +78,11 @@ export const getPaypalAccessToken = async (type: PaypalAccountType) => {
             }
         });
 
-        logger.info("PAYPAL_ACCESS_TOKEN_REQUEST_SUCCESS");
+        console.info("PAYPAL_ACCESS_TOKEN_REQUEST_SUCCESS");
 
         return dbResponse.access_token;
     } catch (e) {
-        logger.error("PAYPAL_ACCESS_TOKEN_REQUEST_ERROR: ", { details: e });
+        console.error("PAYPAL_ACCESS_TOKEN_REQUEST_ERROR: ", { details: e });
         throw new TRPCError({
             message: "Error requesting PayPal access token",
             code: "INTERNAL_SERVER_ERROR",
@@ -204,7 +204,7 @@ export const createDraftDepositInvoice = async (amount: string, client: Pick<Use
             })
         });
         const json = await res.json() as PaypalDraftInvoiceResponse;
-        logger.info("DRAFT_DEPOSIT_INVOICE_CREATED", json);
+        console.info("DRAFT_DEPOSIT_INVOICE_CREATED", json);
 
         try {
             await prisma.event.update({
@@ -218,11 +218,11 @@ export const createDraftDepositInvoice = async (amount: string, client: Pick<Use
                 }
             });
         } catch (e) {
-            logger.error("UPDATE_EVENT_WITH_DEPOSIT_INVOICE_DETAILS_ERROR", { details: e });
+            console.error("UPDATE_EVENT_WITH_DEPOSIT_INVOICE_DETAILS_ERROR", { details: e });
         }
         return json;
     } catch (e) {
-        logger.error("PAYPAL_DRAFT_DEPOSIT_INVOICE_ERROR", { details: e });
+        console.error("PAYPAL_DRAFT_DEPOSIT_INVOICE_ERROR", { details: e });
     }
 };
 
@@ -295,7 +295,7 @@ export const createDraftFinalInvoice = async (amount: string, client: Pick<User,
             })
         });
         const json = await res.json() as PaypalDraftInvoiceResponse;
-        logger.info("DRAFT_FINAL_INVOICE_CREATED", json);
+        console.info("DRAFT_FINAL_INVOICE_CREATED", json);
 
         try {
             await prisma.event.update({
@@ -309,19 +309,19 @@ export const createDraftFinalInvoice = async (amount: string, client: Pick<User,
                 }
             });
         } catch (e) {
-            logger.error("UPDATE_EVENT_WITH_FINAL_INVOICE_DETAILS_ERROR", { details: e });
+            console.error("UPDATE_EVENT_WITH_FINAL_INVOICE_DETAILS_ERROR", { details: e });
         }
 
         return json;
     } catch (e) {
-        logger.error("PAYPAL_DRAFT_FINAL_INVOICE_ERROR", { details: e });
+        console.error("PAYPAL_DRAFT_FINAL_INVOICE_ERROR", { details: e });
     }
 };
 
 export const sendInvoice = async (invoiceId: string, type: PaypalAccountType) => {
     const accessToken = await getPaypalAccessToken(type);
     try {
-        logger.info(JSON.stringify({ message: "SENDING_INVOICE", invoiceId }));
+        console.info(JSON.stringify({ message: "SENDING_INVOICE", invoiceId }));
         const res = await fetch(`${process.env.PAYPAL_URL}/v2/invoicing/invoices/${invoiceId}/send`, {
             method: 'POST',
             headers: {
@@ -343,7 +343,7 @@ export const sendInvoice = async (invoiceId: string, type: PaypalAccountType) =>
         if (Object.hasOwn(paypalResponse, "name")) {
             throw new Error(`${paypalResponse.name} -${paypalResponse.message}`);
         }
-        logger.debug("PAYPAL_SEND_INVOICE_RESPONSE", { paypalResponse });
+        console.debug("PAYPAL_SEND_INVOICE_RESPONSE", { paypalResponse });
 
         if (type === "deposit") {
             await prisma.event.update({
@@ -366,7 +366,7 @@ export const sendInvoice = async (invoiceId: string, type: PaypalAccountType) =>
         }
         return paypalResponse;
     } catch (e) {
-        logger.error("PAYPAL_SEND_INVOICE_ERROR", { details: e });
+        console.error("PAYPAL_SEND_INVOICE_ERROR", { details: e });
         throw new TRPCError({ message: "Error contacting paypal server", code: "INTERNAL_SERVER_ERROR" });
     }
 };
