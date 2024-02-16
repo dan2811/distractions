@@ -36,7 +36,6 @@ import {
   useCreatePath,
   CreateButton,
   DateField,
-  BooleanField,
   Button,
   TabbedShowLayout,
   ShowBase,
@@ -45,8 +44,8 @@ import {
   EditButton,
   ReferenceOneField,
   Link,
+  AutocompleteInput,
 } from "react-admin";
-import { InvoiceButton } from "./Invoices";
 import type { RaEvent } from "~/pages/api/RaHandlers/eventHandler";
 import type { Contract, EventType } from "@prisma/client";
 import type { RaJob } from "~/pages/api/RaHandlers/jobHandler";
@@ -64,9 +63,9 @@ import TodayIcon from "@mui/icons-material/Today";
 import ColouredDateField from "../Fields/ColouredDateField";
 import type { RaUser } from "~/pages/api/RaHandlers/userHandler";
 import { globalColors } from "tailwind.config";
-import { api } from "~/utils/api";
 import { UploadDropzone } from "~/utils/uploadthing";
 import Image from "next/image";
+import { FinanceTab } from "./FinanceTab";
 
 export const EventFilterSideBar = () => {
   const { data, isLoading } = useGetList<EventType>("eventType");
@@ -282,64 +281,6 @@ const DetailsTab = () => {
     </ShowBase>
   );
 };
-const FinanceTab = () => {
-  const record = useRecordContext<RaEvent>();
-  if (!record) return null;
-  return (
-    <ShowBase resource="event">
-      <Grid container spacing={4}>
-        <Grid item xs={6}>
-          <Typography variant="h6">Deposit</Typography>
-          <SimpleShowLayout>
-            <BooleanField source="depositInvoiceSent" />
-            {!record.depositInvoiceSent && (
-              <SendInvoiceButton
-                invoiceId={record.depositInvoiceId}
-                type="deposit"
-              />
-            )}
-            <InvoiceButton type="deposit" />
-          </SimpleShowLayout>
-        </Grid>
-        <Grid item xs={6}>
-          <Typography variant="h6">Final Invoice</Typography>
-          <SimpleShowLayout>
-            <BooleanField source="finalInvoiceSent" />
-            {!record.finalInvoiceSent && (
-              <SendInvoiceButton
-                invoiceId={record.finalInvoiceId}
-                type="final"
-              />
-            )}
-            <InvoiceButton type="final" />
-          </SimpleShowLayout>
-        </Grid>
-      </Grid>
-    </ShowBase>
-  );
-};
-
-const SendInvoiceButton = ({
-  invoiceId,
-  type,
-}: {
-  invoiceId: string | null;
-  type: "deposit" | "final";
-}) => {
-  const notify = useNotify();
-  const refresh = useRefresh();
-  const { mutate } = api.paypal.sendInvoice.useMutation({
-    onSuccess: () => {
-      refresh();
-      notify("Invoice sent", { type: "success" });
-    },
-    onError: () => notify("Error sending invoice", { type: "error" }),
-  });
-  if (!invoiceId) return null;
-  return (
-    <Button label="Send invoice" onClick={() => mutate({ invoiceId, type })} />
-  );
-};
 
 const InstrumentsRequired = () => {
   const record: RaEvent = useRecordContext();
@@ -486,7 +427,9 @@ export const EventCreate = () => {
           source="date"
           parse={(val: string) => new Date(val).toISOString()}
         />
-        <ReferenceInput source="owner" name="Client" reference="user" />
+        <ReferenceInput source="owner" label="Client" reference="user">
+          <AutocompleteInput label="Client" />
+        </ReferenceInput>
         <ReferenceInput
           source="EventType"
           reference="eventType"
