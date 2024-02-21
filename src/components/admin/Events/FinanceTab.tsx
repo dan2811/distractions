@@ -16,12 +16,7 @@ import type { PaypalRefunds } from "~/types";
 export const FinanceTab = () => {
   const record = useRecordContext<RaEvent>();
   if (!record) return null;
-  const {
-    depositInvoiceId,
-    finalInvoiceId,
-    adminDepositInvoiceUrl,
-    adminFinalInvoiceUrl,
-  } = record;
+  const { depositInvoiceId, finalInvoiceId } = record;
 
   return (
     <ShowBase resource="event">
@@ -29,16 +24,12 @@ export const FinanceTab = () => {
         <Grid container spacing={2} width={"100%"}>
           {depositInvoiceId && (
             <Grid item width={"50%"}>
-              <a href={adminDepositInvoiceUrl ?? ""} target="_blank">
-                <InvoiceCard invoiceId={depositInvoiceId} type="deposit" />
-              </a>
+              <InvoiceCard invoiceId={depositInvoiceId} type="deposit" />
             </Grid>
           )}
           {finalInvoiceId && (
             <Grid item width={"50%"}>
-              <a href={adminFinalInvoiceUrl ?? ""} target="_blank">
-                <InvoiceCard invoiceId={finalInvoiceId} type="final" />
-              </a>
+              <InvoiceCard invoiceId={finalInvoiceId} type="final" />
             </Grid>
           )}
         </Grid>
@@ -53,7 +44,11 @@ interface InvoiceCardProps {
 }
 
 const InvoiceCard = ({ invoiceId, type }: InvoiceCardProps) => {
-  const { data: invoice, isLoading } = api.paypal.getInvoice.useQuery({
+  const {
+    data: invoice,
+    isLoading,
+    refetch,
+  } = api.paypal.getInvoice.useQuery({
     invoiceId,
     type,
   });
@@ -78,13 +73,25 @@ const InvoiceCard = ({ invoiceId, type }: InvoiceCardProps) => {
   }
   return (
     <Card className="p-4" raised={true}>
-      <a href={paypalInvoiceUrl ?? ""} className="" target="_blank">
+      <div className="flex items-center">
         <Typography variant="h5" className="h-fit w-fit">
           {`${type.charAt(0).toUpperCase() + type.slice(1)} Invoice - ${
             invoice.status
           }`}
         </Typography>
-      </a>
+        <div className="flex gap-2 pl-4">
+          <a href={paypalInvoiceUrl ?? ""} target="_blank">
+            <Button label="View on PayPal" variant="outlined" />
+          </a>
+          {invoice.status === "DRAFT" && (
+            <SendInvoiceButton
+              invoiceId={invoiceId}
+              type={type}
+              refetch={refetch}
+            />
+          )}
+        </div>
+      </div>
 
       <Grid container spacing={2}>
         <Grid
@@ -95,11 +102,7 @@ const InvoiceCard = ({ invoiceId, type }: InvoiceCardProps) => {
             flexDirection: "column",
             alignItems: "flex-start",
           }}
-        >
-          {invoice.status === "DRAFT" && (
-            <SendInvoiceButton invoiceId={invoiceId} type={type} />
-          )}
-        </Grid>
+        ></Grid>
         <Grid item width="100%">
           <div className="flex flex-col gap-y-2 py-6">
             <div>Total: £{invoice.amount.value}</div>
@@ -201,21 +204,35 @@ const InvoiceCard = ({ invoiceId, type }: InvoiceCardProps) => {
 const SendInvoiceButton = ({
   invoiceId,
   type,
+  refetch,
 }: {
   invoiceId: string | null;
   type: "deposit" | "final";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  refetch: () => Promise<any>;
 }) => {
   const notify = useNotify();
   const refresh = useRefresh();
-  const { mutate } = api.paypal.sendInvoice.useMutation({
+  const { mutate, isLoading } = api.paypal.sendInvoice.useMutation({
     onSuccess: () => {
-      refresh();
       notify("Invoice sent", { type: "success" });
+      refresh();
+      void refetch();
     },
-    onError: () => notify("Error sending invoice", { type: "error" }),
+    onError: (error) => notify(error.message, { type: "error" }),
   });
   if (!invoiceId) return null;
+  if (isLoading)
+    return (
+      <div>
+        <Loading loadingPrimary="Sending invoice" />
+      </div>
+    );
   return (
-    <Button label="Send invoice" onClick={() => mutate({ invoiceId, type })} />
+    <Button
+      variant="outlined"
+      label="Send invoice"
+      onClick={() => mutate({ invoiceId, type })}
+    />
   );
 };

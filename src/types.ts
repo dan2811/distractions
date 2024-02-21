@@ -1,6 +1,13 @@
 import { z } from "zod";
 
-export type Role = "client" | "musician" | "admin" | "superAdmin";
+export const Role = z.union([
+  z.literal("client"),
+  z.literal("musician"),
+  z.literal("admin"),
+  z.literal("superAdmin"),
+]);
+
+export type Role = z.infer<typeof Role>;
 export type JobStatus = "pending" | "accepted" | "rejected" | "completed";
 export interface RequiredInstrumentsJSON {
   quantity: number;

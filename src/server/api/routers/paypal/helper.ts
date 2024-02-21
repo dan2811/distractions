@@ -105,7 +105,7 @@ export const getPaypalAccessToken = async (type: PaypalAccountType) => {
   }
 };
 
-const invoicer = {
+const getInvoicer = (type: PaypalAccountType) => ({
   name: {
     business_name: "The Distractions Band Ltd.",
   },
@@ -117,7 +117,10 @@ const invoicer = {
     country_code: "GB",
   },
   // THIS MUST BE THE EMAIL ADDRESS OF A PAYPAL BUSINESS ACCOUNT
-  email_address: process.env.PAYPAL_DEPOSIT_ACCOUNT_EMAIL,
+  email_address:
+    type === "deposit"
+      ? process.env.PAYPAL_DEPOSIT_ACCOUNT_EMAIL
+      : process.env.PAYPAL_FINAL_BALANCE_ACCOUNT_EMAIL,
   phones: [
     {
       country_code: "44",
@@ -126,7 +129,7 @@ const invoicer = {
     },
   ],
   website: process.env.MAIN_URL,
-};
+});
 
 interface PaypalDraftInvoiceResponse {
   id: string;
@@ -183,7 +186,7 @@ export const createDraftDepositInvoice = async (
             due_date: new Date().toISOString().split("T")[0],
           },
         },
-        invoicer: invoicer,
+        invoicer: getInvoicer("deposit"),
         primary_recipients: [
           {
             billing_info: {
@@ -291,7 +294,7 @@ export const createDraftFinalInvoice = async (
             due_date: dueDate.toISOString().split("T")[0],
           },
         },
-        invoicer: invoicer,
+        invoicer: getInvoicer("final"),
         primary_recipients: [
           {
             billing_info: {

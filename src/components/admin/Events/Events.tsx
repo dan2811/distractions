@@ -87,14 +87,6 @@ export const EventFilterSideBar = () => {
         <SavedQueriesList />
         <FilterLiveSearch source="name" label="Search by event name" />
         <FilterList label="Date" icon={<TodayIcon />}>
-          {/* TODO: Needs fixing! */}
-          {/* <FilterListItem
-            label="Today's events"
-            value={{
-              date_lte: tomorrow,
-              date_gte: yesterday,
-            }}
-          /> */}
           <FilterListItem
             label="Previous events"
             value={{
@@ -276,6 +268,7 @@ const DetailsTab = () => {
         </Grid>
         <Grid item xs={12}>
           <InstrumentsRequired />
+          <EditButton label="Add Instruments" />
         </Grid>
       </Grid>
     </ShowBase>
@@ -291,7 +284,7 @@ const InstrumentsRequired = () => {
   useEffect(() => {
     const main = async () => {
       //TODO: Fix this. There is a bug somewhere that means that record.jobs is sometimes an array of strings (correct), and sometimes an array of objects (WRONG).
-      if (typeof record.jobs[0] !== "string") return;
+      if (typeof record?.jobs[0] !== "string") return;
       const jobs = await dataprovider.getMany<RaJob>("job", {
         ids: record.jobs,
       });
@@ -327,11 +320,7 @@ const InstrumentsRequired = () => {
 
   return (
     <ArrayField source="InstrumentsRequired">
-      <Datagrid
-        bulkActionButtons={false}
-        resource="event"
-        empty={<EditButton label="Add Musicians" />}
-      >
+      <Datagrid bulkActionButtons={false} resource="event" empty={<div></div>}>
         <ReferenceField source="id" reference="Instrument">
           <TextField source="name" />
         </ReferenceField>
@@ -464,7 +453,7 @@ export const EventEdit = () => {
       transform={(data: { contract: { id: string } }) => {
         return {
           ...data,
-          contract: data.contract.id,
+          contract: data.contract?.id ?? undefined,
         };
       }}
     >
