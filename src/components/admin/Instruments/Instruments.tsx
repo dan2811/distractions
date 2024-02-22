@@ -45,7 +45,7 @@ export const InstrumentShow = () => {
           </ReferenceArrayField>
         </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label="Events">
-          <ReferenceArrayField source="jobs" reference="Job">
+          <ReferenceArrayField source="jobs" reference="Job" label="Events">
             <Datagrid rowClick="show">
               <ReferenceField source="eventId" reference="Event">
                 <TextField source="name" />

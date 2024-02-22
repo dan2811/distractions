@@ -175,7 +175,7 @@ const DetailsTab = () => {
               link="show"
             />
             <ReferenceArrayField source="packages" reference="package">
-              <SingleFieldList>
+              <SingleFieldList linkType="show">
                 <ChipField source="name" />
               </SingleFieldList>
             </ReferenceArrayField>

@@ -2,6 +2,7 @@ import React from "react";
 import {
   Create,
   Datagrid,
+  DateField,
   Edit,
   List,
   ReferenceField,
@@ -31,6 +32,7 @@ export const EventTypeShow = () => {
         <TextField source="name" />
         <ReferenceManyField reference="Event" target="eventTypeId">
           <Datagrid rowClick="show">
+            <DateField source="date" />
             <TextField source="name" />
             <ReferenceField source="ownerId" reference="User">
               <TextField source="name" />

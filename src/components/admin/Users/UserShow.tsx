@@ -60,7 +60,7 @@ const Events = () => {
       <ReferenceManyField reference="event" target="ownerId">
         <Datagrid rowClick="show">
           <TextField source="name" />
-          <TextField source="date" />
+          <DateField source="date" />
           <TextField source="location" />
         </Datagrid>
       </ReferenceManyField>
