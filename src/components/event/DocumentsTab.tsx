@@ -8,6 +8,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { LoadingSpinner } from "../LoadingSpinner";
 import type { UseQueryResult } from "@tanstack/react-query";
+import Image from "next/image";
 
 export const DocumentsTab = ({
   event,
@@ -38,12 +39,14 @@ export const DocumentsTab = ({
           signable={true}
           // TODO: Nasty typing!! Please fix me!!
           refetch={refetchContract as RefetchType}
+          signatureUrl={contract.signatureUrl}
         />
       ) : (
-        <p className="text-center">
-          Your contract will appear here as soon as it is ready.
+        <p className="px-4 py-6 text-center">
+          Your event contract will also appear here as soon as it is ready.
         </p>
       )}
+      <h2 className="text-center text-xl font-light">Useful Documents</h2>
       {generalDocuments?.map((document) => (
         <DocumentCard
           key={document.id}
@@ -66,6 +69,7 @@ interface DocumentCardProps {
   url?: string;
   signable?: boolean;
   refetch?: RefetchType;
+  signatureUrl?: string;
 }
 
 const DocumentCard = ({
@@ -75,6 +79,7 @@ const DocumentCard = ({
   url,
   signable = false,
   refetch,
+  signatureUrl,
 }: DocumentCardProps) => {
   const [hasSigned, setHasSigned] = useState(false);
   const [viewed, setViewed] = useState(false);
@@ -120,17 +125,24 @@ const DocumentCard = ({
         setSavingSignature(false);
         return;
       }
-      await signContract({ signatureUrl, id });
-      toast.success("Contract signed", {
-        duration: 4000,
-      });
-
+      await signContract(
+        { signatureUrl, id },
+        {
+          onSuccess: () => {
+            toast.success("Contract signed", {
+              duration: 4000,
+            });
+            setSignaturePadOpen(false);
+          },
+        },
+      );
       if (!refetch) {
         toast.error("Something has gone wrong, please contact support");
         setSavingSignature(false);
         return;
       }
       await refetch();
+
       setSavingSignature(false);
     } catch (e) {
       toast.error("Something went wrong, please try again later", {
@@ -149,12 +161,25 @@ const DocumentCard = ({
         <a
           href={url}
           target="_blank"
-          className={`col-span-${signable ? "1" : "2"} min-w-full`}
+          className={`col-span-${
+            signable ? (!signatureUrl ? "1" : "2") : "2"
+          } min-w-full`}
           onClick={() => setViewed(true)}
         >
           <button className="w-full">VIEW</button>
         </a>
-        {signable && (
+        {signatureUrl && (
+          <div className="col-span-2 flex justify-center rounded-md p-2">
+            <Image
+              className="bg-white"
+              src={signatureUrl}
+              alt="Your signature"
+              width={200}
+              height={20}
+            />
+          </div>
+        )}
+        {signable && !signatureUrl && (
           <button
             className="col-span-1"
             onClick={() => setSignaturePadOpen(!signaturePadOpen)}
