@@ -47,6 +47,7 @@ export const DocumentsTab = ({
         </p>
       )}
       <h2 className="text-center text-xl font-light">Useful Documents</h2>
+      {isGeneralDocumentsLoading && <LoadingSpinner />}
       {generalDocuments?.map((document) => (
         <DocumentCard
           key={document.id}
@@ -69,7 +70,7 @@ interface DocumentCardProps {
   url?: string;
   signable?: boolean;
   refetch?: RefetchType;
-  signatureUrl?: string;
+  signatureUrl?: string | null;
 }
 
 const DocumentCard = ({
