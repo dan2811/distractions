@@ -43,10 +43,13 @@ export const DocumentsTab = ({
         />
       ) : (
         <p className="px-4 py-6 text-center">
-          Your event contract will also appear here as soon as it is ready.
+          Your event contract will {!generalDocuments?.length ? "" : "also"}{" "}
+          appear here as soon as it is ready.
         </p>
       )}
-      <h2 className="text-center text-xl font-light">Useful Documents</h2>
+      {!generalDocuments?.length ? null : (
+        <h2 className="text-center text-xl font-light">Useful Documents</h2>
+      )}
       {isGeneralDocumentsLoading && <LoadingSpinner />}
       {generalDocuments?.map((document) => (
         <DocumentCard

@@ -1,4 +1,3 @@
-import { logger } from "~/utils/Logging";
 import sgMail from "@sendgrid/mail";
 import { env } from "~/env.mjs";
 
@@ -14,10 +13,6 @@ export const sendEmail = async (emailDetails: EmailDetails) => {
   sgMail.setApiKey(env.SENDGRID_API_KEY);
 
   if (process.env.NODE_ENV === "development") {
-    console.info(
-      "Not sending email in development mode, would've sent this: ",
-      emailDetails,
-    );
     console.info(
       "Not sending email in development mode, would've sent this: ",
       emailDetails,
