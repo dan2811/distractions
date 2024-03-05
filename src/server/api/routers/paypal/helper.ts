@@ -477,3 +477,184 @@ export const getInvoice = async (
     });
   }
 };
+
+export const deleteInvoice = async (
+  invoiceId: string,
+  type: PaypalAccountType,
+) => {
+  const accessToken = await getPaypalAccessToken(type);
+
+  try {
+    console.info(
+      JSON.stringify({ message: "DELETING_INVOICE", type, invoiceId }),
+    );
+    const { status } = await fetch(
+      `${process.env.PAYPAL_URL}/v2/invoicing/invoices/${invoiceId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    console[status === 204 ? "debug" : "error"](
+      "PAYPAL_DELETE_INVOICE_RESPONSE",
+      {
+        type,
+        invoiceId,
+        status,
+      },
+    );
+
+    const where =
+      type === "final"
+        ? {
+            finalInvoiceId: invoiceId,
+          }
+        : {
+            depositInvoiceId: invoiceId,
+          };
+
+    const data =
+      type === "final"
+        ? {
+            finalInvoiceId: null,
+            adminFinalInvoiceUrl: null,
+            clientFinalInvoiceUrl: null,
+            finalInvoiceSent: false,
+          }
+        : {
+            depositInvoiceId: null,
+            adminDepositInvoiceUrl: null,
+            depositInvoiceSent: false,
+            clientDepositInvoiceUrl: null,
+          };
+
+    if (status === 204) {
+      try {
+        await prisma.event.update({
+          where,
+          data,
+        });
+        return true;
+      } catch (e) {
+        console.error("Could not update event after deleting paypal invoices", {
+          invoiceId,
+          type,
+        });
+        return false;
+      }
+    }
+    return false;
+  } catch (e) {
+    console.error("PAYPAL_DELETE_INVOICE_ERROR", { details: e });
+    throw new TRPCError({
+      message: "Error contacting paypal server",
+      code: "INTERNAL_SERVER_ERROR",
+    });
+  }
+};
+
+const cancelInvoice = async (invoiceId: string, type: PaypalAccountType) => {
+  const accessToken = await getPaypalAccessToken(type);
+  try {
+    const res = await fetch(
+      `${process.env.PAYPAL_URL}/v2/invoicing/invoices/${invoiceId}/cancel`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+
+    console.debug("PAYPAL_CANCEL_INVOICE_RESPONSE", {
+      type,
+      invoiceId,
+      status: res.status,
+    });
+    if (res.status === 204) {
+      return true;
+    }
+    throw res;
+  } catch (e) {
+    console.error("PAYPAL_CANCEL_INVOICE_ERROR", { details: e });
+    return false;
+  }
+};
+
+export const cancelPaypalInvoices = async (eventId: string) => {
+  const result = {
+    depositInvoice: {
+      deleted: false,
+      cancelled: false,
+    },
+    finalInvoice: {
+      deleted: false,
+      cancelled: false,
+    },
+  };
+
+  const event = await prisma.event.findFirst({
+    select: {
+      depositInvoiceId: true,
+      finalInvoiceId: true,
+    },
+    where: {
+      id: eventId,
+    },
+  });
+
+  console.log({ event });
+
+  if (event?.depositInvoiceId) {
+    const depositInvoice = await getInvoice(event.depositInvoiceId, "deposit");
+    if (depositInvoice.status === "DRAFT") {
+      result.depositInvoice.deleted = await deleteInvoice(
+        event.depositInvoiceId,
+        "deposit",
+      );
+    } else if (depositInvoice.status === "SENT") {
+      result.depositInvoice.cancelled = await cancelInvoice(
+        event.depositInvoiceId,
+        "deposit",
+      );
+    } else {
+      console.warn(
+        `Deposit invoice status is ${depositInvoice.status}. Please delete/cancel invoice manually.`,
+      );
+    }
+  } else {
+    console.warn(
+      `No deposit invoice found for event: ${eventId}. Could not delete/cancel invoice.`,
+    );
+  }
+
+  if (event?.finalInvoiceId) {
+    const finalInvoice = await getInvoice(event.finalInvoiceId, "final");
+    if (finalInvoice.status === "DRAFT") {
+      result.finalInvoice.deleted = await deleteInvoice(
+        event.finalInvoiceId,
+        "final",
+      );
+    } else if (finalInvoice.status === "SENT") {
+      result.finalInvoice.cancelled = await cancelInvoice(
+        event.finalInvoiceId,
+        "final",
+      );
+    } else {
+      console.warn(
+        `Final invoice status is ${finalInvoice.status}. Please delete/cancel invoice manually.`,
+      );
+    }
+  } else {
+    console.warn(
+      `No final invoice found for event: ${eventId}. Could not delete/cancel invoice.`,
+    );
+  }
+
+  return result;
+};

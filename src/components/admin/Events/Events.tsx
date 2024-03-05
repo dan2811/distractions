@@ -45,19 +45,31 @@ import {
   ReferenceOneField,
   Link,
   AutocompleteInput,
+  TopToolbar,
+  useRedirect,
+  useGetRecordId,
+  SaveButton,
+  Toolbar,
 } from "react-admin";
 import type { RaEvent } from "~/pages/api/RaHandlers/eventHandler";
 import type { Contract, EventType } from "@prisma/client";
 import type { RaJob } from "~/pages/api/RaHandlers/jobHandler";
 import CloseIcon from "@mui/icons-material/Close";
 import {
+  Alert,
   Card,
   CardContent,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Grid,
   Tooltip,
   Typography,
 } from "@mui/material";
+import CancelIcon from '@mui/icons-material/Cancel';
 import type { RequiredInstrumentsJSON } from "~/types";
 import TodayIcon from "@mui/icons-material/Today";
 import ColouredDateField from "../Fields/ColouredDateField";
@@ -66,6 +78,7 @@ import { globalColors } from "tailwind.config";
 import { UploadDropzone } from "~/utils/uploadthing";
 import Image from "next/image";
 import { FinanceTab } from "./FinanceTab";
+import { api } from "~/utils/api";
 
 export const EventFilterSideBar = () => {
   const { data, isLoading } = useGetList<EventType>("eventType");
@@ -121,7 +134,7 @@ export const EventFilterSideBar = () => {
 export const EventList = () => {
   return (
     <List aside={<EventFilterSideBar />} sort={{ field: "date", order: "ASC" }}>
-      <DatagridConfigurable omit={["id"]} rowClick="show">
+      <DatagridConfigurable omit={["id"]} rowClick="show" bulkActionButtons={false}>
         <TextField source="id" />
         <TextField source="name" />
         <ReferenceField
@@ -141,9 +154,73 @@ export const EventList = () => {
   );
 };
 
+const TransformCancelInvoicesResult = ({ data }: { data: ReturnType<typeof api.events.cancelEvent.useMutation>['data']; }) => {
+  const { depositInvoice, finalInvoice } = data!;
+  return <div>
+    <Alert severity={!depositInvoice.cancelled && !depositInvoice.deleted ? "warning" : "success"}>Deposit invoice: {depositInvoice.cancelled && "CANCELLED"} {depositInvoice.deleted && "DELETED"} {!depositInvoice.cancelled && !depositInvoice.deleted ? "FAILED TO CANCEL, please manually cancel on paypal." : null}</Alert>
+    <Alert severity={!finalInvoice.cancelled && !finalInvoice.deleted ? "warning" : "success"}>Final invoice: {finalInvoice.cancelled && "CANCELLED"} {finalInvoice.deleted && "DELETED"} {!finalInvoice.cancelled && !finalInvoice.deleted ? "FAILED TO CANCEL, please manually cancel on paypal." : null}</Alert>
+  </div>;
+};
+
+const CancelButton = () => {
+  const record = useRecordContext<RaEvent>();
+  const [open, setOpen] = useState(false);
+  const notify = useNotify();
+  const { isLoading, isSuccess, isError, mutateAsync, error, data } = api.events.cancelEvent.useMutation();
+  
+  if (record?.status === 'cancelled') return null;
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleConfirm = async () => {
+    try {
+      await mutateAsync({ eventId: record.id });
+      notify('Cancelled successfully', {type: 'success'});
+    } catch (error) {
+      notify('Error: could not cancel', { type: 'warning' });
+    }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <>
+      <Button color="error" startIcon={<CancelIcon />} label="Cancel" onClick={handleClick} />
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Are you sure?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Cancelling this event will cancel/delete any associated invoices and contracts. It will also notify relevant musicians that the event has been cancelled.
+          </DialogContentText>
+          {isLoading && <Alert severity="info">Loading...</Alert>}
+          {isError && <Alert severity="error">Unexpected error: {error.message}</Alert>}
+          {data && <TransformCancelInvoicesResult data={data} />}
+        </DialogContent>
+        {!isLoading && !isSuccess && !isError &&
+          <DialogActions>
+          <Button onClick={handleClose} label="No" autoFocus />
+          <Button onClick={() => void handleConfirm()} disabled={isLoading} label="Yes" />
+        </DialogActions>
+        }
+      </Dialog>
+    </>
+  );
+};
+
+const ShowActions = () => (
+  <TopToolbar>
+    <EditButton />
+    <CancelButton />
+  </TopToolbar>
+);
+
 export const EventShow = () => {
   return (
-    <Show>
+    <Show actions={<ShowActions />}>
       <TabbedShowLayout>
         <TabbedShowLayout.Tab label="details">
           <DetailsTab />
@@ -166,6 +243,7 @@ const DetailsTab = () => {
       <Grid container spacing={4}>
         <Grid item xs={6}>
           <SimpleShowLayout>
+            <TextField source="status" />
             <TextField source="name" />
             <DateField source="date" />
             <ReferenceField source="ownerId" reference="user" link="show" />
@@ -446,7 +524,22 @@ export const EventCreate = () => {
   );
 };
 
+const EditToolbar = (props: object) => (
+  <Toolbar {...props} >
+      <SaveButton />
+  </Toolbar>
+);
+
 export const EventEdit = () => {
+  const id = useGetRecordId() as string;
+  const { data } = api.events.getOne.useQuery({ id });
+  const notify = useNotify();
+  const redirect = useRedirect();
+  if (!data) return null;
+  if (data?.status === 'cancelled') {
+    notify("You cannot edit a cancelled event.", { type: "warning" });
+    redirect('show', 'event', id);
+  }
   return (
     <Edit
       redirect="show"
@@ -457,15 +550,14 @@ export const EventEdit = () => {
         };
       }}
     >
-      <SimpleForm>
-        <Tooltip title="The client will see the name of this event.">
+      <SimpleForm toolbar={<EditToolbar />}>
+        <Typography variant="caption">The client will see the name of this event</Typography>
           <TextInput
             source="name"
             validate={required(
               "You must give this event a name. The client will see this.",
-            )}
+              )}
           />
-        </Tooltip>
         <DateInput source="date" />
         <ReferenceInput source="ownerId" reference="user" />
         <ReferenceInput

@@ -165,8 +165,8 @@ const DocumentCard = ({
         <a
           href={url}
           target="_blank"
-          className={`col-span-${
-            signable ? (!signatureUrl ? "1" : "2") : "2"
+          className={`${
+            signable ? (!signatureUrl ? "col-span-1" : "col-span-2") : "col-span-2"
           } min-w-full`}
           onClick={() => setViewed(true)}
         >

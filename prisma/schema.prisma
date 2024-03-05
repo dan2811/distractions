@@ -118,7 +118,8 @@ model Event {
     packages                   Package[]
     Equipment                  Equipment[]
     jobs                       Job[]
-    contract                   Contract? 
+    contract                   Contract?
+    status                     String       @default("booked")
 }
 
 model Contract {
