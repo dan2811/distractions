@@ -358,6 +358,7 @@ const DetailsTab = () => {
 };
 
 const InstrumentsRequired = () => {
+  const refresh = useRefresh();
   const record: RaEvent = useRecordContext();
   const dataprovider = useDataProvider();
   const [eventJobs, setEventJobs] = useState<RaJob[]>([]);
@@ -366,6 +367,10 @@ const InstrumentsRequired = () => {
   useEffect(() => {
     const main = async () => {
       //TODO: Fix this. There is a bug somewhere that means that record.jobs is sometimes an array of strings (correct), and sometimes an array of objects (WRONG).
+      if (!Array.isArray(record?.jobs)) {
+        refresh();
+      };
+      if(!record?.jobs.length) return;
       if (typeof record?.jobs[0] !== "string") return;
       const jobs = await dataprovider.getMany<RaJob>("job", {
         ids: record.jobs,
