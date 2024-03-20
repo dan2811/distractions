@@ -79,6 +79,7 @@ import { UploadDropzone } from "~/utils/uploadthing";
 import Image from "next/image";
 import { FinanceTab } from "./FinanceTab";
 import { api } from "~/utils/api";
+import { useSession } from "next-auth/react";
 
 export const EventFilterSideBar = () => {
   const { data, isLoading } = useGetList<EventType>("eventType");
@@ -219,15 +220,18 @@ const ShowActions = () => (
 );
 
 export const EventShow = () => {
+  const session = useSession();
+  if(!session.data) return null;
+  const isSuperAdmin = session.data.user.role === "superAdmin";
   return (
     <Show actions={<ShowActions />}>
       <TabbedShowLayout>
         <TabbedShowLayout.Tab label="details">
           <DetailsTab />
         </TabbedShowLayout.Tab>
-        <TabbedShowLayout.Tab label="finance">
+        {isSuperAdmin && <TabbedShowLayout.Tab label="finance">
           <FinanceTab />
-        </TabbedShowLayout.Tab>
+        </TabbedShowLayout.Tab>}
       </TabbedShowLayout>
     </Show>
   );
