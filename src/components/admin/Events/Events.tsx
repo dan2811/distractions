@@ -70,7 +70,7 @@ import {
   Typography,
 } from "@mui/material";
 import CancelIcon from '@mui/icons-material/Cancel';
-import type { RequiredInstrumentsJSON } from "~/types";
+import { Role, type RequiredInstrumentsJSON } from "~/types";
 import TodayIcon from "@mui/icons-material/Today";
 import ColouredDateField from "../Fields/ColouredDateField";
 import type { RaUser } from "~/pages/api/RaHandlers/userHandler";
@@ -498,7 +498,8 @@ export const EventCreate = () => {
           source="date"
           parse={(val: string) => new Date(val).toISOString()}
         />
-        <ReferenceInput source="owner" label="Client" reference="user">
+        <ReferenceInput source="owner" label="Client" reference="user" filter={{
+          role_eq: "client"}}>
           <AutocompleteInput label="Client" />
         </ReferenceInput>
         <ReferenceInput
