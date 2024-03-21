@@ -18,7 +18,7 @@ import {
 export const EventTypeList = () => {
   return (
     <List>
-      <Datagrid rowClick="show">
+      <Datagrid rowClick="show" bulkActionButtons={false}>
         <TextField source="name" />
       </Datagrid>
     </List>

@@ -18,7 +18,7 @@ import {
 export const PackageList = () => {
   return (
     <List>
-      <DatagridConfigurable rowClick="show" omit={["id"]}>
+      <DatagridConfigurable rowClick="show" omit={["id"]} bulkActionButtons={false}>
         <TextField source="id" />
         <TextField source="name" />
       </DatagridConfigurable>
