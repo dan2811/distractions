@@ -165,9 +165,7 @@ const DocumentCard = ({
         <a
           href={url}
           target="_blank"
-          className={`${
-            signable ? (!signatureUrl ? "col-span-1" : "col-span-2") : "col-span-2"
-          } min-w-full`}
+          className={signable ? (!signatureUrl ? "col-span-1" : "col-span-2") : "col-span-2"}
           onClick={() => setViewed(true)}
         >
           <button className="w-full">VIEW</button>
