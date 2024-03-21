@@ -14,6 +14,8 @@ import {
   useRedirect,
 } from "react-admin";
 import type { RaJob } from "~/pages/api/RaHandlers/jobHandler";
+import type { Role } from "~/types";
+import { api } from "~/utils/api";
 
 const JobCreate = () => {
   const notify = useNotify();
@@ -58,20 +60,26 @@ const JobCreate = () => {
 
 export default JobCreate;
 
-interface MusicianFilter {
-  role: string[];
-  instruments?: string[];
-}
-
 const FilteredMusicianInput = () => {
   const { record } = useCreateContext<{
     id: Identifier;
-    instruments: string[] | null;
+    Instruments: string[] | null;
   }>();
   const notify = useNotify();
 
-  if (!record) return null;
-  if (!record.instruments) {
+  const query: { roles: Role[]; instruments?: string[] } = {
+    roles: ["admin", "musician", "superAdmin"],
+  };
+
+  if (record?.Instruments) {
+    query.instruments = record?.Instruments;
+  }
+
+  const { data: musicians, isLoading } = api.users.listUsers.useQuery(query);
+
+  if (!record || isLoading) return null;
+
+  if (!musicians ?? !musicians?.length) {
     notify(
       "There are no musicians that play this instrument! Please ensure the musician you want to add has this instrument on their profile.",
       {
@@ -81,20 +89,7 @@ const FilteredMusicianInput = () => {
     );
   }
 
-  const filter: MusicianFilter = {
-    role: ["musician", "admin", "superAdmin"],
-  };
-  if (record.instruments) filter.instruments = record.instruments;
-
   return (
-    <ReferenceInput
-      optionText="name"
-      source="musicianId"
-      reference="user"
-      validate={required()}
-      filter={filter}
-    >
-      <SelectInput />
-    </ReferenceInput>
+    <SelectInput choices={musicians} source="musicianId" optionText="name" />
   );
 };

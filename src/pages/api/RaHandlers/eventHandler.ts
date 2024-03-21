@@ -3,7 +3,6 @@ import type { NextApiResponse } from "next";
 import { type RaPayload, defaultHandler, createHandler, getListHandler, getManyHandler, getOneHandler, updateHandler } from "ra-data-simple-prisma";
 import { createDraftDepositInvoice, createDraftFinalInvoice } from "~/server/api/routers/paypal/helper";
 import { prisma } from "~/server/db";
-import { logger } from "~/utils/Logging";
 
 interface AugmentedEvent extends Event {
     packages: Package[];
@@ -114,7 +113,7 @@ export const eventHandler = async (req: { body: RaPayload; }, _: NextApiResponse
                 console.log("UPDATE RES: ", res);
                 return res;
             } catch (e) {
-                logger.error(`Error updating event: `, e as Record<string, unknown>);
+                console.error(`Error updating event: `, e as Record<string, unknown>);
                 throw new Error(`Error updating event`);
             }
         default:

@@ -3,7 +3,7 @@ import {
     adminProcedure,
     createTRPCRouter, protectedProcedure,
 } from "~/server/api/trpc";
-import { createDraftDepositInvoice, sendInvoice } from "./helper";
+import { createDraftDepositInvoice, getInvoice, sendInvoice } from "./helper";
 
 export const paypalRouter = createTRPCRouter({
     createDraftDepositInvoice: protectedProcedure.input(
@@ -30,5 +30,11 @@ export const paypalRouter = createTRPCRouter({
             type: z.union([z.literal("deposit"), z.literal("final")])
         })).mutation(async ({ input: { invoiceId, type } }) => {
             return sendInvoice(invoiceId, type);
-        })
+        }),
+    getInvoice: adminProcedure.input(z.object({
+        invoiceId: z.string(),
+        type: z.union([z.literal("deposit"), z.literal("final")])
+    })).query(async ({ input: { invoiceId, type } }) => { 
+        return getInvoice(invoiceId, type);
+    })
 });

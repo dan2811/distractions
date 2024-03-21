@@ -118,7 +118,8 @@ model Event {
     packages                   Package[]
     Equipment                  Equipment[]
     jobs                       Job[]
-    contract                   Contract? 
+    contract                   Contract?
+    status                     String       @default("booked")
 }
 
 model Contract {
@@ -175,8 +176,8 @@ model Instrument {
 model Package {
     id              String   @id @default(cuid())
     name            String   @unique
-    basePrice       Int
-    description     String
+    basePrice       Int?
+    description     String?
     createdAt        DateTime           @default(now())
     updatedAt        DateTime           @updatedAt
     events          Event[]

@@ -30,7 +30,7 @@ export const jobHandler = async (req: { body: RaPayload; }, _: NextApiResponse) 
             try {
                 await NotifyMusician(newJob.data as RaJob);
             } catch (e) {
-                logger.error("NOTIFY_MUSICIAN_ERROR", { details: e });
+                console.error("NOTIFY_MUSICIAN_ERROR", { details: e });
             }
             return newJob;
         case "getList":
