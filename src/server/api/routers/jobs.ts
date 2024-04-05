@@ -10,7 +10,8 @@ export const jobRouter = createTRPCRouter({
         .object({
           filter: z.object({
             status: z.string().optional(),
-            date_gte: z.string().optional(),
+            date_gte: z.date().optional(),
+            date_lte: z.date().optional(),
           }),
           includeEvents: z.boolean().optional().default(false),
         })
@@ -38,7 +39,13 @@ export const jobRouter = createTRPCRouter({
           event: {
             date: {
               gte: input?.filter?.date_gte,
+              lte: input?.filter?.date_lte,
             },
+          },
+        },
+        orderBy: {
+          event: {
+            date: "desc",
           },
         },
       });

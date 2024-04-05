@@ -11,7 +11,7 @@ export const Bookings = () => {
   return (
     <div>
       <Heading>
-        <h2>Bookings</h2>
+        <h2 className="themed-h2">Bookings</h2>
       </Heading>
       {isLoading && session.data?.user.role === "client" ? (
         <LoadingSpinner />

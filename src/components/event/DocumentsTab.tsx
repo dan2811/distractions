@@ -48,7 +48,7 @@ export const DocumentsTab = ({
         </p>
       )}
       {!generalDocuments?.length ? null : (
-        <h2 className="text-center text-xl font-light">Useful Documents</h2>
+        <h2 className="themed-h2 text-center">Useful Documents</h2>
       )}
       {isGeneralDocumentsLoading && <LoadingSpinner />}
       {generalDocuments?.map((document) => (
@@ -160,15 +160,21 @@ const DocumentCard = ({
   return (
     <div className="gap-6 p-4 md:max-w-lg">
       <span className="grid w-full grid-cols-2 items-center justify-between gap-2 place-self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 text-center bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
-        <h2 className="col-span-2">{name ?? "Your Document"}</h2>
+        <h2 className="themed-h2 col-span-2">{name ?? "Your Document"}</h2>
         <p className="col-span-2 overflow-auto">{description}</p>
         <a
           href={url}
           target="_blank"
-          className={signable ? (!signatureUrl ? "col-span-1" : "col-span-2") : "col-span-2"}
+          className={
+            signable
+              ? !signatureUrl
+                ? "col-span-1"
+                : "col-span-2"
+              : "col-span-2"
+          }
           onClick={() => setViewed(true)}
         >
-          <button className="w-full">VIEW</button>
+          <button className="themed-button w-full">VIEW</button>
         </a>
         {signatureUrl && (
           <div className="col-span-2 flex justify-center rounded-md p-2">
@@ -183,7 +189,7 @@ const DocumentCard = ({
         )}
         {signable && !signatureUrl && (
           <button
-            className="col-span-1"
+            className="themed-button col-span-1"
             onClick={() => setSignaturePadOpen(!signaturePadOpen)}
           >
             {signaturePadOpen ? "CANCEL" : "SIGN"}
@@ -223,7 +229,7 @@ const SignaturePad = ({
             sigCanvas.current.clear();
           }
         }}
-        className="flex justify-center gap-2"
+        className="themed-button flex justify-center gap-2"
       >
         <DeleteIcon />
         <span>RESET</span>
@@ -231,7 +237,7 @@ const SignaturePad = ({
       <button
         onClick={() => void handleSignContract()}
         disabled={isSigningContract}
-        className="flex justify-center gap-2"
+        className="themed-button flex justify-center gap-2"
       >
         <SaveIcon />
         <span>SAVE</span>

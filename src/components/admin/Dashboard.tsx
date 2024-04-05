@@ -10,14 +10,21 @@ import {
 import BlockIcon from "@mui/icons-material/Block";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import { useSession } from "next-auth/react";
-import { Loading, Title } from "react-admin";
+import { Link, Loading, Title } from "react-admin";
 import { api } from "~/utils/api";
+import type { DateRange } from "react-day-picker";
+import { addDays } from "date-fns";
+import { useState } from "react";
+import { DatePickerWithRange } from "../ui/dateRange";
+
+interface StatsProps {
+  dateRange: DateRange | undefined;
+}
 
 const About = () => {
   return (
-    <Paper>
+    <Paper className="p-4">
       <Typography variant="h4">How to:</Typography>
       <Typography variant="h6" mt={2}>
         Navigation
@@ -121,14 +128,16 @@ const StatsError = ({ title, label }: { title: string; label: string }) => (
   </Paper>
 );
 
-const EmailStats = () => {
+const EmailStats = ({ dateRange }: StatsProps) => {
   const { data, dataUpdatedAt, isLoading, isError } =
-    api.stats.getSendGridStats.useQuery();
+    api.stats.getSendGridStats.useQuery(dateRange);
 
   if (isLoading) return <Loading loadingPrimary="Getting Email stats" />;
 
-  if (data?.[0].statusCode !== 200 || isError)
+  if (isError) {
     return <StatsError title="Email" label="email stats" />;
+  }
+
   return (
     <Paper
       variant="outlined"
@@ -143,7 +152,8 @@ const EmailStats = () => {
       </Typography>
       <br />
       <Typography variant="caption">
-        These stats only apply to emails sent by the system
+        These stats only apply to emails sent by the system, we use Send Grid
+        for emails and that is where this data is pulled from.
       </Typography>
       <Table>
         <TableBody>
@@ -152,7 +162,7 @@ const EmailStats = () => {
               <Typography>Delivered</Typography>
             </TableCell>
             <TableCell>
-              <Typography>{data[1][0]?.stats[0]?.metrics.delivered}</Typography>
+              <Typography>{data.delivered}</Typography>
             </TableCell>
           </TableRow>
           <TableRow>
@@ -161,7 +171,7 @@ const EmailStats = () => {
               <Typography variant="caption">Limit is 100 per day</Typography>
             </TableCell>
             <TableCell>
-              <Typography>{data[1][0]?.stats[0]?.metrics.requests}</Typography>
+              <Typography>{data.requests}</Typography>
             </TableCell>
           </TableRow>
           <TableRow>
@@ -169,9 +179,7 @@ const EmailStats = () => {
               <Typography>Invalid emails</Typography>
             </TableCell>
             <TableCell>
-              <Typography>
-                {data[1][0]?.stats[0]?.metrics.invalid_emails}
-              </Typography>
+              <Typography>{data.invalid_emails}</Typography>
             </TableCell>
           </TableRow>
           <TableRow>
@@ -179,9 +187,7 @@ const EmailStats = () => {
               <Typography>Reported as spam</Typography>
             </TableCell>
             <TableCell>
-              <Typography>
-                {data[1][0]?.stats[0]?.metrics.spam_reports}
-              </Typography>
+              <Typography>{data.spam_reports}</Typography>
             </TableCell>
           </TableRow>
         </TableBody>
@@ -191,7 +197,8 @@ const EmailStats = () => {
 };
 
 const AppStats = () => {
-  const { data, isLoading, error, isError } = api.stats.getAppStats.useQuery();
+  const { data, isLoading, isError, dataUpdatedAt } =
+    api.stats.getAppStats.useQuery();
   if (isLoading) return <Loading loadingPrimary="Getting app stats..." />;
 
   if (isError) return <StatsError title="Email" label="email stats" />;
@@ -204,6 +211,13 @@ const AppStats = () => {
       }}
     >
       <Typography variant="h5">App</Typography>
+      <Typography variant="caption">
+        Last updated: {new Date(dataUpdatedAt).toLocaleTimeString("en-GB")}
+      </Typography>
+      <br />
+      <Typography variant="caption">
+        This data is not effected by the specified date range.
+      </Typography>
       <Table>
         <TableBody>
           <TableRow>
@@ -236,19 +250,255 @@ const AppStats = () => {
   );
 };
 
+const EventStats = ({ dateRange }: StatsProps) => {
+  const { data, isLoading, isError, dataUpdatedAt } =
+    api.stats.getEventStats.useQuery(dateRange);
+  if (isLoading) return <Loading loadingPrimary="Getting event stats..." />;
+
+  if (isError) return <StatsError title="Event" label="event stats" />;
+  return (
+    <Paper
+      variant="outlined"
+      style={{
+        backgroundColor: colors.blue[50],
+        padding: 10,
+      }}
+    >
+      <Typography variant="h4">Event</Typography>
+      <Typography variant="caption">
+        Last updated: {new Date(dataUpdatedAt).toLocaleTimeString("en-GB")}
+      </Typography>
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell>
+              <Typography>Created</Typography>
+              <Typography variant="caption">
+                Number of events created within the specified time frame
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography>{data.totalCreated}</Typography>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography>Scheduled</Typography>
+              <Typography variant="caption">
+                Number of events scheduled to take place within the specified
+                time frame
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography>{data.totalBooked}</Typography>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography>Cancelled</Typography>
+            </TableCell>
+            <TableCell>
+              <Typography>{data.totalCancelled}</Typography>
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </Paper>
+  );
+};
+
+const EventTypeStats = ({ dateRange }: StatsProps) => {
+  const { data, isLoading, isError, dataUpdatedAt } =
+    api.stats.getEventStats.useQuery(dateRange);
+
+  if (isLoading)
+    return <Loading loadingPrimary="Getting event types stats..." />;
+
+  if (isError) return <StatsError title="Event Types" label="event types" />;
+  return (
+    <Paper
+      variant="outlined"
+      style={{
+        backgroundColor: colors.blue[50],
+        padding: 10,
+      }}
+    >
+      <Typography variant="h5">Event Types:</Typography>
+      <Typography variant="caption">
+        Last updated: {new Date(dataUpdatedAt).toLocaleTimeString("en-GB")}
+      </Typography>
+      <Table>
+        <TableBody>
+          {data.totalGroupedByEventType.map(({ events, name }) => (
+            <TableRow key={name}>
+              <TableCell>
+                <Typography>{name}</Typography>
+              </TableCell>
+              <TableCell>
+                <Typography>{events.length}</Typography>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </Paper>
+  );
+};
+
+const EventPackagesStats = ({ dateRange }: StatsProps) => {
+  const { data, isLoading, isError, dataUpdatedAt } =
+    api.stats.getEventStats.useQuery(dateRange);
+
+  if (isLoading) return <Loading loadingPrimary="Getting packages stats..." />;
+
+  if (isError) return <StatsError title="Packages" label="packages" />;
+  return (
+    <Paper
+      variant="outlined"
+      style={{
+        backgroundColor: colors.blue[50],
+        padding: 10,
+      }}
+    >
+      <Typography variant="h5">Event Types:</Typography>
+      <Typography variant="caption">
+        Last updated: {new Date(dataUpdatedAt).toLocaleTimeString("en-GB")}
+      </Typography>
+      <Table>
+        <TableBody>
+          {data.totalGroupedByPackages.map(({ events, name }) => (
+            <TableRow key={name}>
+              <TableCell>
+                <Typography>{name}</Typography>
+              </TableCell>
+              <TableCell>
+                <Typography>{events.length}</Typography>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </Paper>
+  );
+};
+
+const FinanceStats = ({ dateRange }: StatsProps) => {
+  const { data, isLoading, isError, dataUpdatedAt } =
+    api.stats.getFinanceStats.useQuery(dateRange);
+
+  if (isLoading) return <Loading loadingPrimary="Getting finance stats..." />;
+
+  if (isError) return <StatsError title="Finance" label="packages" />;
+  return (
+    <Paper
+      variant="outlined"
+      style={{
+        backgroundColor: colors.blue[50],
+        padding: 10,
+      }}
+    >
+      <Typography variant="h5">Finance</Typography>
+      <Typography variant="caption">
+        Last updated: {new Date(dataUpdatedAt).toLocaleTimeString("en-GB")}
+      </Typography>
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell>
+              <Typography>Gross Revenue</Typography>
+            </TableCell>
+            <TableCell>
+              {data.totalRevenue ? (
+                <Typography>£{data.totalRevenue}</Typography>
+              ) : (
+                <Typography>No data</Typography>
+              )}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography>Average event price</Typography>
+            </TableCell>
+            <TableCell>
+              {data.averagePrice ? (
+                <Typography>£{data.averagePrice}</Typography>
+              ) : (
+                <Typography>No data</Typography>
+              )}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography>Max event price</Typography>
+            </TableCell>
+            <TableCell>
+              {data.maxPrice ? (
+                <Link to={`/event/${data.mostExpensiveEvent?.id}/show`}>
+                  <Typography>£{data.maxPrice}</Typography>
+                </Link>
+              ) : (
+                <Typography>No data</Typography>
+              )}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography>Min event price</Typography>
+            </TableCell>
+            <TableCell>
+              {data.minPrice ? (
+                <Link to={`/event/${data.cheapestEvent?.id}/show`}>
+                  <Typography>£{data.minPrice}</Typography>
+                </Link>
+              ) : (
+                <Typography>No data</Typography>
+              )}
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </Paper>
+  );
+};
+
 const Stats = () => {
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: new Date(),
+    to: addDays(new Date(), 1),
+  });
   return (
     <Card>
       <CardContent>
-        <Typography variant="h3">Stats</Typography>
-        <Grid2 container spacing={3}>
-          <Grid2 xs={6}>
-            <EmailStats />
-          </Grid2>
-          <Grid2 xs={6}>
-            <AppStats />
-          </Grid2>
-        </Grid2>
+        <div className="flex flex-row items-center gap-4 pb-4">
+          <Typography variant="h3">Stats</Typography>
+          <DatePickerWithRange date={date} setDate={setDate} />
+        </div>
+        <div className="gap-4 xl:flex ">
+          <div className="flex flex-col gap-4 xl:w-1/3">
+            <div>
+              <FinanceStats dateRange={date} />
+            </div>
+            <div>
+              <EventStats dateRange={date} />
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 xl:w-1/3">
+            <div>
+              <EmailStats dateRange={date} />
+            </div>
+            <div>
+              <AppStats />
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 xl:w-1/3">
+            <div>
+              <EventTypeStats dateRange={date} />
+            </div>
+            <div>
+              <EventPackagesStats dateRange={date} />
+            </div>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
@@ -261,14 +511,9 @@ const Dashboard = () => {
   return (
     <Card sx={{ marginTop: 1 }}>
       <Title title="Admin console" />
-      <CardContent>
-        <Typography variant="h4">
-          Hello{user?.name ? " " + user.name : ""},
-        </Typography>
-        <br />
-        <Typography variant="h5">Welcome to the admin console.</Typography>
+      <CardContent className="flex gap-4">
+        {/* <About /> */}
         <Stats />
-        <About />
       </CardContent>
     </Card>
   );

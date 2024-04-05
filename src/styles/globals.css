@@ -1,22 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 body {
   @apply bg-black font-body font-thin text-slate-100;
 }
 
-h2 {
+.themed-h2 {
   @apply font-headers text-2xl font-normal;
 }
 
-button,
-button[type="submit"] {
+.themed-button {
   @apply rounded-md bg-main-accent p-2 font-headers text-xl font-normal text-white;
 }
 
-input,
-textarea,
-select {
+.themed-input {
   @apply rounded bg-main-input;
 }

@@ -13,7 +13,7 @@ export const GigOffers = () => {
   return (
     <div>
       <Heading>
-        <h2>Gig Offers</h2>
+        <h2 className="themed-h2">Gig Offers</h2>
       </Heading>
       {isLoading ? (
         <LoadingSpinner />

@@ -32,7 +32,7 @@ const Profile = () => {
       ) : (
         <>
           <Heading>
-            <h2>Profile</h2>
+            <h2 className="themed-h2">Profile</h2>
           </Heading>
           <div className="flex flex-col gap-6 p-4">
             <ProfileAttribute
@@ -111,12 +111,12 @@ const ProfileAttribute = ({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           pattern={pattern}
-          className="col-span-4 w-full rounded-lg bg-main-input bg-opacity-60 p-2"
+          className="themed-input col-span-4 w-full p-2"
         />
         <div className="col-span-2 flex justify-center">
           <button
             type="submit"
-            className="w-3/4 bg-main-accent text-sm disabled:opacity-30"
+            className="themed-button w-3/4 text-sm disabled:opacity-30"
             disabled={isLoading}
           >
             SAVE
@@ -186,7 +186,7 @@ const InstrumentsSelect = ({ userId }: { userId: string }) => {
         <div className="col-span-2 flex justify-center">
           <button
             type="submit"
-            className="w-3/4 bg-main-accent text-sm disabled:opacity-30"
+            className="themed-button w-3/4 text-sm disabled:opacity-30"
             disabled={isLoading}
           >
             SAVE

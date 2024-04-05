@@ -11,7 +11,7 @@ const contact = () => {
       pageDescription="Get in touch with us about your booking."
     >
       <Heading>
-        <h2>Contact</h2>
+        <h2 className="themed-h2">Contact</h2>
       </Heading>
       <div className="flex w-full self-center p-4">
         <div className="flex w-full content-between rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-6 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
