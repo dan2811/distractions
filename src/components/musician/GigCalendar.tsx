@@ -42,6 +42,15 @@ export const GigCalendar = ({
     );
   };
 
+  const isToday = (date: Date) => {
+    const today = new Date();
+    return (
+      today.getDate() === date.getDate() &&
+      today.getMonth() === date.getMonth() &&
+      today.getFullYear() === date.getFullYear()
+    );
+  };
+
   const isSelected = (date: Date) => {
     return (
       selectedDate &&
@@ -85,7 +94,7 @@ export const GigCalendar = ({
           "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
         ),
         day_range_end: "day-range-end",
-        day_today: "text-accent-foreground",
+        day_today: "text-accent-foreground border-2 border-main-accent",
         day_disabled: "text-muted-foreground opacity-50",
         day_range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
@@ -103,16 +112,17 @@ export const GigCalendar = ({
               className={cn(
                 "day relative",
                 isHighlighted(date)
-                  ? `rounded-md p-2 font-headers text-xl font-normal text-main-accent`
-                  : "rounded-md p-2 font-headers text-xl font-normal text-slate-400",
-                isSelected(date) && "bg-main-accent text-primary-foreground",
+                  ? `w-full rounded-md p-1 font-headers text-xl font-normal text-main-accent`
+                  : "w-full rounded-md p-1 font-headers text-xl font-normal text-slate-400",
+                isSelected(date) && "text-primary-foreground bg-main-accent",
                 isOutsideCurrentMonth(date, displayMonth) && "hidden",
+                isToday(date) && "border-2 border-main-accent",
               )}
             >
               {isHighlighted(date) && (
                 <div
                   className={cn(
-                    "absolute left-1/2 top-1 h-2 w-2 -translate-x-1/2 transform rounded-full",
+                    "absolute left-1/2 top-0.5 h-2 w-2 -translate-x-1/2 transform rounded-full",
                     isSelected(date) ? "bg-black" : "bg-main-accent",
                   )}
                 ></div>
