@@ -83,9 +83,7 @@ export const Gigs = () => {
           <ViewToggle setView={setView} />
         </div>
       </div>
-      {isLoading ? (
-        <LoadingSpinner />
-      ) : view === "calendar" ? (
+      {view === "calendar" ? (
         <>
           <div className="flex w-full items-center justify-center p-4">
             <GigCalendar
@@ -94,6 +92,9 @@ export const Gigs = () => {
               setSelectedDate={setSelectedDate}
               selectedDate={selectedDate}
               setCurrentMonth={setCurrentMonth}
+              setCurrentYear={setCurrentYear}
+              currentMonth={currentMonth}
+              currentYear={currentYear}
             />
           </div>
           <JobCard jobs={selectedJobs} />
@@ -101,13 +102,24 @@ export const Gigs = () => {
       ) : (
         <>
           <div className="flex w-2/3 gap-2 pl-4 pt-4">
-            <MonthSelect setCurrentMonth={setCurrentMonth} />
-            <YearSelect setCurrentYear={setCurrentYear} />
+            <MonthSelect
+              setCurrentMonth={setCurrentMonth}
+              currentMonth={currentMonth}
+            />
+            <YearSelect
+              setCurrentYear={setCurrentYear}
+              currentYear={currentYear}
+            />
           </div>
-          {!jobs?.length && <p className="p-2 font-body">No gigs</p>}
-          <p className="flex flex-col gap-4 p-4 font-body">
-            {jobs?.map((job) => <GigListItem job={job} key={job.id} />)}
-          </p>
+          {isLoading ? (
+            <LoadingSpinner />
+          ) : !jobs?.length ? (
+            <p className="p-2 font-body">No gigs</p>
+          ) : (
+            <p className="flex flex-col gap-4 p-4 font-body">
+              {jobs?.map((job) => <GigListItem job={job} key={job.id} />)}
+            </p>
+          )}
         </>
       )}
     </div>
@@ -116,12 +128,19 @@ export const Gigs = () => {
 
 const MonthSelect = ({
   setCurrentMonth,
+  currentMonth,
 }: {
   setCurrentMonth: (input: Date) => void;
+  currentMonth: Date;
 }) => {
   return (
     <Select
-      defaultValue={new Date().getMonth().toString(10)}
+      defaultValue={
+        !currentMonth
+          ? new Date().getMonth().toString(10)
+          : currentMonth.getMonth().toString(10)
+      }
+      value={currentMonth.getMonth().toString(10)}
       onValueChange={(e) =>
         setCurrentMonth(new Date(new Date().setMonth(parseInt(e))))
       }
@@ -129,7 +148,7 @@ const MonthSelect = ({
       <SelectTrigger className="w-1/2">
         <SelectValue placeholder="Month" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent style={{ zIndex: 1000000 }}>
         <SelectGroup>
           <SelectLabel>Months</SelectLabel>
           <SelectItem value="0">January</SelectItem>
@@ -152,17 +171,19 @@ const MonthSelect = ({
 
 const YearSelect = ({
   setCurrentYear,
+  currentYear,
 }: {
   setCurrentYear: (input: Date) => void;
+  currentYear: Date;
 }) => {
-  const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 9 }, (_, i) =>
-    (currentYear - 4 + i).toString(),
+    (currentYear.getFullYear() - 4 + i).toString(),
   );
 
   return (
     <Select
-      defaultValue={currentYear.toString()}
+      defaultValue={currentYear.getFullYear().toString()}
+      value={currentYear.getFullYear().toString()}
       onValueChange={(e) =>
         setCurrentYear(new Date(new Date().setFullYear(parseInt(e))))
       }

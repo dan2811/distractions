@@ -22,6 +22,9 @@ export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
   selectedDate?: Date;
   setSelectedDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
   setCurrentMonth: React.Dispatch<React.SetStateAction<Date>>;
+  setCurrentYear: React.Dispatch<React.SetStateAction<Date>>;
+  currentMonth: Date;
+  currentYear: Date;
 };
 
 export const GigCalendar = ({
@@ -31,6 +34,9 @@ export const GigCalendar = ({
   selectedDate,
   setSelectedDate,
   setCurrentMonth,
+  setCurrentYear,
+  currentMonth,
+  currentYear,
   ...props
 }: CalendarProps) => {
   const isHighlighted = (date: Date) => {
@@ -101,7 +107,18 @@ export const GigCalendar = ({
         day_hidden: "invisible",
         ...classNames,
       }}
-      onMonthChange={(month) => setCurrentMonth(month)}
+      onMonthChange={(month) => {
+        setCurrentMonth(month);
+        setCurrentYear(month);
+      }}
+      month={
+        new Date(
+          new Date().setFullYear(
+            currentYear.getFullYear(),
+            currentMonth.getMonth(),
+          ),
+        )
+      }
       components={{
         Day: ({ date, displayMonth }) => {
           return (
