@@ -21,18 +21,37 @@ interface JobCardProps {
 const JobCard = ({ jobs }: JobCardProps) => {
   console.log(jobs);
   if (!jobs) return null;
-  return jobs.map((job) => (
-    <div key={job.id}>
-      <p>Event Name: {job.event.name}</p>
-      <p>Location: {job.event.location}</p>
-      <p>Last Updated: {job.updatedAt.toLocaleDateString("en-gb")}</p>
-      <p>Created At: {job.createdAt.toLocaleDateString("en-gb")}</p>
-      <p>Status: {job.status}</p>
-      <p>Hotel booked? {job.hotelBooked}</p>
-      <p>Hotel Info: {job.hotelInfo}</p>
-      <p>Notes: {job.notes}</p>
+  return (
+    <div className="flex flex-col gap-4 p-4">
+      {jobs.map((job) => (
+        <div
+          key={job.id}
+          className="flex flex-col rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-600/50 p-4 px-2 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md"
+        >
+          <div>
+            <p className="text-left text-lg font-light">Event Name:</p>
+            <p>{job.event.name}</p>
+          </div>
+          <div>
+            <p className="text-left text-lg font-light">Location:</p>
+            <p>{job.event.location}</p>
+          </div>
+          <div>
+            <p className="text-left text-lg font-light">Status:</p>
+            <p>{job.status}</p>
+          </div>
+          <div>
+            {job.notes ? (
+              <>
+                <p className="text-left text-lg font-light">Notes:</p>
+                <p>{job.notes}</p>
+              </>
+            ) : null}
+          </div>
+        </div>
+      ))}
     </div>
-  ));
+  );
 };
 
 export default JobCard;
