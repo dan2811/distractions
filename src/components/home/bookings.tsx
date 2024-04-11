@@ -1,19 +1,26 @@
-import { useSession } from "next-auth/react";
-import { api } from "~/utils/api";
 import { Heading } from "../Layout/Heading";
 import { LoadingSpinner } from "../LoadingSpinner";
 import { EventListItem } from "./EventListItem";
+import type { UseTRPCQueryResult } from "@trpc/react-query/shared";
+import type { TRPCClientErrorLike } from "@trpc/client";
+import type { inferRouterOutputs } from "@trpc/server";
+import type { AppRouter } from "~/server/api/root";
 
-export const Bookings = () => {
-  const session = useSession();
-  const { data, isLoading } = api.events.getMyBookings.useQuery();
-  if (session.data?.user.role !== "client" && !data?.length) return null;
+export const Bookings = ({
+  bookings,
+}: {
+  bookings: UseTRPCQueryResult<
+    inferRouterOutputs<AppRouter>["events"]["getMyBookings"],
+    TRPCClientErrorLike<AppRouter>
+  >;
+}) => {
+  const { data, isLoading } = bookings;
   return (
     <div>
       <Heading>
         <h2 className="themed-h2">Bookings</h2>
       </Heading>
-      {isLoading && session.data?.user.role === "client" ? (
+      {isLoading ? (
         <LoadingSpinner />
       ) : (
         <div className="flex flex-col gap-4 p-4 font-body">

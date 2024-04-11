@@ -17,10 +17,19 @@ const EventDetails = () => {
     id: id as string,
   });
 
+  if (!currentTab) {
+    void router.replace({
+      query: {
+        ...router.query,
+        tab: "0",
+      },
+    });
+  }
+
   const [tab, setTab] = useState(0);
 
   useEffect(() => {
-    setTab(parseInt(currentTab as string));
+    setTab(parseInt((currentTab as string) ?? 0));
   }, [currentTab]);
 
   if (isLoading) return <LoadingSpinner />;
@@ -44,7 +53,7 @@ const EventDetails = () => {
       <BottomNavigation
         showLabels
         value={tab}
-        onChange={(event, newValue: number) => {
+        onChange={(_event, newValue: number) => {
           void router.push(`/event/${id as string}?tab=${newValue}`);
         }}
         sx={{
