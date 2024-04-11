@@ -4,7 +4,6 @@ import { LoadingSpinner } from "../LoadingSpinner";
 import { GigListItem } from "./GigListItem";
 import { GigCalendar } from "../musician/GigCalendar";
 import { useState } from "react";
-import JobCard from "../musician/JobCard";
 import { List, Calendar } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import {
@@ -19,11 +18,13 @@ import {
 
 export function ViewToggle({
   setView,
+  view,
 }: {
   setView: (view: "calendar" | "list") => void;
+  view: "calendar" | "list";
 }) {
   return (
-    <ToggleGroup type="single" defaultValue="calendar">
+    <ToggleGroup type="single" defaultValue={view}>
       <ToggleGroupItem
         value="calendar"
         aria-label="Toggle calendar view"
@@ -43,10 +44,37 @@ export function ViewToggle({
 }
 
 export const Gigs = () => {
-  const [selectedDate, setSelectedDate] = useState<undefined | Date>();
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  if (!localStorage.getItem("gigs-view-preference")) {
+    localStorage.setItem("gigs-view-preference", "calendar");
+  }
+  const viewPreference = localStorage.getItem("gigs-view-preference");
+  const cachedCurrentMonth = sessionStorage.getItem("gig-list-current-month");
+  const cachedCurrentYear = sessionStorage.getItem("gig-list-current-year");
+  const [selectedDate, setSelectedDate] = useState<undefined | Date>(
+    new Date(cachedCurrentYear ?? new Date()),
+  );
+  const [currentMonth, setCurrentMonth] = useState(
+    new Date(cachedCurrentMonth ?? new Date()),
+  );
   const [currentYear, setCurrentYear] = useState(new Date());
-  const [view, setView] = useState<"calendar" | "list">("calendar");
+  const [view, setView] = useState<"calendar" | "list">(
+    (viewPreference as "calendar" | "list") ?? "calendar",
+  );
+
+  const setViewPreference = (input: "calendar" | "list") => {
+    localStorage.setItem("gigs-view-preference", input);
+    setView(input);
+  };
+
+  const setCurrentMonthWrapper = (input: Date) => {
+    setCurrentMonth(input);
+    sessionStorage.setItem("gig-list-current-month", input.toISOString());
+  };
+
+  const setCurrentYearWrapper = (input: Date) => {
+    setCurrentYear(input);
+    sessionStorage.setItem("gig-list-current-year", currentYear.toISOString());
+  };
 
   // use current month to get the first and last day of the month
   const firstDay = new Date(
@@ -80,10 +108,10 @@ export const Gigs = () => {
           <h2 className="themed-h2">Gigs</h2>
         </Heading>
         <div className="flex items-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 px-2 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
-          <ViewToggle setView={setView} />
+          <ViewToggle setView={setViewPreference} view={view} />
         </div>
       </div>
-      {view === "calendar" ? (
+      {viewPreference === "calendar" ? (
         <>
           <div className="flex w-full items-center justify-center p-4">
             <GigCalendar
@@ -91,17 +119,20 @@ export const Gigs = () => {
               highlightedDates={jobs}
               setSelectedDate={setSelectedDate}
               selectedDate={selectedDate}
-              setCurrentMonth={setCurrentMonth}
-              setCurrentYear={setCurrentYear}
+              setCurrentMonth={setCurrentMonthWrapper}
+              setCurrentYear={setCurrentYearWrapper}
               currentMonth={currentMonth}
               currentYear={currentYear}
             />
           </div>
-          <JobCard jobs={selectedJobs} />
+
+          <div className="flex flex-col gap-4 px-4 pb-4 font-body">
+            {selectedJobs?.map((job) => <GigListItem job={job} key={job.id} />)}
+          </div>
         </>
       ) : (
         <>
-          <div className="flex w-2/3 gap-2 pl-4 pt-4">
+          <div className="flex w-2/3 gap-2 pl-4 pt-4 font-headers font-normal">
             <MonthSelect
               setCurrentMonth={setCurrentMonth}
               currentMonth={currentMonth}
@@ -114,11 +145,15 @@ export const Gigs = () => {
           {isLoading ? (
             <LoadingSpinner />
           ) : !jobs?.length ? (
-            <p className="p-2 font-body">No gigs</p>
+            <div className="flex flex-col gap-4 p-4 font-body">
+              <p className="flex h-1/2 w-full items-center justify-between gap-2 rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 text-center bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md md:max-w-md">
+                No gigs
+              </p>
+            </div>
           ) : (
-            <p className="flex flex-col gap-4 p-4 font-body">
+            <div className="flex flex-col gap-4 p-4 font-body">
               {jobs?.map((job) => <GigListItem job={job} key={job.id} />)}
-            </p>
+            </div>
           )}
         </>
       )}

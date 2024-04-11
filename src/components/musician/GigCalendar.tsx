@@ -21,8 +21,8 @@ export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
   }>[];
   selectedDate?: Date;
   setSelectedDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
-  setCurrentMonth: React.Dispatch<React.SetStateAction<Date>>;
-  setCurrentYear: React.Dispatch<React.SetStateAction<Date>>;
+  setCurrentMonth: (input: Date) => void;
+  setCurrentYear: (input: Date) => void;
   currentMonth: Date;
   currentYear: Date;
 };
