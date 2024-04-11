@@ -12,6 +12,7 @@ import {
   useCreateContext,
   useNotify,
   useRedirect,
+  TextInput,
 } from "react-admin";
 import type { RaJob } from "~/pages/api/RaHandlers/jobHandler";
 import type { Role } from "~/types";
@@ -51,7 +52,7 @@ const JobCreate = () => {
           defaultValue={0}
           disabled
         />
-
+        <TextInput source="notes" multiline />
         <BooleanInput source="isMd" defaultValue={false} label="MD" />
       </SimpleForm>
     </Create>
