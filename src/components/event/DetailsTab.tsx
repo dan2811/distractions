@@ -1,13 +1,8 @@
 import { useRouter } from "next/router";
-import React, {
-  type Dispatch,
-  type HTMLInputTypeAttribute,
-  type SetStateAction,
-  useState,
-} from "react";
+import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
-import { type RouterInputs, api } from "~/utils/api";
+import { api } from "~/utils/api";
 import { Chip } from "@mui/material";
 
 export const DetailsTab = () => {
@@ -21,8 +16,7 @@ export const DetailsTab = () => {
     location: data?.location ?? "",
   });
 
-  const { isLoading: isMutationLoading, mutateAsync } =
-    api.events.updateEvent.useMutation();
+  const { mutateAsync } = api.events.updateEvent.useMutation();
 
   if (!id) return 404;
 
@@ -118,47 +112,6 @@ export const DetailsTab = () => {
           </div>
         </div>
       </span>
-    </div>
-  );
-};
-
-interface AttributeProps<FormValues> {
-  fieldName: keyof FormValues;
-  label: string;
-  inputType: HTMLInputTypeAttribute;
-  formValues: FormValues;
-  setFormValues: Dispatch<SetStateAction<FormValues>>;
-  validationPattern?: string;
-  editMode: boolean;
-}
-
-const Attribute = ({
-  fieldName,
-  label,
-  inputType,
-  formValues,
-  setFormValues,
-  validationPattern,
-  editMode,
-}: AttributeProps<RouterInputs["events"]["updateEvent"]>) => {
-  return (
-    <div className="grid grid-cols-6 p-2">
-      {editMode && (
-        <label htmlFor={fieldName} className="col-span-2 self-start">
-          {label}:
-        </label>
-      )}
-      <input
-        type={inputType}
-        id={fieldName}
-        value={formValues[fieldName]}
-        onChange={(e) =>
-          setFormValues({ ...formValues, [fieldName]: e.target.value })
-        }
-        pattern={validationPattern}
-        className="col-span-4 w-full bg-main-input p-2 disabled:bg-opacity-0"
-        disabled={!editMode}
-      />
     </div>
   );
 };

@@ -12,7 +12,7 @@ import { Chip } from "@mui/material";
 import type { UseQueryResult } from "@tanstack/react-query";
 
 const Profile = () => {
-  const { data: sessionData, status, update } = useSession();
+  const { data: sessionData, status } = useSession();
   const {
     data: user,
     isLoading,

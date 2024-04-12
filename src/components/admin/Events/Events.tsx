@@ -70,7 +70,7 @@ import {
   Typography,
 } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { Role, type RequiredInstrumentsJSON } from "~/types";
+import type { RequiredInstrumentsJSON } from "~/types";
 import TodayIcon from "@mui/icons-material/Today";
 import ColouredDateField from "../Fields/ColouredDateField";
 import type { RaUser } from "~/pages/api/RaHandlers/userHandler";
