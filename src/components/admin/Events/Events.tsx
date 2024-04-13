@@ -80,7 +80,6 @@ import Image from "next/image";
 import { FinanceTab } from "./FinanceTab";
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
 
 export const EventFilterSideBar = () => {
   const { data, isLoading } = useGetList<EventType>("eventType");
