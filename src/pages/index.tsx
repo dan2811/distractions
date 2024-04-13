@@ -9,6 +9,7 @@ import type { Role } from "~/types";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
+import NextGig from "~/components/home/NextGig";
 
 const Home = () => {
   const session = useSession();
@@ -62,6 +63,7 @@ const AuthenticatedHomePage = ({
         <Bookings bookings={bookings} />
       )}
       {!isClient && <GigOffers />}
+      {!isClient && <NextGig />}
       {!isClient && <Gigs />}
     </>
   );

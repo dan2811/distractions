@@ -1,3 +1,4 @@
+import { addDays } from "date-fns";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
@@ -46,6 +47,58 @@ export const jobRouter = createTRPCRouter({
         orderBy: {
           event: {
             date: "desc",
+          },
+        },
+      });
+    }),
+  getMyNextJobs: protectedProcedure
+    .input(
+      z
+        .object({
+          includeEvents: z.boolean().optional().default(false),
+        })
+        .optional(),
+    )
+    .query(({ ctx, input }) => {
+      const include: { Instruments: boolean; event?: object } = {
+        Instruments: true,
+      };
+      if (input?.includeEvents) {
+        include.event = {
+          select: {
+            id: true,
+            date: true,
+            name: true,
+            location: true,
+          },
+        };
+      }
+      return prisma.job.findMany({
+        include,
+        where: {
+          musicianId: ctx.session.user.id,
+          OR: [
+            {
+              status: {
+                contains: "accepted",
+              },
+            },
+            {
+              status: {
+                contains: "pending",
+              },
+            },
+          ],
+          event: {
+            date: {
+              gte: new Date(),
+            },
+          },
+        },
+        take: 1,
+        orderBy: {
+          event: {
+            date: "asc",
           },
         },
       });
