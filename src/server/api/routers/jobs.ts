@@ -83,4 +83,35 @@ export const jobRouter = createTRPCRouter({
         },
       });
     }),
+  test: protectedProcedure.query(async ({ ctx }) => {
+    const updated = await ctx.prisma.job.update({
+      data: {
+        id: "clsxmx34b000ulg7fkgithcb4",
+        pay: 250,
+        isMd: false,
+        notes: "Please bring your own bongos",
+        status: "accepted",
+        createdAt: "2024-02-22T19:47:10.476Z",
+        updatedAt: "2024-04-03T16:10:29.853Z",
+        musicianId: "clsxmwzku000jlg7fcavb9lvd",
+        eventId: "clsxmx0pl000nlg7fb28ak9cn",
+        hotelNeeded: false,
+        hotelBooked: false,
+        hotelInfo: null,
+        Instruments: {
+          set: [
+            {
+              id: "clsxmwx3a0004lg7fh46pu2m8",
+            },
+            {
+              id: "clsxmwxiq0007lg7fjo563bk4",
+            },
+          ],
+        },
+      },
+      where: {
+        id: "clsxmx34b000ulg7fkgithcb4",
+      },
+    });
+  }),
 });

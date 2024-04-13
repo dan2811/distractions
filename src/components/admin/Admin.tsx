@@ -35,12 +35,12 @@ import {
 } from "./Package/Package";
 import Dashboard from "./Dashboard";
 import MyAppBar from "./AppBar";
-import JobCreate from "./Jobs/Create";
 import {
   GeneralDocumentCreate,
   GeneralDocumentList,
   GeneralDocumentShow,
 } from "./GeneralDocuments/GeneralDocumentList";
+import { JobCreate, JobEdit, JobShow } from "./Jobs";
 
 export const MyLayout = (props: LayoutProps) => (
   <>
@@ -120,7 +120,7 @@ const AdminApp = () => {
         create={GeneralDocumentCreate}
         icon={ArticleIcon}
       />
-      <Resource name="job" create={JobCreate} />
+      <Resource name="job" create={JobCreate} show={JobShow} edit={JobEdit} />
     </Admin>
   );
 };

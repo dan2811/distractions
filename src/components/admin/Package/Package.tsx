@@ -18,7 +18,11 @@ import {
 export const PackageList = () => {
   return (
     <List>
-      <DatagridConfigurable rowClick="show" omit={["id"]} bulkActionButtons={false}>
+      <DatagridConfigurable
+        rowClick="show"
+        omit={["id"]}
+        bulkActionButtons={false}
+      >
         <TextField source="id" />
         <TextField source="name" />
       </DatagridConfigurable>
@@ -37,7 +41,7 @@ export const PackageShow = () => {
         </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label="Events">
           <ReferenceArrayField source="events" reference="Event">
-            <Datagrid rowClick="show">
+            <Datagrid rowClick="show" bulkActionButtons={false}>
               <TextField source="name" />
               <DateField source="date" />
             </Datagrid>

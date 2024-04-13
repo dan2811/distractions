@@ -80,6 +80,7 @@ import Image from "next/image";
 import { FinanceTab } from "./FinanceTab";
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export const EventFilterSideBar = () => {
   const { data, isLoading } = useGetList<EventType>("eventType");
@@ -413,6 +414,7 @@ const InstrumentsRequired = () => {
   const dataprovider = useDataProvider();
   const [eventJobs, setEventJobs] = useState<RaJob[]>([]);
   const [musicians, setMusicians] = useState<RaUser[]>([]);
+  const redirect = useRedirect();
 
   useEffect(() => {
     const main = async () => {
@@ -474,6 +476,9 @@ const InstrumentsRequired = () => {
                   label={`${job.isMd ? "MD - " : ""}${
                     musician?.name ?? "unknown musician"
                   }: ${job.status}`}
+                  onClick={() => {
+                    void redirect(`show`, "job", job.id);
+                  }}
                   sx={{
                     backgroundColor:
                       globalColors.jobStatus[parseJobStatus(job.status)],

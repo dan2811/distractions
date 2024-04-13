@@ -6,6 +6,7 @@ import {
   getListHandler,
   getManyHandler,
   getOneHandler,
+  updateHandler,
 } from "ra-data-simple-prisma";
 import { prisma } from "~/server/db";
 import NotifyMusician from "../notifications/notifyMusician";
@@ -98,6 +99,23 @@ export const jobHandler = async (
         ),
       };
       return { data: job };
+    case "update":
+      try {
+        const res = await updateHandler<Prisma.JobUpdateArgs>(
+          req.body,
+          prisma.job,
+          {
+            set: {
+              Instruments: "id",
+            },
+          },
+        );
+        console.log("UPDATE RES: ", res);
+        return res;
+      } catch (e) {
+        console.error(`Error updating event: `, e as Record<string, unknown>);
+        throw new Error(`Error updating event`);
+      }
     default:
       return await defaultHandler(req.body, prisma);
   }

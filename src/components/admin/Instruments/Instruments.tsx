@@ -19,7 +19,11 @@ import {
 export const InstrumentList = () => {
   return (
     <List>
-      <DatagridConfigurable rowClick="show" omit={["id"]} bulkActionButtons={false}>
+      <DatagridConfigurable
+        rowClick="show"
+        omit={["id"]}
+        bulkActionButtons={false}
+      >
         <TextField source="id" />
         <TextField source="name" />
       </DatagridConfigurable>
@@ -38,7 +42,7 @@ export const InstrumentShow = () => {
         </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label="Musicians">
           <ReferenceArrayField source="musicians" reference="User">
-            <Datagrid rowClick="show">
+            <Datagrid rowClick="show" bulkActionButtons={false}>
               <TextField source="name" />
               <TextField source="email" />
             </Datagrid>
@@ -46,11 +50,11 @@ export const InstrumentShow = () => {
         </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label="Events">
           <ReferenceArrayField source="jobs" reference="Job" label="Events">
-            <Datagrid rowClick="show">
+            <Datagrid rowClick="show" bulkActionButtons={false}>
               <ReferenceField source="eventId" reference="Event">
                 <TextField source="name" />
               </ReferenceField>
-              <ReferenceField source="eventId" reference="Event">
+              <ReferenceField source="eventId" reference="Event" label="Date">
                 <DateField source="date" />
               </ReferenceField>
             </Datagrid>

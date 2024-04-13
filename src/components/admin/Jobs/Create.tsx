@@ -18,7 +18,7 @@ import type { RaJob } from "~/pages/api/RaHandlers/jobHandler";
 import type { Role } from "~/types";
 import { api } from "~/utils/api";
 
-const JobCreate = () => {
+export const JobCreate = () => {
   const notify = useNotify();
   const redirect = useRedirect();
   const onSuccess = (data: RaJob) => {
@@ -58,8 +58,6 @@ const JobCreate = () => {
     </Create>
   );
 };
-
-export default JobCreate;
 
 const FilteredMusicianInput = () => {
   const { record } = useCreateContext<{

@@ -69,7 +69,7 @@ const Events = () => {
 
   return (
     <ReferenceArrayField source="jobs" reference="Job">
-      <Datagrid rowClick="show" resource="event">
+      <Datagrid rowClick="show" resource="event" bulkActionButtons={false}>
         <ReferenceField
           source="eventId"
           reference="Event"
