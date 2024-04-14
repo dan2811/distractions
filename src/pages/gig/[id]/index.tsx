@@ -148,7 +148,11 @@ const DetailsTab = ({ event }: { event: Event }) => {
         </>
       )}
       <h2 className="themed-h2">Pay</h2>
-      <div>No payment Information yet</div>
+      {jobData?.pay ? (
+        <div>£{jobData?.pay}</div>
+      ) : (
+        <div>No payment info yet</div>
+      )}
     </div>
   );
 };

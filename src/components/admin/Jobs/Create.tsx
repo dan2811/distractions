@@ -45,13 +45,12 @@ export const JobCreate = () => {
         >
           <SelectArrayInput optionText="name" disabled />
         </ReferenceArrayInput>
-        <FilteredMusicianInput />
-        <NumberInput
-          source="pay"
+        <ReferenceInput
+          source="wages"
+          reference="wages"
           validate={required()}
-          defaultValue={0}
-          disabled
         />
+        <FilteredMusicianInput />
         <TextInput source="notes" multiline />
         <BooleanInput source="isMd" defaultValue={false} label="MD" />
       </SimpleForm>

@@ -1,4 +1,4 @@
-import type { Prisma, Job, Instrument } from "@prisma/client";
+import { Prisma, type Job, type Instrument } from "@prisma/client";
 import {
   type RaPayload,
   defaultHandler,
@@ -26,6 +26,25 @@ export const jobHandler = async (
 ) => {
   switch (req.body.method) {
     case "create":
+      console.log("req.body", req.body);
+
+      if (!Object.hasOwn(req.body.params.data, "wages")) {
+        throw new Error("Wage ID is required", { cause: "MISSING_WAGE_ID" });
+      }
+      const wageId: string = req.body.params.data.wages! as string;
+
+      if (!wageId) {
+        throw new Error("Wage ID is required", { cause: "MISSING_WAGE_ID" });
+      }
+
+      const wage = await prisma.wages.findUniqueOrThrow({
+        where: { id: wageId },
+      });
+
+      const { wages, ...dataWithoutWages } = req.body.params.data;
+      const data = { ...dataWithoutWages, pay: parseInt(wage.amount, 10) };
+
+      req.body.params.data = data as unknown as Prisma.JobCreateArgs["data"];
       const newJob = await createHandler<Prisma.JobCreateArgs>(
         req.body,
         prisma.job,

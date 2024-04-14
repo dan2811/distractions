@@ -2,6 +2,7 @@ import {
   BooleanField,
   Datagrid,
   DateField,
+  FunctionField,
   ReferenceArrayField,
   ReferenceField,
   Show,
@@ -28,7 +29,10 @@ export const JobShow = () => {
         <TextField source="status" />
         <BooleanField source="isMd" />
         <TextField source="notes" emptyText="No notes" />
-        <TextField source="pay" />
+        <FunctionField
+          source="pay"
+          render={(record: { pay: string }) => "£" + (record.pay ?? 0)}
+        />
         <DateField source="createdAt" showTime />
         <DateField source="updatedAt" showTime />
         <ReferenceArrayField source="Instruments" reference="Instrument">

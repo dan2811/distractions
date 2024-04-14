@@ -12,7 +12,7 @@ import {
 
 export const JobEdit = () => {
   return (
-    <Edit>
+    <Edit redirect="show">
       <SimpleForm>
         <Labeled label="Event" sx={{ paddingBottom: "1rem" }}>
           <ReferenceField source="eventId" reference="event" link="show" />

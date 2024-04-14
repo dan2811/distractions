@@ -125,10 +125,23 @@ const AdminApp = () => {
         create={GeneralDocumentCreate}
         icon={ArticleIcon}
       />
-      <Resource name="job" create={JobCreate} show={JobShow} edit={JobEdit} />
+      <Resource
+        name="job"
+        recordRepresentation="musician.name"
+        create={JobCreate}
+        show={JobShow}
+        edit={JobEdit}
+      />
       {isSuperAdmin && (
         <Resource
           name="wages"
+          recordRepresentation={({
+            name,
+            amount,
+          }: {
+            name: string;
+            amount: string;
+          }) => `${name} - £${amount}`}
           create={WageCreate}
           show={WageShow}
           edit={WageEdit}
