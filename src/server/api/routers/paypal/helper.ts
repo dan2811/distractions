@@ -1,13 +1,11 @@
 import type { Event, User } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
 import { prisma } from "~/server/db";
 import {
   paypalInvoiceSchema,
   type PaypalAccountType,
   type PaypalInvoice,
 } from "~/types";
-import { logger } from "~/utils/Logging";
 
 const getEncodedPaypalData = (type: PaypalAccountType) => {
   if (type === "deposit") {

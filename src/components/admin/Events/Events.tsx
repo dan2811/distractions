@@ -69,8 +69,8 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import CancelIcon from '@mui/icons-material/Cancel';
-import { Role, type RequiredInstrumentsJSON } from "~/types";
+import CancelIcon from "@mui/icons-material/Cancel";
+import type { RequiredInstrumentsJSON } from "~/types";
 import TodayIcon from "@mui/icons-material/Today";
 import ColouredDateField from "../Fields/ColouredDateField";
 import type { RaUser } from "~/pages/api/RaHandlers/userHandler";
@@ -135,7 +135,11 @@ export const EventFilterSideBar = () => {
 export const EventList = () => {
   return (
     <List aside={<EventFilterSideBar />} sort={{ field: "date", order: "ASC" }}>
-      <DatagridConfigurable omit={["id"]} rowClick="show" bulkActionButtons={false}>
+      <DatagridConfigurable
+        omit={["id"]}
+        rowClick="show"
+        bulkActionButtons={false}
+      >
         <TextField source="id" />
         <TextField source="name" />
         <ReferenceField
@@ -155,21 +159,52 @@ export const EventList = () => {
   );
 };
 
-const TransformCancelInvoicesResult = ({ data }: { data: ReturnType<typeof api.events.cancelEvent.useMutation>['data']; }) => {
+const TransformCancelInvoicesResult = ({
+  data,
+}: {
+  data: ReturnType<typeof api.events.cancelEvent.useMutation>["data"];
+}) => {
   const { depositInvoice, finalInvoice } = data!;
-  return <div>
-    <Alert severity={!depositInvoice.cancelled && !depositInvoice.deleted ? "warning" : "success"}>Deposit invoice: {depositInvoice.cancelled && "CANCELLED"} {depositInvoice.deleted && "DELETED"} {!depositInvoice.cancelled && !depositInvoice.deleted ? "FAILED TO CANCEL, please manually cancel on paypal." : null}</Alert>
-    <Alert severity={!finalInvoice.cancelled && !finalInvoice.deleted ? "warning" : "success"}>Final invoice: {finalInvoice.cancelled && "CANCELLED"} {finalInvoice.deleted && "DELETED"} {!finalInvoice.cancelled && !finalInvoice.deleted ? "FAILED TO CANCEL, please manually cancel on paypal." : null}</Alert>
-  </div>;
+  return (
+    <div>
+      <Alert
+        severity={
+          !depositInvoice.cancelled && !depositInvoice.deleted
+            ? "warning"
+            : "success"
+        }
+      >
+        Deposit invoice: {depositInvoice.cancelled && "CANCELLED"}{" "}
+        {depositInvoice.deleted && "DELETED"}{" "}
+        {!depositInvoice.cancelled && !depositInvoice.deleted
+          ? "FAILED TO CANCEL, please manually cancel on paypal."
+          : null}
+      </Alert>
+      <Alert
+        severity={
+          !finalInvoice.cancelled && !finalInvoice.deleted
+            ? "warning"
+            : "success"
+        }
+      >
+        Final invoice: {finalInvoice.cancelled && "CANCELLED"}{" "}
+        {finalInvoice.deleted && "DELETED"}{" "}
+        {!finalInvoice.cancelled && !finalInvoice.deleted
+          ? "FAILED TO CANCEL, please manually cancel on paypal."
+          : null}
+      </Alert>
+    </div>
+  );
 };
 
 const CancelButton = () => {
   const record = useRecordContext<RaEvent>();
   const [open, setOpen] = useState(false);
   const notify = useNotify();
-  const { isLoading, isSuccess, isError, mutateAsync, error, data } = api.events.cancelEvent.useMutation();
-  
-  if (record?.status === 'cancelled') return null;
+  const { isLoading, isSuccess, isError, mutateAsync, error, data } =
+    api.events.cancelEvent.useMutation();
+
+  if (record?.status === "cancelled") return null;
 
   const handleClick = () => {
     setOpen(true);
@@ -178,9 +213,9 @@ const CancelButton = () => {
   const handleConfirm = async () => {
     try {
       await mutateAsync({ eventId: record.id });
-      notify('Cancelled successfully', {type: 'success'});
+      notify("Cancelled successfully", { type: "success" });
     } catch (error) {
-      notify('Error: could not cancel', { type: 'warning' });
+      notify("Error: could not cancel", { type: "warning" });
     }
   };
 
@@ -190,23 +225,36 @@ const CancelButton = () => {
 
   return (
     <>
-      <Button color="error" startIcon={<CancelIcon />} label="Cancel" onClick={handleClick} />
+      <Button
+        color="error"
+        startIcon={<CancelIcon />}
+        label="Cancel"
+        onClick={handleClick}
+      />
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Are you sure?</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Cancelling this event will cancel/delete any associated invoices and contracts. It will also notify relevant musicians that the event has been cancelled.
+            Cancelling this event will cancel/delete any associated invoices and
+            contracts. It will also notify relevant musicians that the event has
+            been cancelled.
           </DialogContentText>
           {isLoading && <Alert severity="info">Loading...</Alert>}
-          {isError && <Alert severity="error">Unexpected error: {error.message}</Alert>}
+          {isError && (
+            <Alert severity="error">Unexpected error: {error.message}</Alert>
+          )}
           {data && <TransformCancelInvoicesResult data={data} />}
         </DialogContent>
-        {!isLoading && !isSuccess && !isError &&
+        {!isLoading && !isSuccess && !isError && (
           <DialogActions>
-          <Button onClick={handleClose} label="No" autoFocus />
-          <Button onClick={() => void handleConfirm()} disabled={isLoading} label="Yes" />
-        </DialogActions>
-        }
+            <Button onClick={handleClose} label="No" autoFocus />
+            <Button
+              onClick={() => void handleConfirm()}
+              disabled={isLoading}
+              label="Yes"
+            />
+          </DialogActions>
+        )}
       </Dialog>
     </>
   );
@@ -221,7 +269,7 @@ const ShowActions = () => (
 
 export const EventShow = () => {
   const session = useSession();
-  if(!session.data) return null;
+  if (!session.data) return null;
   const isSuperAdmin = session.data.user.role === "superAdmin";
   return (
     <Show actions={<ShowActions />}>
@@ -229,9 +277,11 @@ export const EventShow = () => {
         <TabbedShowLayout.Tab label="details">
           <DetailsTab />
         </TabbedShowLayout.Tab>
-        {isSuperAdmin && <TabbedShowLayout.Tab label="finance">
-          <FinanceTab />
-        </TabbedShowLayout.Tab>}
+        {isSuperAdmin && (
+          <TabbedShowLayout.Tab label="finance">
+            <FinanceTab />
+          </TabbedShowLayout.Tab>
+        )}
       </TabbedShowLayout>
     </Show>
   );
@@ -363,14 +413,15 @@ const InstrumentsRequired = () => {
   const dataprovider = useDataProvider();
   const [eventJobs, setEventJobs] = useState<RaJob[]>([]);
   const [musicians, setMusicians] = useState<RaUser[]>([]);
+  const redirect = useRedirect();
 
   useEffect(() => {
     const main = async () => {
       //TODO: Fix this. There is a bug somewhere that means that record.jobs is sometimes an array of strings (correct), and sometimes an array of objects (WRONG).
       if (!Array.isArray(record?.jobs)) {
         refresh();
-      };
-      if(!record?.jobs.length) return;
+      }
+      if (!record?.jobs.length) return;
       if (typeof record?.jobs[0] !== "string") return;
       const jobs = await dataprovider.getMany<RaJob>("job", {
         ids: record.jobs,
@@ -424,6 +475,9 @@ const InstrumentsRequired = () => {
                   label={`${job.isMd ? "MD - " : ""}${
                     musician?.name ?? "unknown musician"
                   }: ${job.status}`}
+                  onClick={() => {
+                    void redirect(`show`, "job", job.id);
+                  }}
                   sx={{
                     backgroundColor:
                       globalColors.jobStatus[parseJobStatus(job.status)],
@@ -503,8 +557,14 @@ export const EventCreate = () => {
           source="date"
           parse={(val: string) => new Date(val).toISOString()}
         />
-        <ReferenceInput source="owner" label="Client" reference="user" filter={{
-          role_eq: "client"}}>
+        <ReferenceInput
+          source="owner"
+          label="Client"
+          reference="user"
+          filter={{
+            role_eq: "client",
+          }}
+        >
           <AutocompleteInput label="Client" />
         </ReferenceInput>
         <ReferenceInput
@@ -535,8 +595,8 @@ export const EventCreate = () => {
 };
 
 const EditToolbar = (props: object) => (
-  <Toolbar {...props} >
-      <SaveButton />
+  <Toolbar {...props}>
+    <SaveButton />
   </Toolbar>
 );
 
@@ -546,9 +606,9 @@ export const EventEdit = () => {
   const notify = useNotify();
   const redirect = useRedirect();
   if (!data) return null;
-  if (data?.status === 'cancelled') {
+  if (data?.status === "cancelled") {
     notify("You cannot edit a cancelled event.", { type: "warning" });
-    redirect('show', 'event', id);
+    redirect("show", "event", id);
   }
   return (
     <Edit
@@ -561,13 +621,15 @@ export const EventEdit = () => {
       }}
     >
       <SimpleForm toolbar={<EditToolbar />}>
-        <Typography variant="caption">The client will see the name of this event</Typography>
-          <TextInput
-            source="name"
-            validate={required(
-              "You must give this event a name. The client will see this.",
-              )}
-          />
+        <Typography variant="caption">
+          The client will see the name of this event
+        </Typography>
+        <TextInput
+          source="name"
+          validate={required(
+            "You must give this event a name. The client will see this.",
+          )}
+        />
         <DateInput source="date" />
         <ReferenceInput source="ownerId" reference="user" />
         <ReferenceInput

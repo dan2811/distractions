@@ -125,14 +125,14 @@ const DetailsTab = ({ event }: { event: Event }) => {
       )}
       <ClientInfo clientId={eventData.ownerId} />
 
-      <h2 className="text-xl text-main-accent">Location</h2>
-      <p className="text-lg">{eventData.location}</p>
-      <h2 className="text-xl text-main-accent">Date</h2>
-      <p className="text-lg">{new Date(eventData.date).toLocaleDateString()}</p>
+      <h2 className="themed-h2">Location</h2>
+      <p>{eventData.location}</p>
+      <h2 className="themed-h2">Date</h2>
+      <p>{new Date(eventData.date).toLocaleDateString()}</p>
       {!!instruments && (
         <>
-          <h2 className="text-xl text-main-accent">Instrument</h2>
-          <p className="text-lg">
+          <h2 className="themed-h2">Instrument</h2>
+          <p>
             {instruments
               .map((instrument: Instrument) => instrument.name)
               .join(", ")}
@@ -143,12 +143,16 @@ const DetailsTab = ({ event }: { event: Event }) => {
         <LoadingSpinner />
       ) : !jobData?.notes ? null : (
         <>
-          <h2 className="text-xl text-main-accent">Notes</h2>
+          <h2 className="themed-h2">Notes</h2>
           <p className="text-lg">{jobData.notes}</p>
         </>
       )}
-      <h2 className="text-xl text-main-accent">Pay</h2>
-      <div>No payment Information yet</div>
+      <h2 className="themed-h2">Pay</h2>
+      {jobData?.pay ? (
+        <div>£{jobData?.pay}</div>
+      ) : (
+        <div>No payment info yet</div>
+      )}
     </div>
   );
 };
@@ -189,12 +193,8 @@ const ClientInfo = ({ clientId }: { clientId: string }) => {
 
   return (
     <>
-      <h2 className="text-xl text-main-accent">Client</h2>
-      {isClientLoading ? (
-        <LoadingSpinner />
-      ) : (
-        <p className="text-lg">{clientData?.name}</p>
-      )}
+      <h2 className="themed-h2">Client</h2>
+      {isClientLoading ? <LoadingSpinner /> : <p>{clientData?.name}</p>}
     </>
   );
 };

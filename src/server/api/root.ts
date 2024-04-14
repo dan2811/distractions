@@ -6,6 +6,7 @@ import { jobRouter } from "./routers/jobs";
 import { contractRouter } from "./routers/contracts";
 import { generalDocumentRouter } from "./routers/generalDocuments";
 import { instrumentRouter } from "./routers/instruments";
+import { statsRouter } from "./routers/stats";
 
 /**
  * This is the primary router for your server.
@@ -19,7 +20,8 @@ export const appRouter = createTRPCRouter({
   paypal: paypalRouter,
   jobs: jobRouter,
   contracts: contractRouter,
-  generalDocuments: generalDocumentRouter
+  generalDocuments: generalDocumentRouter,
+  stats: statsRouter,
 });
 
 // export type definition of API

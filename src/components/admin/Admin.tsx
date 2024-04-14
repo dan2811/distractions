@@ -10,6 +10,7 @@ import PianoIcon from "@mui/icons-material/Piano";
 import StadiumIcon from "@mui/icons-material/Stadium";
 import AudioFileIcon from "@mui/icons-material/AudioFile";
 import ArticleIcon from "@mui/icons-material/Article";
+import CurrencyPoundIcon from "@mui/icons-material/CurrencyPound";
 
 import { useSession } from "next-auth/react";
 import { EventCreate, EventEdit, EventList, EventShow } from "./Events/Events";
@@ -35,12 +36,16 @@ import {
 } from "./Package/Package";
 import Dashboard from "./Dashboard";
 import MyAppBar from "./AppBar";
-import JobCreate from "./Jobs/Create";
 import {
   GeneralDocumentCreate,
   GeneralDocumentList,
   GeneralDocumentShow,
 } from "./GeneralDocuments/GeneralDocumentList";
+import { JobCreate, JobEdit, JobShow } from "./Jobs";
+import { WageCreate } from "./Wages/Create";
+import { WageShow } from "./Wages/Show";
+import { WageEdit } from "./Wages/Edit";
+import { WageList } from "./Wages/List";
 
 export const MyLayout = (props: LayoutProps) => (
   <>
@@ -120,7 +125,30 @@ const AdminApp = () => {
         create={GeneralDocumentCreate}
         icon={ArticleIcon}
       />
-      <Resource name="job" create={JobCreate} />
+      <Resource
+        name="job"
+        recordRepresentation="musician.name"
+        create={JobCreate}
+        show={JobShow}
+        edit={JobEdit}
+      />
+      {isSuperAdmin && (
+        <Resource
+          name="wages"
+          recordRepresentation={({
+            name,
+            amount,
+          }: {
+            name: string;
+            amount: string;
+          }) => `${name} - £${amount}`}
+          create={WageCreate}
+          show={WageShow}
+          edit={WageEdit}
+          list={WageList}
+          icon={CurrencyPoundIcon}
+        />
+      )}
     </Admin>
   );
 };

@@ -12,12 +12,13 @@ import {
   useCreateContext,
   useNotify,
   useRedirect,
+  TextInput,
 } from "react-admin";
 import type { RaJob } from "~/pages/api/RaHandlers/jobHandler";
 import type { Role } from "~/types";
 import { api } from "~/utils/api";
 
-const JobCreate = () => {
+export const JobCreate = () => {
   const notify = useNotify();
   const redirect = useRedirect();
   const onSuccess = (data: RaJob) => {
@@ -44,21 +45,18 @@ const JobCreate = () => {
         >
           <SelectArrayInput optionText="name" disabled />
         </ReferenceArrayInput>
-        <FilteredMusicianInput />
-        <NumberInput
-          source="pay"
+        <ReferenceInput
+          source="wages"
+          reference="wages"
           validate={required()}
-          defaultValue={0}
-          disabled
         />
-
+        <FilteredMusicianInput />
+        <TextInput source="notes" multiline />
         <BooleanInput source="isMd" defaultValue={false} label="MD" />
       </SimpleForm>
     </Create>
   );
 };
-
-export default JobCreate;
 
 const FilteredMusicianInput = () => {
   const { record } = useCreateContext<{

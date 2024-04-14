@@ -1,4 +1,4 @@
-import { Input, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import type { GeneralDocument } from "@prisma/client";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import {
@@ -12,9 +12,7 @@ import {
   SimpleShowLayout,
   TextField,
   TextInput,
-  ValidationError,
   required,
-  useCreateContext,
   useNotify,
   useRecordContext,
 } from "react-admin";

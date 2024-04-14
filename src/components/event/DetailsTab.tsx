@@ -1,13 +1,8 @@
 import { useRouter } from "next/router";
-import React, {
-  type Dispatch,
-  type HTMLInputTypeAttribute,
-  type SetStateAction,
-  useState,
-} from "react";
+import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
-import { type RouterInputs, api } from "~/utils/api";
+import { api } from "~/utils/api";
 import { Chip } from "@mui/material";
 
 export const DetailsTab = () => {
@@ -21,8 +16,7 @@ export const DetailsTab = () => {
     location: data?.location ?? "",
   });
 
-  const { isLoading: isMutationLoading, mutateAsync } =
-    api.events.updateEvent.useMutation();
+  const { mutateAsync } = api.events.updateEvent.useMutation();
 
   if (!id) return 404;
 
@@ -60,18 +54,18 @@ export const DetailsTab = () => {
     <div className="flex w-full flex-col gap-6 place-self-center p-4 md:max-w-lg">
       <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
         <div>
-          <h2>Date</h2>
+          <h2 className="themed-h2">Date</h2>
           <p>{new Date(data.date).toLocaleDateString()}</p>
         </div>
       </span>
       <form onSubmit={handleSubmit}>
         <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
           <div>
-            <h2>Location</h2>
+            <h2 className="themed-h2">Location</h2>
             {editMode ? (
               <textarea
                 defaultValue={data.location ?? ""}
-                className="h-3/4 w-full px-1"
+                className="themed-input h-3/4 w-full px-1"
                 value={formValues.location}
                 onChange={(e) =>
                   setFormValues({ ...formValues, location: e.target.value })
@@ -83,17 +77,25 @@ export const DetailsTab = () => {
           </div>
           {!tooLateToEdit && (
             <div className="flex w-1/2 flex-col justify-between gap-4 place-self-end self-center">
-              <button type="button" onClick={() => setEditMode(!editMode)}>
+              <button
+                type="button"
+                onClick={() => setEditMode(!editMode)}
+                className="themed-button"
+              >
                 {editMode ? "CANCEL" : "EDIT"}
               </button>
-              {editMode && <button type="submit">SAVE</button>}
+              {editMode && (
+                <button type="submit" className="themed-button">
+                  SAVE
+                </button>
+              )}
             </div>
           )}
         </span>
       </form>
       <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
         <div className="col-span-2 flex flex-col gap-2">
-          <h2>Packages</h2>
+          <h2 className="themed-h2">Packages</h2>
           <div className="col-span-2 flex w-full flex-wrap gap-2">
             {data.packages.map((pkg) => {
               return (
@@ -110,47 +112,6 @@ export const DetailsTab = () => {
           </div>
         </div>
       </span>
-    </div>
-  );
-};
-
-interface AttributeProps<FormValues> {
-  fieldName: keyof FormValues;
-  label: string;
-  inputType: HTMLInputTypeAttribute;
-  formValues: FormValues;
-  setFormValues: Dispatch<SetStateAction<FormValues>>;
-  validationPattern?: string;
-  editMode: boolean;
-}
-
-const Attribute = ({
-  fieldName,
-  label,
-  inputType,
-  formValues,
-  setFormValues,
-  validationPattern,
-  editMode,
-}: AttributeProps<RouterInputs["events"]["updateEvent"]>) => {
-  return (
-    <div className="grid grid-cols-6 p-2">
-      {editMode && (
-        <label htmlFor={fieldName} className="col-span-2 self-start">
-          {label}:
-        </label>
-      )}
-      <input
-        type={inputType}
-        id={fieldName}
-        value={formValues[fieldName]}
-        onChange={(e) =>
-          setFormValues({ ...formValues, [fieldName]: e.target.value })
-        }
-        pattern={validationPattern}
-        className="col-span-4 w-full bg-main-input p-2 disabled:bg-opacity-0"
-        disabled={!editMode}
-      />
     </div>
   );
 };

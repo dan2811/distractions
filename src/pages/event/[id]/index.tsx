@@ -1,3 +1,4 @@
+"use client";
 import { BottomNavigation, BottomNavigationAction, Card } from "@mui/material";
 import Image from "next/image";
 import Showband from "/public/assets/images/showband.png";
@@ -20,8 +21,17 @@ const EventDetails = () => {
   const [tab, setTab] = useState(0);
 
   useEffect(() => {
-    setTab(parseInt(currentTab as string));
-  }, [currentTab]);
+    if (!currentTab) {
+      void router.replace({
+        query: {
+          ...router.query,
+          tab: "0",
+        },
+      });
+    }
+    setTab(parseInt((currentTab as string) ?? 0));
+    console.log("use effect");
+  }, [currentTab, router]);
 
   if (isLoading) return <LoadingSpinner />;
 
@@ -44,7 +54,7 @@ const EventDetails = () => {
       <BottomNavigation
         showLabels
         value={tab}
-        onChange={(event, newValue: number) => {
+        onChange={(_event, newValue: number) => {
           void router.push(`/event/${id as string}?tab=${newValue}`);
         }}
         sx={{

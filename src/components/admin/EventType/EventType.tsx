@@ -18,7 +18,7 @@ import {
 export const EventTypeList = () => {
   return (
     <List>
-      <Datagrid rowClick="show">
+      <Datagrid rowClick="show" bulkActionButtons={false}>
         <TextField source="name" />
       </Datagrid>
     </List>
@@ -31,7 +31,7 @@ export const EventTypeShow = () => {
       <SimpleShowLayout>
         <TextField source="name" />
         <ReferenceManyField reference="Event" target="eventTypeId">
-          <Datagrid rowClick="show">
+          <Datagrid rowClick="show" bulkActionButtons={false}>
             <DateField source="date" />
             <TextField source="name" />
             <ReferenceField source="ownerId" reference="User">

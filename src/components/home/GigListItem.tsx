@@ -34,7 +34,7 @@ export const GigListItem = ({ job }: { job: JobWithInstruments }) => {
   return (
     <>
       <div
-        className="flex h-1/2 w-full items-center justify-between gap-2 rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 text-center bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md md:max-w-md"
+        className="flex h-1/2 w-full items-center justify-between gap-2 rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 text-center font-light bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md md:max-w-md"
         onClick={() => void push(`gig/${event.id}?tab=0`)}
       >
         <p>

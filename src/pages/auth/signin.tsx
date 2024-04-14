@@ -47,11 +47,11 @@ export default function SignIn({
                   id="email"
                   type="email"
                   placeholder="Email"
-                  className="p-2"
+                  className="themed-input p-2"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                <button className="w-full" type="submit">
+                <button className="themed-button w-full" type="submit">
                   Sign in with {provider.name}
                 </button>
               </form>
