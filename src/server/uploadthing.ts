@@ -23,7 +23,6 @@ export const ourFileRouter = {
       const isAdmin =
         session?.user.role === "admin" || session?.user.role === "superAdmin";
       if (!isAdmin) throw new Error("Unauthorized");
-      // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return input;
     })
     .onUploadComplete(
@@ -75,6 +74,51 @@ export const ourFileRouter = {
     .onUploadComplete(({ file, metadata }) => {
       console.info("General document uploaded", { file, metadata });
     }),
+  musicianInvoiceUploader: f({ pdf: { maxFileSize: "1MB" } })
+    .input(
+      z.object({
+        jobId: z.string(),
+      }),
+    )
+    .middleware(async ({ req, res, input }) => {
+      const session = await getServerAuthSession({ req, res });
+      if (!session) throw new Error("Unauthorized");
+      const isMusicianOrAbove =
+        session.user.role === "musician" ||
+        session.user.role === "admin" ||
+        session.user.role === "superAdmin";
+      if (!isMusicianOrAbove) throw new Error("Unauthorized");
+      return input;
+    })
+    .onUploadComplete(
+      async ({ file: { key, url, size, name }, metadata: { jobId } }) => {
+        console.info("Musician invoice uploaded", {
+          key,
+          url,
+          jobId,
+          size,
+          name,
+        });
+        try {
+          await prisma.invoice.upsert({
+            create: {
+              id: key,
+              url,
+              jobId,
+            },
+            update: {
+              url,
+            },
+            where: {
+              jobId,
+            },
+          });
+        } catch (e) {
+          console.error("Error saving contract to DB: ", e);
+          throw new Error(`Error saving contract to DB`);
+        }
+      },
+    ),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

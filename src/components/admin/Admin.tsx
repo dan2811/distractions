@@ -11,6 +11,7 @@ import StadiumIcon from "@mui/icons-material/Stadium";
 import AudioFileIcon from "@mui/icons-material/AudioFile";
 import ArticleIcon from "@mui/icons-material/Article";
 import CurrencyPoundIcon from "@mui/icons-material/CurrencyPound";
+import ReceiptIcon from "@mui/icons-material/Receipt";
 
 import { useSession } from "next-auth/react";
 import { EventCreate, EventEdit, EventList, EventShow } from "./Events/Events";
@@ -21,7 +22,7 @@ import {
   InstrumentShow,
 } from "./Instruments/Instruments";
 import { UserShow } from "./Users/UserShow";
-import type { Event } from "@prisma/client";
+import type { Event, Prisma } from "@prisma/client";
 import {
   EventTypeCreate,
   EventTypeEdit,
@@ -46,6 +47,8 @@ import { WageCreate } from "./Wages/Create";
 import { WageShow } from "./Wages/Show";
 import { WageEdit } from "./Wages/Edit";
 import { WageList } from "./Wages/List";
+import { InvoiceList } from "./Invoices/List";
+import { InvoiceShow } from "./Invoices/Show";
 
 export const MyLayout = (props: LayoutProps) => (
   <>
@@ -147,6 +150,28 @@ const AdminApp = () => {
           edit={WageEdit}
           list={WageList}
           icon={CurrencyPoundIcon}
+        />
+      )}
+      {isSuperAdmin && (
+        <Resource
+          name="invoice"
+          recordRepresentation={(
+            record: Prisma.InvoiceGetPayload<{
+              include: {
+                Job: {
+                  include: {
+                    musician: true;
+                    event: true;
+                  };
+                };
+              };
+            }>,
+          ) => {
+            return `${record.Job.musician.name} - ${record.Job.event.name}`;
+          }}
+          show={InvoiceShow}
+          list={InvoiceList}
+          icon={ReceiptIcon}
         />
       )}
     </Admin>

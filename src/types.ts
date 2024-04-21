@@ -16,6 +16,13 @@ export interface RequiredInstrumentsJSON {
 
 export type PaypalAccountType = "deposit" | "final";
 
+export const musicianInvoiceStatus = z.union([
+  z.literal("due"),
+  z.literal("overdue"),
+  z.literal("paid"),
+  z.literal("declined"),
+]);
+
 const refunds = z.object({
   transactions: z
     .array(
