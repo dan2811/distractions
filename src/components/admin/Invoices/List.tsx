@@ -1,7 +1,6 @@
-import { Card, CardContent, Chip } from "@mui/material";
+import { Card, CardContent } from "@mui/material";
 import type { Prisma } from "@prisma/client";
 import { ReceiptIcon } from "lucide-react";
-import { useEffect } from "react";
 import {
   DatagridConfigurable,
   DateField,
