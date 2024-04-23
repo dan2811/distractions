@@ -33,9 +33,16 @@ export const NavBar = () => {
     session.data?.user.role === "superAdmin" ||
     session.data?.user.role === "admin";
 
+  const isMusician = session.data?.user.role === "musician" || isAdmin;
+
   if (isAdmin) {
     navItems.push({ label: "Admin console", path: "/admin" });
   }
+
+  if (isMusician) {
+    navItems.push({ label: "Invoices", path: "/invoice/list" });
+  }
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const { push } = useRouter();
   const { status } = useSession();
