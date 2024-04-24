@@ -130,7 +130,7 @@ const DetailsTab = ({ event }: { event: Event }) => {
       <h2 className="themed-h2">Location</h2>
       <p>{eventData.location}</p>
       <h2 className="themed-h2">Date</h2>
-      <p>{new Date(eventData.date).toLocaleDateString()}</p>
+      <p>{new Date(eventData.date).toLocaleDateString("en-gb")}</p>
       {!!instruments && (
         <>
           <h2 className="themed-h2">Instrument</h2>

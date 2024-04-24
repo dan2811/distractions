@@ -83,7 +83,7 @@ const AdminApp = () => {
       <Resource
         name="event"
         recordRepresentation={(rec: Event) =>
-          `${new Date(rec.date).toLocaleDateString()} - ${rec.name}`
+          `${new Date(rec.date).toLocaleDateString("en-gb")} - ${rec.name}`
         }
         list={EventList}
         show={EventShow}
