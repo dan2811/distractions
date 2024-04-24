@@ -2,7 +2,6 @@ import {
   BooleanInput,
   Create,
   type Identifier,
-  NumberInput,
   ReferenceArrayInput,
   ReferenceInput,
   SelectArrayInput,
@@ -48,7 +47,10 @@ export const JobCreate = () => {
         <ReferenceInput
           source="wages"
           reference="wages"
-          validate={required()}
+          validate={required((value: unknown, values: unknown) => {
+            console.log(`value: `, value);
+            console.log(`values: `, values);
+          })}
         />
         <FilteredMusicianInput />
         <TextInput source="notes" multiline />

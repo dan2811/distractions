@@ -1,7 +1,14 @@
+import { TRPCError } from "@trpc/server";
+import { UTApi } from "uploadthing/server";
 import { z } from "zod";
-
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { getInvoicePaidEmail } from "~/emails/musicians/musicians";
+import {
+  adminProcedure,
+  createTRPCRouter,
+  protectedProcedure,
+} from "~/server/api/trpc";
 import { prisma } from "~/server/db";
+import { sendEmail } from "~/utils/email";
 
 export const jobRouter = createTRPCRouter({
   getMyJobs: protectedProcedure
@@ -115,6 +122,7 @@ export const jobRouter = createTRPCRouter({
         },
         include: {
           Instruments: true,
+          invoice: true,
         },
       });
     }),
@@ -134,5 +142,127 @@ export const jobRouter = createTRPCRouter({
           status: input.status,
         },
       });
+    }),
+  deleteInvoice: protectedProcedure
+    .input(z.object({ invoiceId: z.string() }))
+    .mutation(async ({ input: { invoiceId: id } }) => {
+      const utApi = new UTApi();
+
+      const { success } = await utApi.deleteFiles(id);
+
+      if (!success) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete invoice from UploadThing",
+        });
+      }
+
+      console.log(`Deleted invoice from UploadThing, File ID: ${id}`);
+      try {
+        return prisma.invoice.delete({
+          where: {
+            id,
+          },
+        });
+      } catch (e) {
+        console.log(
+          `Failed to delete invoice with id: ${id} from database: ${
+            typeof e === "string" ? e : JSON.stringify(e)
+          }`,
+        );
+      }
+    }),
+  markInvoicePaid: adminProcedure
+    .input(z.object({ invoiceId: z.string(), musicianId: z.string() }))
+    .mutation(async ({ input }) => {
+      try {
+        const res = await prisma.invoice.update({
+          select: {
+            Job: {
+              include: {
+                event: {
+                  select: {
+                    name: true,
+                    date: true,
+                  },
+                },
+              },
+            },
+          },
+          where: {
+            id: input.invoiceId,
+          },
+          data: {
+            status: "paid",
+          },
+        });
+        const musician = await prisma.user.findUnique({
+          where: {
+            id: input.musicianId,
+          },
+        });
+        if (!musician) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Musician not found",
+          });
+        }
+
+        if (!res.Job) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Job not found",
+          });
+        }
+        const email = getInvoicePaidEmail(musician, res.Job);
+        await sendEmail(email);
+        return res;
+      } catch (e) {
+        console.error(
+          `Failed to EITHER: mark invoice with id: ${
+            input.invoiceId
+          } as paid, OR send email to musician to notify of paid invoice: ${
+            typeof e === "string" ? e : JSON.stringify(e)
+          }`,
+        );
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to mark invoice as paid or send email to musician",
+        });
+      }
+    }),
+  listInvoicesInfinite: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100).nullish(),
+        cursor: z.string().nullish(), // <-- "cursor" needs to exist, but can be any type
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const limit = input.limit ?? 50;
+      const items = await prisma.invoice.findMany({
+        take: limit + 1, // get an extra item at the end which we'll use as next cursor
+        where: {
+          Job: {
+            musicianId: ctx.session.user.id /* Optional filter */,
+          },
+        },
+        include: {
+          Job: true,
+        },
+        cursor: input.cursor ? { id: input.cursor } : undefined,
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+      let nextCursor: typeof input.cursor | undefined = undefined;
+      if (items.length > limit) {
+        const nextItem = items.pop();
+        nextCursor = nextItem!.id;
+      }
+      return {
+        items,
+        nextCursor,
+      };
     }),
 });

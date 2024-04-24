@@ -160,6 +160,7 @@ model Job {
     hotelNeeded  Boolean @default(false)
     hotelBooked  Boolean @default(false)
     hotelInfo    String?
+    invoice      Invoice?
 
     @@unique([musicianId, eventId])
 }
@@ -198,4 +199,14 @@ model Wages {
     amount     String
     createdAt  DateTime           @default(now())
     updatedAt  DateTime           @updatedAt
+}
+
+model Invoice {
+    id           String   @id @default(cuid()) 
+    url          String
+    createdAt    DateTime           @default(now())
+    updatedAt    DateTime           @updatedAt
+    jobId        String             @unique
+    Job          Job     @relation(fields: [jobId], references: [id])
+    status       String  @default("due")
 }

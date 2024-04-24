@@ -34,7 +34,6 @@ import {
   useGetList,
   Loading,
   useCreatePath,
-  CreateButton,
   DateField,
   Button,
   TabbedShowLayout,
@@ -80,6 +79,7 @@ import Image from "next/image";
 import { FinanceTab } from "./FinanceTab";
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
+import AddIcon from "@mui/icons-material/Add";
 
 export const EventFilterSideBar = () => {
   const { data, isLoading } = useGetList<EventType>("eventType");
@@ -335,10 +335,9 @@ const DetailsTab = () => {
                   label="Client signature"
                   render={(record: Contract) => {
                     if (typeof record.signatureUrl === "string") {
-                      const sigUrl = record.signatureUrl;
                       return (
                         <Image
-                          src={sigUrl}
+                          src={record.signatureUrl}
                           width={100}
                           height={100}
                           alt="client signature"
@@ -400,7 +399,7 @@ const DetailsTab = () => {
         </Grid>
         <Grid item xs={12}>
           <InstrumentsRequired />
-          <EditButton label="Add Instruments" />
+          <EditButton label="Add Instruments" icon={<AddIcon />} />
         </Grid>
       </Grid>
     </ShowBase>
@@ -499,9 +498,10 @@ const CreateJobButton = ({ eventId }: { eventId: string }) => {
   const record = useRecordContext();
   const createPath = useCreatePath();
   return (
-    <CreateButton
-      label="Add musician"
-      resource="job"
+    <Button
+      component={Link}
+      startIcon={<AddIcon />}
+      label="Add Musician"
       to={{
         pathname: createPath({
           resource: "job",
@@ -513,7 +513,11 @@ const CreateJobButton = ({ eventId }: { eventId: string }) => {
           Instruments: [record.id],
         })}`,
       }}
-    />
+    >
+      <>
+        <AddIcon />
+      </>
+    </Button>
   );
 };
 

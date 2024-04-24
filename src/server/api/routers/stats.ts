@@ -299,6 +299,29 @@ export const statsRouter = createTRPCRouter({
           price: "asc",
         },
       });
+
+      const wageStats = await ctx.prisma.job.aggregate({
+        where: {
+          event: {
+            date: {
+              gte: input?.from,
+              lte: input?.to,
+            },
+          },
+        },
+        _avg: {
+          pay: true,
+        },
+        _sum: {
+          pay: true,
+        },
+        _min: {
+          pay: true,
+        },
+        _max: {
+          pay: true,
+        },
+      });
       return {
         averagePrice: aggregates._avg.price,
         totalRevenue: aggregates._sum.price,
@@ -306,6 +329,7 @@ export const statsRouter = createTRPCRouter({
         maxPrice: aggregates._max.price,
         mostExpensiveEvent,
         cheapestEvent,
+        wageStats,
       };
     }),
 });

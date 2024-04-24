@@ -11,6 +11,8 @@ import toast, { CheckmarkIcon, ErrorIcon } from "react-hot-toast";
 import Layout from "~/components/Layout/Layout";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { api } from "~/utils/api";
+import { UploadButton } from "~/utils/uploadthing";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 const GigDetails = () => {
   const router = useRouter();
@@ -153,6 +155,9 @@ const DetailsTab = ({ event }: { event: Event }) => {
       ) : (
         <div>No payment info yet</div>
       )}
+      {!!jobData && jobData.status === "accepted" && (
+        <Invoice eventId={eventId} />
+      )}
     </div>
   );
 };
@@ -199,4 +204,115 @@ const ClientInfo = ({ clientId }: { clientId: string }) => {
   );
 };
 
+const Invoice = ({ eventId }: { eventId: string }) => {
+  const { data: job, refetch: refetchJob } = api.jobs.getOne.useQuery({
+    eventId,
+  });
+
+  const { mutateAsync } = api.jobs.deleteInvoice.useMutation({
+    onSuccess: async () => {
+      await refetchJob();
+    },
+  });
+
+  const [uploaded, setUploaded] = useState(false);
+
+  useEffect(() => {
+    if (uploaded) {
+      void refetchJob();
+    }
+  }, [uploaded, refetchJob]);
+
+  if (!job) return null;
+
+  if (uploaded && !job.invoice) {
+    setTimeout(() => {
+      void refetchJob();
+      if (!job.invoice) {
+        setTimeout(() => {
+          void refetchJob();
+        }, 2000);
+      }
+    }, 1000);
+    return <LoadingSpinner />;
+  }
+
+  if (!job.invoice)
+    return (
+      <>
+        <h2 className="themed-h2 pr-4">Invoice</h2>
+        <UploadButton
+          endpoint="musicianInvoiceUploader"
+          input={{ jobId: job.id }}
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
+          onClientUploadComplete={() => {
+            setUploaded(true);
+            toast.success("Invoice Uploaded!");
+          }}
+          className="font-headers font-normal ut-button:bg-main-accent/80 ut-button:after:bg-main-accent ut-button:focus-within:ring-0"
+          onUploadError={(error: Error) =>
+            toast.error(`ERROR! ${error.message}`)
+          }
+        />
+      </>
+    );
+
+  const invoiceStatus = !job.invoice ? "" : job.invoice?.status.toLowerCase();
+
+  return (
+    <div className="flex flex-col">
+      <div className="flex w-full items-center pb-2 pr-2">
+        <h2 className="themed-h2 pr-4">Invoice</h2>
+        {job.invoice !== null && (
+          <div className="flex w-full items-center justify-between">
+            <Chip
+              label={invoiceStatus.toUpperCase()}
+              variant="filled"
+              className="w-fit p-1 text-white"
+              color={
+                invoiceStatus === "due"
+                  ? "info"
+                  : invoiceStatus === "paid"
+                    ? "success"
+                    : invoiceStatus === "overdue"
+                      ? "error"
+                      : "primary"
+              }
+            />
+
+            {invoiceStatus !== "paid" && (
+              <button
+                className="rounded-lg border border-white p-2"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setUploaded(false);
+                  void toast.promise(
+                    mutateAsync({
+                      invoiceId: job.invoice!.id,
+                    }),
+                    {
+                      loading: "Deleting...",
+                      success: "Invoice deleted",
+                      error: "There was an error deleting the invoice",
+                    },
+                  );
+                }}
+              >
+                <DeleteForeverIcon />
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+      {job.invoice !== null && (
+        <div className="h-screen">
+          <iframe
+            src={job.invoice.url}
+            className="h-full w-full max-w-lg pr-2 pt-2"
+          />
+        </div>
+      )}
+    </div>
+  );
+};
 export default GigDetails;

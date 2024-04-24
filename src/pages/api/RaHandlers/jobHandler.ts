@@ -1,4 +1,4 @@
-import { Prisma, type Job, type Instrument } from "@prisma/client";
+import type { Prisma, Job, Instrument } from "@prisma/client";
 import {
   type RaPayload,
   defaultHandler,
@@ -41,6 +41,7 @@ export const jobHandler = async (
         where: { id: wageId },
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { wages, ...dataWithoutWages } = req.body.params.data;
       const data = { ...dataWithoutWages, pay: parseInt(wage.amount, 10) };
 
