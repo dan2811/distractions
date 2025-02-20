@@ -39,7 +39,7 @@ export const GigListItem = ({ job }: { job: JobWithInstruments }) => {
       >
         <p>
           {event.date
-            ? new Date(event.date).toLocaleDateString()
+            ? new Date(event.date).toLocaleDateString("en-gb")
             : "Date unknown"}
         </p>
         <p>{event.location}</p>

@@ -28,9 +28,9 @@ export const getInvoicePaidEmail = (
   text: `Your invoice has been marked as paid.`,
   html: `<p>Hey ${
     musician.name
-  },</p><p>Your invoice has been paid.</p><p>Event Date: ${job.event.date.toLocaleDateString()}</p><p>Event Name: ${
-    job.event.name
-  }</p><p>Pay: £${
+  },</p><p>Your invoice has been paid.</p><p>Event Date: ${job.event.date.toLocaleDateString(
+    "en-gb",
+  )}</p><p>Event Name: ${job.event.name}</p><p>Pay: £${
     job.pay
   } (this figure may not include petrol/extra invoice items)</p>`,
 });

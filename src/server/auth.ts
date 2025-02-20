@@ -41,6 +41,18 @@ declare module "next-auth/jwt" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
+    async signIn(params) {
+      const user = await prisma.user.findUnique({
+        where: {
+          email: params.profile?.email ?? params.user.email ?? undefined,
+        },
+      });
+
+      if (!user) {
+        throw new Error("User does not exist");
+      }
+      return true;
+    },
     jwt({ token, user }: { token: JWT; user: DefaultUser | undefined }) {
       if (user) {
         // add extra key/value(s) to the token
