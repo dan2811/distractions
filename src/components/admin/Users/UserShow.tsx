@@ -13,7 +13,7 @@ import {
   TextField,
   useRecordContext,
 } from "react-admin";
-import type { RaUser } from "~/pages/api/RaHandlers/userHandler";
+import type { RaUser } from "~/server/RaHandlers/userHandler";
 
 export const UserShow = () => {
   return (

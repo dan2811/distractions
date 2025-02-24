@@ -8,7 +8,7 @@ import {
   useRecordContext,
   useRefresh,
 } from "react-admin";
-import type { RaEvent } from "~/pages/api/RaHandlers/eventHandler";
+import type { RaEvent } from "~/server/RaHandlers/eventHandler";
 import { api } from "~/utils/api";
 import type { Event } from "@prisma/client";
 import type { PaypalRefunds } from "~/types";
