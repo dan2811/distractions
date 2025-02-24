@@ -50,9 +50,9 @@ import {
   SaveButton,
   Toolbar,
 } from "react-admin";
-import type { RaEvent } from "~/pages/api/RaHandlers/eventHandler";
+import type { RaEvent } from "~/server/RaHandlers/eventHandler";
 import type { Contract, EventType } from "@prisma/client";
-import type { RaJob } from "~/pages/api/RaHandlers/jobHandler";
+import type { RaJob } from "~/server/RaHandlers/jobHandler";
 import CloseIcon from "@mui/icons-material/Close";
 import {
   Alert,
@@ -72,7 +72,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import type { RequiredInstrumentsJSON } from "~/types";
 import TodayIcon from "@mui/icons-material/Today";
 import ColouredDateField from "../Fields/ColouredDateField";
-import type { RaUser } from "~/pages/api/RaHandlers/userHandler";
+import type { RaUser } from "~/server/RaHandlers/userHandler";
 import { globalColors } from "tailwind.config";
 import { UploadDropzone } from "~/utils/uploadthing";
 import Image from "next/image";

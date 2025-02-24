@@ -9,7 +9,7 @@ import {
   updateHandler,
 } from "ra-data-simple-prisma";
 import { prisma } from "~/server/db";
-import NotifyMusician from "../notifications/notifyMusician";
+import NotifyMusician from "~/server/notifications/notifyMusician";
 import type { NextApiResponse } from "next";
 
 export interface AugmentedJob extends Job {

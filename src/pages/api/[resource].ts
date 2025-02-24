@@ -1,18 +1,26 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import type { NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { type RaPayload, defaultHandler } from "ra-data-simple-prisma";
 import { prisma } from "~/server/db";
-import { userHandler } from "./RaHandlers/userHandler";
-import { instrumentHandler } from "./RaHandlers/instrumentHandler";
-import { eventHandler } from "./RaHandlers/eventHandler";
-import { jobHandler } from "./RaHandlers/jobHandler";
-import { packageHandler } from "./RaHandlers/packageHandler";
+import { userHandler } from "../../server/RaHandlers/userHandler";
+import { instrumentHandler } from "../../server/RaHandlers/instrumentHandler";
+import { eventHandler } from "../../server/RaHandlers/eventHandler";
+import { jobHandler } from "../../server/RaHandlers/jobHandler";
+import { packageHandler } from "../../server/RaHandlers/packageHandler";
 import { log } from "next-axiom";
-import { invoiceHandler } from "./RaHandlers/invoiceHandler";
+import { invoiceHandler } from "../../server/RaHandlers/invoiceHandler";
+import { getServerAuthSession } from "~/server/auth";
 
-const handler = async (req: { body: RaPayload }, res: NextApiResponse) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const session = await getServerAuthSession({ req, res });
+
+  if (!session?.user) {
+    console.error("THIS IS BAD, SOMEONE TRIED TO CALL THE API WITHOUT AUTH");
+    return;
+  }
+
   let result;
   switch (req.body.resource) {
     case "user":
@@ -34,7 +42,7 @@ const handler = async (req: { body: RaPayload }, res: NextApiResponse) => {
       result = await invoiceHandler(req, res);
       break;
     default:
-      result = await defaultHandler(req.body, prisma);
+      result = await defaultHandler(req.body as RaPayload, prisma);
       break;
   }
   log.info("REACT_ADMIN_ROUTE_HANDLER", {
