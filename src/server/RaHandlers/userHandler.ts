@@ -28,26 +28,22 @@ export const userHandler = async (
 ) => {
   switch (req.body.method) {
     case "create":
-      //   BODY:  {
-      //     method: 'create',
-      //     resource: 'user',
-      //     params: {
-      //       data: {
-      //         name: 'testing',
-      //         email: 'testing1@test.com',
-      //         phone: '0987654',
-      //         role: 'musician'
-      //       }
-      //     }
-      //   }
-
       if (req.body.params.data.role === "musician") {
         try {
           await sendWelcomeEmailToMusician({
-            name: req.body.params.data.name,
-            email: req.body.params.data.email,
+            name: req.body.params.data.name as string,
+            email: req.body.params.data.email as string,
           });
-        } catch (e) {}
+        } catch (e) {
+          console.error(
+            `FAILED_EMAIL - failed to send welcome email to musician: Method:${
+              req.body.method
+            }, Resource:${req.body.resource}, Data:${JSON.stringify(
+              req.body.params,
+            )}`,
+            e,
+          );
+        }
       }
 
       return await createHandler<Prisma.UserCreateArgs>(req.body, prisma.user, {

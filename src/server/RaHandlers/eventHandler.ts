@@ -6,7 +6,7 @@ import type {
   Equipment,
   Contract,
 } from "@prisma/client";
-import type { GetServerSidePropsContext, NextApiResponse } from "next";
+import type { NextApiResponse } from "next";
 import {
   type RaPayload,
   defaultHandler,
@@ -20,7 +20,6 @@ import {
   createDraftDepositInvoice,
   createDraftFinalInvoice,
 } from "~/server/api/routers/paypal/helper";
-import { getServerAuthSession } from "~/server/auth";
 import { prisma } from "~/server/db";
 
 interface AugmentedEvent extends Event {
