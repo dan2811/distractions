@@ -634,7 +634,10 @@ export const EventEdit = () => {
             "You must give this event a name. The client will see this.",
           )}
         />
-        <DateInput source="date" />
+        <DateInput
+          source="date"
+          parse={(date: string) => new Date(date).toISOString()}
+        />
         <ReferenceInput source="ownerId" reference="user" />
         <ReferenceInput
           source="eventTypeId"
