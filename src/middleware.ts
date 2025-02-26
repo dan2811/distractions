@@ -14,7 +14,7 @@ export default withAuth({
           log.info("ADMIN_ACCESS_GRANTED", { user: token });
           return true;
         }
-        log.warn("ADMIN_ACCESS_DENIED", { user: token });
+        log.warn("ADMIN_ACCESS_DENIED", { user: token, req });
         return false;
       }
 

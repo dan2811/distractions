@@ -10,6 +10,7 @@ import {
   TextField,
   TextInput,
   email,
+  regex,
   required,
 } from "react-admin";
 
@@ -43,7 +44,11 @@ export const UserFilterSideBar = () => (
 export const UserList = () => {
   return (
     <List aside={<UserFilterSideBar />}>
-      <DatagridConfigurable rowClick="show" omit={["id"]} bulkActionButtons={false}>
+      <DatagridConfigurable
+        rowClick="show"
+        omit={["id"]}
+        bulkActionButtons={false}
+      >
         <TextField source="id" />
         <TextField source="name" />
         <TextField source="role" />
@@ -82,7 +87,16 @@ export const UserCreate = () => {
         <TextInput
           source="email"
           type="email"
-          validate={[required(), email("Must be a valid email address")]}
+          validate={[
+            required(),
+            email("Must be a valid email address"),
+            (val: string) => {
+              if ([...val].some((char) => char !== char.toLowerCase())) {
+                return "Email must be lowercase";
+              }
+              return;
+            },
+          ]}
         />
         <TextInput source="phone" />
         <SelectInput
