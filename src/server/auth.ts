@@ -47,6 +47,7 @@ export const authOptions: NextAuthOptions = {
           email: params.profile?.email ?? params.user.email ?? undefined,
         },
       });
+      console.log("signIn: found user in DB allowing sign in", { user });
 
       if (!user) {
         throw new Error("User does not exist");
@@ -59,10 +60,13 @@ export const authOptions: NextAuthOptions = {
         token.sub = user.id;
         token.phone = (user as User).phone;
         token.role = (user as User).role;
+      } else {
+        console.log("jwt: no user. Cannot augment token");
       }
       return token;
     },
     async session({ session, token }) {
+      console.info("session auth method called", { session, token });
       if (session.user && token.sub) {
         session.user.phone = token.phone;
         session.user.id = token.sub;
@@ -71,6 +75,8 @@ export const authOptions: NextAuthOptions = {
             id: token.sub,
           },
         });
+
+        console.info("session: augmenting session", { session, token, user });
         //Assign role to session for use in front end
         session.user.role = user?.role ?? "client";
         //Assign role to token for use in middleware to check for admin access
@@ -99,6 +105,7 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       profile: (profile: GoogleProfile) => {
+        console.log("Attempting login with Google", { profile });
         return {
           id: profile.sub,
           given_name: profile.given_name,

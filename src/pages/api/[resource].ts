@@ -49,6 +49,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     method: req.body.method,
     resource: req.body.resource,
     result,
+    session,
   });
   return res.json(result);
 };
