@@ -142,6 +142,7 @@ export const EventList = () => {
       >
         <TextField source="id" />
         <TextField source="name" />
+        <TextField source="status" />
         <ReferenceField
           source="ownerId"
           reference="user"

@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import {
   AppBar,
   InspectorButton,
@@ -81,15 +81,10 @@ const MyUserMenu = (props: UserMenuProps) => {
 };
 
 const MyAppBar = () => {
-  const session = useSession();
-  if (session.status !== "authenticated") {
-    return null;
-  }
-  const isSuperAdmin = session.data.user.role === "superAdmin";
   return (
     <AppBar userMenu={<MyUserMenu />}>
       <TitlePortal />
-      {isSuperAdmin ?? <InspectorButton />}
+      <InspectorButton />
     </AppBar>
   );
 };

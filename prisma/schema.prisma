@@ -68,6 +68,7 @@ model User {
     instruments   Instrument[]
     jobs          Job[]
     bookings      Event[]       @relation("bookings")
+    lastSignIn    DateTime?
 }
 
 enum Role {
@@ -121,6 +122,30 @@ model Event {
     contract                   Contract?
     status                     String       @default("booked")
 }
+
+// model Set {
+//     id         String   @id @default(cuid())
+//     name       String   @unique
+//     startTime  DateTime
+//     endTime    DateTime
+//     location   String
+//     packageId  String
+//     package    Package  @relation(fields: [packageId], references: [id])
+//     createdAt  DateTime @default(now())
+//     updatedAt  DateTime @updatedAt
+//     goodSongs  Song[] @relation("goodSongs")
+//     badSongs   Song[] @relation("badSongs")
+// }
+
+// model Song {
+//     id         String   @id @default(cuid())
+//     name       String   @unique
+//     artist     String
+//     goodSongs  Set[] @relation("goodSongs")
+//     badSongs   Set[] @relation("badSongs")
+//     createdAt  DateTime @default(now())
+//     updatedAt  DateTime @updatedAt
+// }
 
 model Contract {
     /// id = "key" of the file. "key" is uploadthing terminology
@@ -182,6 +207,7 @@ model Package {
     createdAt        DateTime           @default(now())
     updatedAt        DateTime           @updatedAt
     events          Event[]
+    // sets            Set[]
 }
 
 model Equipment {
