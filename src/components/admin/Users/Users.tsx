@@ -1,6 +1,7 @@
 import {
   Create,
   DatagridConfigurable,
+  DateField,
   Edit,
   List,
   ReferenceArrayField,
@@ -10,7 +11,6 @@ import {
   TextField,
   TextInput,
   email,
-  regex,
   required,
 } from "react-admin";
 
@@ -52,6 +52,12 @@ export const UserList = () => {
         <TextField source="id" />
         <TextField source="name" />
         <TextField source="role" />
+        <DateField
+          source="lastSignIn"
+          emptyText="Not logged in yet"
+          showTime
+          label="Last Active"
+        />
       </DatagridConfigurable>
     </List>
   );

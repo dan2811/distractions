@@ -47,6 +47,7 @@ export const authOptions: NextAuthOptions = {
           email: params.profile?.email ?? params.user.email ?? undefined,
         },
       });
+
       console.log("signIn: found user in DB allowing sign in", { user });
 
       if (!user) {
@@ -75,6 +76,19 @@ export const authOptions: NextAuthOptions = {
             id: token.sub,
           },
         });
+
+        try {
+          await prisma.user.update({
+            where: {
+              id: user?.id,
+            },
+            data: {
+              lastSignIn: new Date().toISOString(),
+            },
+          });
+        } catch (error) {
+          console.error("Could not update user's lastSignedIn time", error);
+        }
 
         console.info("session: augmenting session", { session, token, user });
         //Assign role to session for use in front end
