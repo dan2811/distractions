@@ -100,6 +100,20 @@ export const EventFilterSideBar = () => {
       <CardContent>
         <SavedQueriesList />
         <FilterLiveSearch source="name" label="Search by event name" />
+        <FilterList label="Status" icon={<TodayIcon />}>
+          <FilterListItem
+            label="Booked"
+            value={{
+              status: "booked",
+            }}
+          />
+          <FilterListItem
+            label="Cancelled"
+            value={{
+              status: "cancelled",
+            }}
+          />
+        </FilterList>
         <FilterList label="Date" icon={<TodayIcon />}>
           <FilterListItem
             label="Previous events"
