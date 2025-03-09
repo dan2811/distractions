@@ -121,6 +121,7 @@ model Event {
     jobs                       Job[]
     contract                   Contract?
     status                     String       @default("booked")
+    clientEditLockNumOfDays    Int          @default(14)
 }
 
 // model Set {

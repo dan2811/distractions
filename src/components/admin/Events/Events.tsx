@@ -51,7 +51,7 @@ import {
   Toolbar,
 } from "react-admin";
 import type { RaEvent } from "~/server/RaHandlers/eventHandler";
-import type { Contract, EventType } from "@prisma/client";
+import type { Contract, Event, EventType } from "@prisma/client";
 import type { RaJob } from "~/server/RaHandlers/jobHandler";
 import CloseIcon from "@mui/icons-material/Close";
 import {
@@ -315,6 +315,25 @@ const DetailsTab = () => {
             <TextField source="status" />
             <TextField source="name" />
             <DateField source="date" />
+            <FunctionField
+              source="clientEditLockNumOfDays"
+              label="Client edit lock"
+              render={(record: {
+                date: Date;
+                clientEditLockNumOfDays: number;
+              }) => {
+                const eventDate = new Date(record.date);
+                const currentDate = new Date();
+                const diffTime = Math.abs(
+                  eventDate.getTime() - currentDate.getTime(),
+                );
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                return diffDays >= record.clientEditLockNumOfDays
+                  ? `${record.clientEditLockNumOfDays} days before the event`
+                  : "Client can no longer make changes";
+              }}
+            />
             <ReferenceField source="ownerId" reference="user" link="show" />
             <ReferenceField
               source="eventTypeId"
@@ -576,6 +595,17 @@ export const EventCreate = () => {
           source="date"
           parse={(val: string) => new Date(val).toISOString()}
         />
+        <div className="flex gap-2">
+          <NumberInput
+            source="clientEditLockNumOfDays"
+            label="Client edit lock"
+            defaultValue={14}
+          />
+          <p className="text-md h-full self-center">
+            This is the number of days before the event date, from which the
+            client will no longer be able to make changes.
+          </p>
+        </div>
         <ReferenceInput
           source="owner"
           label="Client"
@@ -653,6 +683,17 @@ export const EventEdit = () => {
           source="date"
           parse={(date: string) => new Date(date).toISOString()}
         />
+        <div className="flex gap-2">
+          <NumberInput
+            source="clientEditLockNumOfDays"
+            label="Client edit lock"
+            defaultValue={14}
+          />
+          <p className="text-md h-full self-center">
+            This is the number of days before the event date, from which the
+            client will no longer be able to make changes.
+          </p>
+        </div>
         <ReferenceInput source="ownerId" reference="user" />
         <ReferenceInput
           source="eventTypeId"

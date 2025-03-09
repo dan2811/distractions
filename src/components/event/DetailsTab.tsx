@@ -24,10 +24,7 @@ export const DetailsTab = () => {
 
   const tooLateToEdit: boolean =
     Date.parse(data.date.toISOString()) <
-    new Date().setDate(
-      new Date().getDate() +
-        parseInt(process.env.NUM_DAYS_BEFORE_EVENT_LOCK ?? "14"),
-    );
+    new Date().setDate(new Date().getDate() + data.clientEditLockNumOfDays);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
