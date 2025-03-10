@@ -80,6 +80,7 @@ import { FinanceTab } from "./FinanceTab";
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
 import AddIcon from "@mui/icons-material/Add";
+import { MusicTab } from "./MusicTab";
 
 export const EventFilterSideBar = () => {
   const { data, isLoading } = useGetList<EventType>("eventType");
@@ -297,6 +298,9 @@ export const EventShow = () => {
             <FinanceTab />
           </TabbedShowLayout.Tab>
         )}
+        <TabbedShowLayout.Tab label="music">
+          <MusicTab />
+        </TabbedShowLayout.Tab>
       </TabbedShowLayout>
     </Show>
   );

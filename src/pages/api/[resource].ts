@@ -12,6 +12,7 @@ import { packageHandler } from "../../server/RaHandlers/packageHandler";
 import { log } from "next-axiom";
 import { invoiceHandler } from "../../server/RaHandlers/invoiceHandler";
 import { getServerAuthSession } from "~/server/auth";
+import { setHandler } from "~/server/RaHandlers/setHandler";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getServerAuthSession({ req, res });
@@ -34,6 +35,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       break;
     case "job":
       result = await jobHandler(req, res);
+      break;
+    case "set":
+      result = await setHandler(req, res);
       break;
     case "package":
       result = await packageHandler(req, res);

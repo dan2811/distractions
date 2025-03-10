@@ -49,6 +49,8 @@ import { WageEdit } from "./Wages/Edit";
 import { WageList } from "./Wages/List";
 import { InvoiceList } from "./Invoices/List";
 import { InvoiceShow } from "./Invoices/Show";
+import { SetShow } from "./Sets/show";
+import { SetCreate } from "./Sets/create";
 
 export const MyLayout = (props: LayoutProps) => (
   <>
@@ -134,6 +136,12 @@ const AdminApp = () => {
         create={JobCreate}
         show={JobShow}
         edit={JobEdit}
+      />
+      <Resource
+        name="set"
+        recordRepresentation="name"
+        show={SetShow}
+        create={SetCreate}
       />
       {isSuperAdmin && (
         <Resource

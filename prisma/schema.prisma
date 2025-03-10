@@ -122,31 +122,34 @@ model Event {
     contract                   Contract?
     status                     String       @default("booked")
     clientEditLockNumOfDays    Int          @default(14)
+    sets                       Set[]
 }
 
-// model Set {
-//     id         String   @id @default(cuid())
-//     name       String   @unique
-//     startTime  DateTime
-//     endTime    DateTime
-//     location   String
-//     packageId  String
-//     package    Package  @relation(fields: [packageId], references: [id])
-//     createdAt  DateTime @default(now())
-//     updatedAt  DateTime @updatedAt
-//     goodSongs  Song[] @relation("goodSongs")
-//     badSongs   Song[] @relation("badSongs")
-// }
+model Set {
+    id         String   @id @default(cuid())
+    name       String   @unique
+    startTime  DateTime
+    endTime    DateTime
+    location   String
+    packageId  String
+    package    Package  @relation(fields: [packageId], references: [id])
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    goodSongs  Song[] @relation("goodSongs")
+    badSongs   Song[] @relation("badSongs")
+    eventId    String
+    event      Event    @relation(fields: [eventId], references: [id])
+}
 
-// model Song {
-//     id         String   @id @default(cuid())
-//     name       String   @unique
-//     artist     String
-//     goodSongs  Set[] @relation("goodSongs")
-//     badSongs   Set[] @relation("badSongs")
-//     createdAt  DateTime @default(now())
-//     updatedAt  DateTime @updatedAt
-// }
+model Song {
+    id         String   @id @default(cuid())
+    name       String   @unique
+    artist     String
+    goodSongs  Set[] @relation("goodSongs")
+    badSongs   Set[] @relation("badSongs")
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+}
 
 model Contract {
     /// id = "key" of the file. "key" is uploadthing terminology
@@ -208,7 +211,7 @@ model Package {
     createdAt        DateTime           @default(now())
     updatedAt        DateTime           @updatedAt
     events          Event[]
-    // sets            Set[]
+    sets            Set[]
 }
 
 model Equipment {
