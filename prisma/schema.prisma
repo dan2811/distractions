@@ -149,6 +149,7 @@ model Song {
     badSongs   Set[] @relation("badSongs")
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
+    packages   Package[]
 }
 
 model Contract {
@@ -212,6 +213,7 @@ model Package {
     updatedAt        DateTime           @updatedAt
     events          Event[]
     sets            Set[]
+    songs           Song[]
 }
 
 model Equipment {

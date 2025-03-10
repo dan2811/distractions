@@ -51,6 +51,21 @@ export const DetailsTab = () => {
     <div className="flex w-full flex-col gap-6 place-self-center p-4 md:max-w-lg">
       <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
         <div>
+          <h2 className="themed-h2">Music</h2>
+          <p>Tailor your music</p>
+        </div>
+        <span className="flex w-1/2 flex-col justify-between gap-4 place-self-end self-center">
+          <button
+            type="button"
+            className="themed-button"
+            onClick={() => void router.push(`/event/${id}/sets`)}
+          >
+            Go
+          </button>
+        </span>
+      </span>
+      <span className="grid w-full grid-cols-2 self-center rounded-lg bg-gradient-to-tl from-gray-900/40 to-gray-300/50 p-4 bg-blend-darken shadow-inner shadow-gray-500 backdrop-blur-md">
+        <div>
           <h2 className="themed-h2">Date</h2>
           <p>{new Date(data.date).toLocaleDateString("en-gb")}</p>
         </div>

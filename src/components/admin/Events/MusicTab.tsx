@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, SxProps } from "@mui/material";
 import {
   Button,
   Datagrid,
@@ -6,16 +6,18 @@ import {
   Link,
   ReferenceArrayField,
   ReferenceField,
+  RowClickFunction,
   ShowBase,
   SimpleShowLayout,
   TextField,
   useCreatePath,
-  useNotify,
+  useGetOne,
   useRecordContext,
-  useRefresh,
 } from "react-admin";
 import type { RaEvent } from "~/server/RaHandlers/eventHandler";
 import AddIcon from "@mui/icons-material/Add";
+import { useState } from "react";
+import { RaSet } from "~/server/RaHandlers/setHandler";
 
 const CreateSetButton = ({ eventId }: { eventId: string }) => {
   const record = useRecordContext();
@@ -44,16 +46,32 @@ const CreateSetButton = ({ eventId }: { eventId: string }) => {
 };
 
 export const MusicTab = () => {
-  const notify = useNotify();
   const record = useRecordContext<RaEvent>();
-  const refresh = useRefresh();
+  const [selectedSet, setSelectedSet] = useState<string | null>(null);
+
+  const onRowClick: RowClickFunction = (id, _resource, _record) => {
+    setSelectedSet(id as string);
+    console.log(`selected: ${id}`);
+    return false;
+  };
+
+  const setRowSx: (record: RaSet, index: number) => SxProps = (record) => {
+    if (record.id === selectedSet) {
+      return {
+        backgroundColor: "Highlight",
+      };
+    } else {
+      return {};
+    }
+  };
+
   return (
     <ShowBase resource="event">
       <Grid container spacing={4}>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <SimpleShowLayout>
             <ReferenceArrayField source="sets" reference="set">
-              <Datagrid rowClick="show">
+              <Datagrid rowClick={onRowClick} rowSx={setRowSx}>
                 <TextField source="name" />
                 <DateField
                   source="startTime"
@@ -71,15 +89,46 @@ export const MusicTab = () => {
             <CreateSetButton eventId={record.id} />
           </SimpleShowLayout>
         </Grid>
-        <Grid item xs={6} className="flex flex-col justify-start align-middle">
-          <SimpleShowLayout>
-            <div> hello</div>
-          </SimpleShowLayout>
+        <Grid item xs={6}>
+          {selectedSet ? (
+            <SongList id={selectedSet} source="goodSongs" />
+          ) : (
+            <div>Select a set, to view it&apos;s songs</div>
+          )}
         </Grid>
-        <Grid item xs={12}>
-          <div>hello</div>
+        <Grid item xs={6}>
+          {selectedSet ? <SongList id={selectedSet} source="badSongs" /> : null}
         </Grid>
       </Grid>
     </ShowBase>
+  );
+};
+
+const SongList = ({
+  id,
+  source,
+}: {
+  id: string;
+  source: "badSongs" | "goodSongs";
+}) => {
+  const set = useGetOne<RaSet>("set", {
+    id,
+  });
+  return (
+    <SimpleShowLayout record={set.data}>
+      <ReferenceArrayField source={source} reference="song">
+        <Datagrid
+          rowClick="show"
+          bulkActionButtons={false}
+          sx={{
+            backgroundColor:
+              source === "goodSongs" ? "lightgreen" : "lightsalmon",
+          }}
+        >
+          <TextField source="name" />
+          <TextField source="artist" />
+        </Datagrid>
+      </ReferenceArrayField>
+    </SimpleShowLayout>
   );
 };

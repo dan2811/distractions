@@ -1,4 +1,4 @@
-import type { Prisma, Set, Event, Song } from "@prisma/client";
+import type { Prisma, Set, Song } from "@prisma/client";
 import type { NextApiResponse } from "next";
 import {
   type RaPayload,
@@ -26,7 +26,6 @@ export const setHandler = async (
 ) => {
   switch (req.body.method) {
     case "create":
-      console.log("INPUT YO: ", req.body);
       const { eventId, ...dataWithoutEventId } = req.body.params.data;
       const renamedData = { ...dataWithoutEventId, event: eventId as string };
       req.body.params.data =

@@ -22,7 +22,7 @@ import {
   InstrumentShow,
 } from "./Instruments/Instruments";
 import { UserShow } from "./Users/UserShow";
-import type { Event, Prisma } from "@prisma/client";
+import type { Event, Prisma, Song } from "@prisma/client";
 import {
   EventTypeCreate,
   EventTypeEdit,
@@ -51,6 +51,7 @@ import { InvoiceList } from "./Invoices/List";
 import { InvoiceShow } from "./Invoices/Show";
 import { SetShow } from "./Sets/show";
 import { SetCreate } from "./Sets/create";
+import { SongCreate, SongEdit, SongList, SongShow } from "./Songs/Song";
 
 export const MyLayout = (props: LayoutProps) => (
   <>
@@ -142,6 +143,14 @@ const AdminApp = () => {
         recordRepresentation="name"
         show={SetShow}
         create={SetCreate}
+      />
+      <Resource
+        name="song"
+        recordRepresentation={(rec: Song) => `${rec.name} - ${rec.artist}`}
+        show={SongShow}
+        create={SongCreate}
+        edit={SongEdit}
+        list={SongList}
       />
       {isSuperAdmin && (
         <Resource

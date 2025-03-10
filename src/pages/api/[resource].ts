@@ -13,6 +13,7 @@ import { log } from "next-axiom";
 import { invoiceHandler } from "../../server/RaHandlers/invoiceHandler";
 import { getServerAuthSession } from "~/server/auth";
 import { setHandler } from "~/server/RaHandlers/setHandler";
+import { songHandler } from "~/server/RaHandlers/songHandler";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getServerAuthSession({ req, res });
@@ -44,6 +45,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       break;
     case "invoice":
       result = await invoiceHandler(req, res);
+      break;
+    case "song":
+      result = await songHandler(req, res);
       break;
     default:
       result = await defaultHandler(req.body as RaPayload, prisma);
