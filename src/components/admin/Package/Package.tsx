@@ -47,6 +47,13 @@ export const PackageShow = () => {
             </Datagrid>
           </ReferenceArrayField>
         </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab label="Songs">
+          <ReferenceArrayField source="songs" reference="Song">
+            <Datagrid rowClick="show" bulkActionButtons={false}>
+              <TextField source="name" />
+            </Datagrid>
+          </ReferenceArrayField>
+        </TabbedShowLayout.Tab>
       </TabbedShowLayout>
     </Show>
   );

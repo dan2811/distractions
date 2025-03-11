@@ -1,8 +1,9 @@
-import { InfoIcon } from "lucide-react";
+import { ArrowLeftIcon, InfoIcon } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Layout from "~/components/Layout/Layout";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
+import { Button } from "~/components/ui/button";
 import { api } from "~/utils/api";
 
 const Sets = () => {
@@ -26,7 +27,16 @@ const Sets = () => {
       pageDescription="Help us understand your music taste."
     >
       <div className="flex w-full flex-col gap-6 place-self-center p-4 md:max-w-lg">
-        <h1 className="text-center text-xl font-light">Your Sets</h1>
+        <span className="flex justify-between bg-black pt-2">
+          <h1 className="text-center text-xl font-light">Your Sets</h1>
+          <Button
+            className="themed-button"
+            onClick={() => void router.push(`/event/${eventId}`)}
+          >
+            <ArrowLeftIcon />
+            <p>Back</p>
+          </Button>
+        </span>
         <p>
           Help us to make your event unforgettable by letting us know your music
           preferences.{" "}
