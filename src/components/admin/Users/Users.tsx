@@ -70,6 +70,9 @@ export const UserEdit = () => {
         <TextInput source="name" />
         <TextInput source="email" type="email" />
         <TextInput source="phone" />
+        <TextInput source="address" />
+        <TextInput source="emergencyContactName" />
+        <TextInput source="emergencyContactPhone" />
         <SelectInput
           source="role"
           choices={[
@@ -116,6 +119,9 @@ export const UserCreate = () => {
         <TextInput source="name" validate={required()} />
         <TextInput source="email" type="email" />
         <TextInput source="phone" />
+        <TextInput source="address" />
+        <TextInput source="emergencyContactName" />
+        <TextInput source="emergencyContactPhone" />
         <SelectInput
           source="role"
           choices={[

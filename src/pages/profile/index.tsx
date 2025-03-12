@@ -53,7 +53,30 @@ const Profile = () => {
             {!sessionData
               ? null
               : sessionData?.user.role !== "client" && (
-                  <InstrumentsSelect userId={sessionData.user.id} />
+                  <>
+                    <ProfileAttribute
+                      label="Address"
+                      fieldName="address"
+                      inputType="text"
+                      initialValue={user.address ?? ""}
+                      refetch={refetch as UseQueryResult<"users">["refetch"]}
+                    />
+                    <InstrumentsSelect userId={sessionData.user.id} />
+                    <ProfileAttribute
+                      label="Emergency contact name"
+                      fieldName="emergencyContactName"
+                      inputType="text"
+                      initialValue={user.emergencyContactName ?? ""}
+                      refetch={refetch as UseQueryResult<"users">["refetch"]}
+                    />
+                    <ProfileAttribute
+                      label="Emergency contact phone number"
+                      fieldName="emergencyContactPhone"
+                      inputType="text"
+                      initialValue={user.emergencyContactPhone ?? ""}
+                      refetch={refetch as UseQueryResult<"users">["refetch"]}
+                    />
+                  </>
                 )}
           </div>
           <AuthButton />

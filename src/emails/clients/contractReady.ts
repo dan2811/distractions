@@ -6,7 +6,7 @@ export const getContractReadyEmail = (
   client: User,
   eventId: string,
 ): EmailDetails => ({
-  to: client.email,
+  to: client.email ?? "",
   from: process.env.EMAIL_FROM ?? "info@thedistractionsband.co.uk",
   subject: "Your contract is ready to sign",
   text: `Please visit ${process.env.MAIN_URL} to sign your contract`,
