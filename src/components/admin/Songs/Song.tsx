@@ -2,10 +2,10 @@ import {
   Create,
   Datagrid,
   DatagridConfigurable,
-  DateField,
   Edit,
   List,
   ReferenceArrayField,
+  ReferenceArrayInput,
   Show,
   SimpleForm,
   SimpleShowLayout,
@@ -15,7 +15,7 @@ import {
   required,
 } from "react-admin";
 
-export const PackageList = () => {
+export const SongList = () => {
   return (
     <List>
       <DatagridConfigurable
@@ -25,30 +25,24 @@ export const PackageList = () => {
       >
         <TextField source="id" />
         <TextField source="name" />
+        <TextField source="artist" />
       </DatagridConfigurable>
     </List>
   );
 };
 
-export const PackageShow = () => {
+export const SongShow = () => {
   return (
     <Show>
       <TabbedShowLayout>
         <TabbedShowLayout.Tab label="details">
           <SimpleShowLayout>
             <TextField source="name" />
+            <TextField source="artist" />
           </SimpleShowLayout>
         </TabbedShowLayout.Tab>
-        <TabbedShowLayout.Tab label="Events">
-          <ReferenceArrayField source="events" reference="Event">
-            <Datagrid rowClick="show" bulkActionButtons={false}>
-              <TextField source="name" />
-              <DateField source="date" />
-            </Datagrid>
-          </ReferenceArrayField>
-        </TabbedShowLayout.Tab>
-        <TabbedShowLayout.Tab label="Songs">
-          <ReferenceArrayField source="songs" reference="Song">
+        <TabbedShowLayout.Tab label="Packages">
+          <ReferenceArrayField source="packages" reference="Package">
             <Datagrid rowClick="show" bulkActionButtons={false}>
               <TextField source="name" />
             </Datagrid>
@@ -59,21 +53,25 @@ export const PackageShow = () => {
   );
 };
 
-export const PackageEdit = () => {
+export const SongEdit = () => {
   return (
-    <Edit>
+    <Edit redirect="show">
       <SimpleForm>
         <TextInput source="name" validate={required()} />
+        <TextInput source="artist" validate={required()} />
+        <ReferenceArrayInput source="packages" reference="package" />
       </SimpleForm>
     </Edit>
   );
 };
 
-export const PackageCreate = () => {
+export const SongCreate = () => {
   return (
     <Create redirect="show">
       <SimpleForm>
         <TextInput source="name" validate={required()} />
+        <TextInput source="artist" validate={required()} />
+        <ReferenceArrayInput source="packages" reference="package" />
       </SimpleForm>
     </Create>
   );

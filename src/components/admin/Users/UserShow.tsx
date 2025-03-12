@@ -22,6 +22,9 @@ export const UserShow = () => {
         <TextField source="name" />
         <TextField source="email" />
         <TextField source="phone" emptyText="No phone number" />
+        <TextField source="address" emptyText="Unknown" />
+        <TextField source="emergencyContactName" emptyText="Unknown" />
+        <TextField source="emergencyContactPhone" emptyText="Unknown" />
         <DateField
           source="lastSignIn"
           emptyText="Not logged in yet"

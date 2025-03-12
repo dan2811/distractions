@@ -10,7 +10,7 @@ import {
   SimpleForm,
   TextField,
   TextInput,
-  email,
+  type ValidateForm,
   required,
 } from "react-admin";
 
@@ -70,6 +70,9 @@ export const UserEdit = () => {
         <TextInput source="name" />
         <TextInput source="email" type="email" />
         <TextInput source="phone" />
+        <TextInput source="address" />
+        <TextInput source="emergencyContactName" />
+        <TextInput source="emergencyContactPhone" />
         <SelectInput
           source="role"
           choices={[
@@ -86,25 +89,39 @@ export const UserEdit = () => {
 };
 
 export const UserCreate = () => {
+  const validateUserCreation: ValidateForm = (values) => {
+    const errors: Record<string, string> = {};
+    if (values.role !== "client" && !values.email) {
+      errors.email = "Email is required";
+    }
+    if (
+      values.email &&
+      typeof values.email === "string" &&
+      [...values.email].some((char) => char !== char.toLowerCase())
+    ) {
+      errors.email = "Email must be lowercase";
+    }
+
+    const EMAIL_REGEX =
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (
+      values.email &&
+      typeof values.email === "string" &&
+      values.email.match(EMAIL_REGEX) === null
+    ) {
+      errors.email = "Must be a valid email address";
+    }
+    return errors;
+  };
   return (
     <Create redirect="show">
-      <SimpleForm>
+      <SimpleForm validate={validateUserCreation}>
         <TextInput source="name" validate={required()} />
-        <TextInput
-          source="email"
-          type="email"
-          validate={[
-            required(),
-            email("Must be a valid email address"),
-            (val: string) => {
-              if ([...val].some((char) => char !== char.toLowerCase())) {
-                return "Email must be lowercase";
-              }
-              return;
-            },
-          ]}
-        />
+        <TextInput source="email" type="email" />
         <TextInput source="phone" />
+        <TextInput source="address" />
+        <TextInput source="emergencyContactName" />
+        <TextInput source="emergencyContactPhone" />
         <SelectInput
           source="role"
           choices={[

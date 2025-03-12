@@ -5,6 +5,7 @@ import type {
   Package,
   Equipment,
   Contract,
+  Set,
 } from "@prisma/client";
 import type { NextApiResponse } from "next";
 import {
@@ -27,6 +28,7 @@ interface AugmentedEvent extends Event {
   Equipment: Equipment[];
   jobs: Job[];
   contract: Contract;
+  sets: Set[];
 }
 
 export interface RaEvent extends Event {
@@ -34,6 +36,7 @@ export interface RaEvent extends Event {
   Equipment: string[];
   jobs: string[];
   contract: string;
+  sets: string[];
 }
 
 export const eventHandler = async (
@@ -117,6 +120,7 @@ export const eventHandler = async (
               packages: true,
               jobs: true,
               contract: true,
+              sets: true,
             },
           },
         );
@@ -128,7 +132,9 @@ export const eventHandler = async (
           (equip: Equipment) => equip.id,
         ),
         contract: response.data?.contract?.id,
+        sets: response.data?.sets?.map((set) => set.id),
       };
+
       return { data: event };
     case "update":
       try {

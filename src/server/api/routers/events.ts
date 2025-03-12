@@ -177,4 +177,20 @@ export const eventRouter = createTRPCRouter({
         );
       }
     }),
+  getSets: protectedProcedure
+    .input(
+      z.object({
+        eventId: z.string(),
+      }),
+    )
+    .query(({ ctx, input: { eventId } }) => {
+      return ctx.prisma.set.findMany({
+        where: {
+          eventId,
+        },
+        include: {
+          package: true,
+        },
+      });
+    }),
 });

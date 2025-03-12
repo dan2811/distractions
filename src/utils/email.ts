@@ -2,7 +2,7 @@ import sgMail from "@sendgrid/mail";
 import { env } from "~/env.mjs";
 
 export interface EmailDetails {
-  to: string;
+  to: string | null;
   from: string;
   subject: string;
   text: string;
@@ -21,7 +21,15 @@ export const sendEmail = async (emailDetails: EmailDetails) => {
   }
 
   try {
-    const result = await sgMail.send(emailDetails);
+    if (!emailDetails.to) {
+      console.error("Email not sent. No email for user.", { emailDetails });
+      return;
+    }
+    const result = await sgMail.send(
+      emailDetails as Omit<EmailDetails, "to"> & {
+        to: string;
+      },
+    );
     console.info("EMAIL_SENT", { emailDetails, sendGridResponse: result });
     return result;
   } catch (e) {

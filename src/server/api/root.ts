@@ -7,6 +7,8 @@ import { contractRouter } from "./routers/contracts";
 import { generalDocumentRouter } from "./routers/generalDocuments";
 import { instrumentRouter } from "./routers/instruments";
 import { statsRouter } from "./routers/stats";
+import { setRouter } from "./routers/sets";
+import { songRouter } from "./routers/songs";
 
 /**
  * This is the primary router for your server.
@@ -22,6 +24,8 @@ export const appRouter = createTRPCRouter({
   contracts: contractRouter,
   generalDocuments: generalDocumentRouter,
   stats: statsRouter,
+  sets: setRouter,
+  songs: songRouter,
 });
 
 // export type definition of API

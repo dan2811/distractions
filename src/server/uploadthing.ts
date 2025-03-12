@@ -4,6 +4,7 @@ import { prisma } from "./db";
 import { z } from "zod";
 import { sendEmail } from "~/utils/email";
 import { getContractReadyEmail } from "~/emails/clients/contractReady";
+import { email } from "react-admin";
 
 const f = createUploadthing();
 // FileRouter for your app, can contain multiple FileRoutes
@@ -55,6 +56,13 @@ export const ourFileRouter = {
             },
           });
           const emailDetails = getContractReadyEmail(client, eventId);
+          if (!emailDetails.to) {
+            console.error(
+              "Email did not send, no email address found for user",
+              { emailDetails },
+            );
+            return;
+          }
           const result = await sendEmail(emailDetails);
           if (!result) throw new Error("Error sending email");
         } catch (e) {
