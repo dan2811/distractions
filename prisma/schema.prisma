@@ -129,25 +129,28 @@ model Event {
 }
 
 model Set {
-    id         String   @id @default(cuid())
-    name       String   @unique
-    startTime  DateTime
-    endTime    DateTime
-    location   String
-    packageId  String
-    package    Package  @relation(fields: [packageId], references: [id])
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
-    goodSongs  Song[] @relation("goodSongs")
-    badSongs   Song[] @relation("badSongs")
-    eventId    String
-    event      Event    @relation(fields: [eventId], references: [id])
+    id              String   @id @default(cuid())
+    name            String   @unique
+    startTime       DateTime
+    endTime         DateTime
+    location        String
+    packageId       String
+    package         Package  @relation(fields: [packageId], references: [id])
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+    goodSongs       Song[]   @relation("goodSongs")
+    badSongs        Song[]   @relation("badSongs")
+    goodSongsLimit  Int      @default(10)
+    badSongsLimit   Int      @default(10)
+    eventId         String
+    event           Event    @relation(fields: [eventId], references: [id])
 }
 
 model Song {
     id         String   @id @default(cuid())
     name       String   @unique
     artist     String
+    link       String?
     goodSongs  Set[] @relation("goodSongs")
     badSongs   Set[] @relation("badSongs")
     createdAt  DateTime @default(now())

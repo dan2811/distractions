@@ -90,7 +90,6 @@ export const authOptions: NextAuthOptions = {
           console.error("Could not update user's lastSignedIn time", error);
         }
 
-        console.info("session: augmenting session", { session, token, user });
         //Assign role to session for use in front end
         session.user.role = user?.role ?? "client";
         //Assign role to token for use in middleware to check for admin access
