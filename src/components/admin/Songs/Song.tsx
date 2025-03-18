@@ -67,7 +67,7 @@ export const SongEdit = () => {
 
 export const SongCreate = () => {
   return (
-    <Create redirect="show">
+    <Create redirect="list">
       <SimpleForm>
         <TextInput source="name" validate={required()} />
         <TextInput source="artist" validate={required()} />
