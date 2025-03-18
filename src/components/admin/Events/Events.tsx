@@ -614,6 +614,7 @@ export const EventCreate = () => {
           source="owner"
           label="Client"
           reference="user"
+          perPage={999999}
           filter={{
             role_eq: "client",
           }}
@@ -624,6 +625,7 @@ export const EventCreate = () => {
           source="EventType"
           reference="eventType"
           validate={required()}
+          perPage={999999}
         />
         <ReferenceArrayInput source="packages" reference="package" />
         <TextInput source="location" />
@@ -636,6 +638,7 @@ export const EventCreate = () => {
               reference="Instrument"
               resource="Instrument"
               label="Required instruments"
+              perPage={9999999}
             >
               <SelectInput optionText="name" label="Instrument" value="id" />
             </ReferenceInput>
@@ -698,11 +701,12 @@ export const EventEdit = () => {
             client will no longer be able to make changes.
           </p>
         </div>
-        <ReferenceInput source="ownerId" reference="user" />
+        <ReferenceInput source="ownerId" reference="user" perPage={9999999} />
         <ReferenceInput
           source="eventTypeId"
           reference="eventType"
           validate={required()}
+          perPage={9999999}
         />
         <ReferenceArrayInput source="packages" reference="package" />
         <TextInput source="location" />
@@ -714,6 +718,7 @@ export const EventEdit = () => {
               reference="Instrument"
               resource="Instrument"
               label="Required instruments"
+              perPage={9999999}
             >
               <SelectInput optionText="name" label="Instrument" value="id" />
             </ReferenceInput>

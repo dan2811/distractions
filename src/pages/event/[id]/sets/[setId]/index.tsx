@@ -4,7 +4,7 @@ import {
   BottomNavigationAction,
   Card,
 } from "@mui/material";
-import { Song } from "@prisma/client";
+import type { Song } from "@prisma/client";
 import { ArrowLeftIcon, CheckIcon, XIcon } from "lucide-react";
 import { useRouter } from "next/router";
 import React from "react";
@@ -54,7 +54,19 @@ const SongChoice = () => {
   if (!setId || Array.isArray(setId))
     return <p className="text-red-600">Set not found</p>;
 
-  const addSongToGoodSongs = async (song: Song, isAlreadyAdded: boolean) => {
+  const addSongToGoodSongs = async (song: Song) => {
+    if (!!set?.goodSongs && !!set.goodSongsLimit) {
+      const isSongAlreadyInGoodSongs = set.goodSongs.find(
+        (s) => s.id === song.id,
+      );
+      const isGoodSongsFull = set.goodSongs.length >= set.goodSongsLimit;
+      if (isGoodSongsFull && !isSongAlreadyInGoodSongs) {
+        toast.error(
+          `You can only like a maximum of ${set.goodSongsLimit} songs. But don't worry, this is just a guide to help us learn your general preferences.`,
+        );
+        return;
+      }
+    }
     await mutateSongToGoodSongs(
       { songId: song.id, setId: setId },
       {
@@ -68,7 +80,19 @@ const SongChoice = () => {
     );
   };
 
-  const addSongToBadSongs = async (song: Song, isAlreadyAdded: boolean) => {
+  const addSongToBadSongs = async (song: Song) => {
+    if (!!set?.badSongs && !!set.badSongsLimit) {
+      const isSongAlreadyInBadSongs = set.badSongs.find(
+        (s) => s.id === song.id,
+      );
+      const isBadSongsFull = set.badSongs.length >= set.badSongsLimit;
+      if (isBadSongsFull && !isSongAlreadyInBadSongs) {
+        toast.error(
+          `You can only dislike a maximum of ${set.badSongsLimit} songs. But don't worry, this is just a guide to help us learn your general preferences.`,
+        );
+        return;
+      }
+    }
     await mutateSongToBadSongs(
       { songId: song.id, setId: setId },
       {
@@ -101,6 +125,8 @@ const SongChoice = () => {
         <p className="bg-black pt-2">
           Click the green tick to tell us that you like a song and use the red
           button if you&apos;re not a fan. Click the same button again to undo.
+          You can like a maximum of {set?.goodSongsLimit ?? 10} songs. You can
+          dislike a maximum of {set?.badSongsLimit ?? 10} songs.
         </p>
         <div className="h-8 bg-gradient-to-b from-black to-transparent"></div>
       </div>
@@ -123,7 +149,7 @@ const SongChoice = () => {
               </span>
               <span className="flex items-center justify-center gap-8">
                 <button
-                  onClick={() => void addSongToGoodSongs(song, isGoodSong)}
+                  onClick={() => void addSongToGoodSongs(song)}
                   className={`h-fit w-fit rounded-full bg-green-500 ${
                     isGoodSong ? "bg-opacity-70" : "bg-opacity-30"
                   }  p-2`}
@@ -131,7 +157,7 @@ const SongChoice = () => {
                   <CheckIcon />
                 </button>
                 <button
-                  onClick={() => void addSongToBadSongs(song, isBadSong)}
+                  onClick={() => void addSongToBadSongs(song)}
                   className={`h-fit w-fit rounded-full bg-red-500 ${
                     isBadSong ? "bg-opacity-70" : "bg-opacity-30"
                   } p-2`}
@@ -146,10 +172,6 @@ const SongChoice = () => {
       <Card className="h-16 w-full" />
       <BottomNavigation
         showLabels
-        // value={tab}
-        onChange={(_event, newValue: number) => {
-          void router.push(`/event/${eventId}?tab=${newValue}`);
-        }}
         sx={{
           borderTop: "0.5px solid rgba(168, 160, 124, 0.5)",
           boxShadow: "0px -5px 10px 0px rgba(0,0,0,0.75)",

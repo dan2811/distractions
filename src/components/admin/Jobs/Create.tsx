@@ -47,10 +47,9 @@ export const JobCreate = () => {
         <ReferenceInput
           source="wages"
           reference="wages"
-          validate={required((value: unknown, values: unknown) => {
-            console.log(`value: `, value);
-            console.log(`values: `, values);
-          })}
+          perPage={99999}
+          validate={required()}
+          sort={{ field: "name", order: "ASC" }}
         />
         <FilteredMusicianInput />
         <TextInput source="notes" multiline />
