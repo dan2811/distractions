@@ -115,10 +115,13 @@ export const jobRouter = createTRPCRouter({
         eventId: z.string(),
       }),
     )
-    .query(({ input }) => {
+    .query(({ input, ctx }) => {
       return prisma.job.findFirstOrThrow({
         where: {
-          eventId: input.eventId,
+          AND: {
+            eventId: input.eventId,
+            musicianId: ctx.session.user.id,
+          },
         },
         include: {
           Instruments: true,
