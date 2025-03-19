@@ -82,7 +82,7 @@ export const ourFileRouter = {
     .onUploadComplete(({ file, metadata }) => {
       console.info("General document uploaded", { file, metadata });
     }),
-  musicianInvoiceUploader: f({ pdf: { maxFileSize: "1MB" } })
+  musicianInvoiceUploader: f({ pdf: { maxFileSize: "16MB" } })
     .input(
       z.object({
         jobId: z.string(),
