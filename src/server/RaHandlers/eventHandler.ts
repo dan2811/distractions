@@ -147,6 +147,7 @@ export const eventHandler = async (
               packages: "id",
               Equipment: "id",
               owner: "id",
+              sets: "id",
             },
             skipFields: {
               jobs: true,
